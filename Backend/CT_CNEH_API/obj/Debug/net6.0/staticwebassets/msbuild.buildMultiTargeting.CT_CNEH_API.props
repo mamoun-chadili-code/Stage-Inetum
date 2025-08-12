@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\CT_CNEH_API.props" />
+</Project>

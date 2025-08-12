@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "gzOKtqJYDYaVk+apIHZtzbjdPmiWNriKW8NtOlkiAas=",
+  "Source": "CT_CNEH_API",
+  "BasePath": "_content/CT_CNEH_API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
