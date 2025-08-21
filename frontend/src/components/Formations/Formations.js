@@ -477,7 +477,6 @@ export default function Formations() {
                 <TableRow>
                   <TableCell>Type de Formation</TableCell>
                   <TableCell>CCT</TableCell>
-                  <TableCell>Nom</TableCell>
                   <TableCell>Nom agent</TableCell>
                   <TableCell>Intitulé</TableCell>
                   <TableCell>Début</TableCell>
@@ -492,7 +491,6 @@ export default function Formations() {
                     <TableRow key={formation.id}>
                       <TableCell>{formation.typeFormation || '-'}</TableCell>
                       <TableCell>{formation.cct || '-'}</TableCell>
-                      <TableCell>{formation.chefCentre || '-'}</TableCell>
                       <TableCell>{formation.agent || '-'}</TableCell>
                       <TableCell>
                         <Typography variant="subtitle2" fontWeight="bold">
@@ -542,7 +540,7 @@ export default function Formations() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={9} align="center" sx={{ py: 4 }}>
+                    <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
                       <Typography variant="body1" color="text.secondary">
                         {searchTerm ? 'Aucune formation trouvée pour cette recherche' : 'Aucune formation disponible'}
                       </Typography>

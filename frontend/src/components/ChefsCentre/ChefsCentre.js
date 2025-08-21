@@ -15,7 +15,6 @@ import {
   IconButton,
   Typography,
   Paper,
-  Grid,
   FormControl,
   InputLabel,
   Select,
@@ -64,7 +63,7 @@ export default function ChefsCentre() {
     totalCount: 0,
     pageCount: 0,
     currentPage: 1,
-    pageSize: 10
+    pageSize: 5
   });
 
   // États des modals
@@ -130,14 +129,14 @@ export default function ChefsCentre() {
   const refreshData = async () => {
     try {
       setLoading(true);
-      const response = await chefCentreService.getChefsCentre({}, 1, 10);
+      const response = await chefCentreService.getChefsCentre({}, 1, 5);
       setChefsCentre(response.data);
       setPagination(prev => ({
         ...prev,
         totalCount: response.pagination.totalCount,
         pageCount: response.pagination.pageCount,
         currentPage: 1,
-        pageSize: 10
+        pageSize: 5
       }));
     } catch (error) {
       toast.error('Erreur lors du rafraîchissement des données');
@@ -300,358 +299,231 @@ export default function ChefsCentre() {
         }}
       >
         <Typography 
-          variant="h5" 
+          variant="h6" 
           gutterBottom 
           sx={{ 
             display: 'flex', 
             alignItems: 'center', 
             gap: 2,
             color: 'primary.main',
-            fontWeight: 700,
+            fontWeight: 600,
             mb: 3,
-            fontSize: '1.5rem',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
+            fontSize: '1.2rem',
+            textTransform: 'none',
+            letterSpacing: '0.3px',
             borderBottom: '2px solid',
             borderColor: 'primary.light',
             pb: 1,
             '& .MuiSvgIcon-root': {
-              fontSize: '2rem',
+              fontSize: '1.5rem',
               color: 'primary.main'
             }
           }}
         >
           <SearchIcon />
-          Recherche Avancée
+          Recherche
         </Typography>
         
-        <Grid container spacing={4}>
-          {/* Indicateur de statut des filtres */}
-          <Grid item xs={12}>
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 1, 
-              mb: 3,
-              p: 2,
-              bgcolor: 'grey.50',
-              borderRadius: 2,
-              border: '1px solid',
-              borderColor: 'grey.200'
-            }}>
-              <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                Filtres actifs :
-              </Typography>
-              {Object.values(filters).some(value => value !== '') ? (
-                <Chip 
-                  label={`${Object.values(filters).filter(value => value !== '').length} filtre(s) appliqué(s)`}
-                  color="primary"
-                  size="small"
-                  variant="outlined"
-                />
-              ) : (
-                <Chip 
-                  label="Aucun filtre appliqué"
-                  color="default"
-                  size="small"
-                  variant="outlined"
-                />
-              )}
-            </Box>
-          </Grid>
-          
-          <Grid item xs={12} md={4.5}>
-            <SearchableSelect
-              label="Région"
-              value={filters.regionId}
-              onChange={(value) => handleFilterChange('regionId', value)}
-              options={dropdowns.regions || []}
-              placeholder="Rechercher une région..."
-              getOptionLabel={(option) => option.libelle}
-              getOptionValue={(option) => option.id}
-              fullWidth
-              margin="dense"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 3,
-                  minHeight: '75px',
-                  transition: 'all 0.2s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-1px)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                  }
-                },
-                '& .MuiInputLabel-root': {
-                  fontSize: '1.15rem',
-                  fontWeight: 600,
-                  color: 'text.primary',
-                  marginBottom: '10px'
-                }
-              }}
-            />
-          </Grid>
-          
-          <Grid item xs={12} md={4.5}>
-            <SearchableSelect
-              label="Ville"
-              value={filters.villeId}
-              onChange={(value) => handleFilterChange('villeId', value)}
-              options={dropdowns.villes || []}
-              placeholder="Rechercher une ville..."
-              getOptionLabel={(option) => option.nom}
-              getOptionValue={(option) => option.id}
-              fullWidth
-              margin="dense"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 3,
-                  minHeight: '75px',
-                  transition: 'all 0.2s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-1px)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                  }
-                },
-                '& .MuiInputLabel-root': {
-                  fontSize: '1.15rem',
-                  fontWeight: 600,
-                  color: 'text.primary',
-                  marginBottom: '10px'
-                }
-              }}
-            />
-          </Grid>
-          
-          <Grid item xs={12} md={4.5}>
-            <SearchableSelect
-              label="Réseau de ralliement"
-              value={filters.reseauId}
-              onChange={(value) => handleFilterChange('reseauId', value)}
-              options={dropdowns.reseaux || []}
-              placeholder="Rechercher un réseau..."
-              getOptionLabel={(option) => option.nom}
-              getOptionValue={(option) => option.id}
-              fullWidth
-              margin="dense"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 3,
-                  minHeight: '75px',
-                  transition: 'all 0.2s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-1px)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                  }
-                },
-                '& .MuiInputLabel-root': {
-                  fontSize: '1.15rem',
-                  fontWeight: 600,
-                  color: 'text.primary',
-                  marginBottom: '10px'
-                }
-              }}
-            />
-          </Grid>
-          
-          <Grid item xs={12} md={4.5}>
-            <SearchableSelect
-              label="CCT"
-              value={filters.CCTId}
-              onChange={(value) => handleFilterChange('CCTId', value)}
-              options={dropdowns.ccts || []}
-              placeholder="Rechercher un CCT..."
-              getOptionLabel={(option) => option.nom}
-              getOptionValue={(option) => option.id}
-              fullWidth
-              margin="dense"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 3,
-                  minHeight: '75px',
-                  transition: 'all 0.2s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-1px)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                  }
-                },
-                '& .MuiInputLabel-root': {
-                  fontSize: '1.15rem',
-                  fontWeight: 600,
-                  color: 'text.primary',
-                  marginBottom: '10px'
-                }
-              }}
-            />
-          </Grid>
-          
-          <Grid item xs={12} md={4.5}>
-            <SearchableSelect
-              label="Formation"
-              value={filters.niveauFormationId}
-              onChange={(value) => handleFilterChange('niveauFormationId', value)}
-              options={dropdowns.niveauxFormation || []}
-              placeholder="Rechercher un niveau..."
-              getOptionLabel={(option) => option.libelle}
-              getOptionValue={(option) => option.id}
-              fullWidth
-              margin="dense"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 3,
-                  minHeight: '75px',
-                  transition: 'all 0.2s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-1px)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                  }
-                },
-                '& .MuiInputLabel-root': {
-                  fontSize: '1.15rem',
-                  fontWeight: 600,
-                  color: 'text.primary',
-                  marginBottom: '10px'
-                }
-              }}
-            />
-          </Grid>
-          
-          <Grid item xs={12} md={4.5}>
-            <TextField
-              fullWidth
-              size="medium"
-              label="Année d'affectation"
-              value={filters.anneeAffectation}
-              onChange={(e) => handleFilterChange('anneeAffectation', e.target.value)}
-              placeholder="Ex: 2024"
-              InputProps={{
-                startAdornment: (
-                  <Box sx={{ mr: 1, color: 'primary.main' }}>
-                    <CalendarIcon fontSize="small" />
-                  </Box>
-                ),
-              }}
-              sx={{
-                bgcolor: 'white',
-                borderRadius: 3,
-                transition: 'all 0.2s ease-in-out',
-                '& .MuiInputLabel-root': {
-                  fontSize: '1.15rem',
-                  fontWeight: 600,
-                  color: 'text.primary',
-                  marginBottom: '10px'
-                },
-                '& .MuiInputBase-input': {
-                  fontSize: '1.15rem',
-                  fontWeight: 500,
-                  color: 'text.primary',
-                  padding: '24px 20px'
-                },
-                '& .MuiOutlinedInput-root': {
-                  minHeight: '75px',
-                  '& fieldset': {
-                    borderColor: 'grey.400',
-                    borderWidth: '3px'
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'primary.main',
-                    borderWidth: '3.5px'
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'primary.main',
-                    borderWidth: '3.5px'
-                  },
-                  '&:hover': {
-                    transform: 'translateY(-1px)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                  }
-                }
-              }}
-            />
-          </Grid>
-          
-          <Grid item xs={12} md={4.5}>
-            <Box sx={{ 
-              display: 'flex', 
-              gap: 2, 
-              height: '100%',
-              alignItems: 'center'
-            }}>
-              <Button
-                variant="contained"
-                onClick={applyFilters}
-                startIcon={<FilterIcon />}
-                sx={{
-                  flex: 1,
-                  height: '75px',
-                  fontSize: '1.15rem',
-                  fontWeight: 600,
-                  borderRadius: 3,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px',
-                  background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
-                  boxShadow: '0 4px 15px rgba(25, 118, 210, 0.3)',
-                  transition: 'all 0.3s ease-in-out',
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #1565c0 0%, #0d47a1 100%)',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 6px 20px rgba(25, 118, 210, 0.4)'
-                  }
-                }}
-              >
-                Rechercher
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={clearFilters}
-                startIcon={<ClearIcon />}
-                sx={{
-                  flex: 1,
-                  height: '75px',
-                  fontSize: '1.15rem',
-                  fontWeight: 600,
-                  borderRadius: 3,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px',
-                  borderColor: 'primary.main',
-                  borderWidth: '3px',
-                  color: 'primary.main',
-                  transition: 'all 0.3s ease-in-out',
-                  '&:hover': {
-                    borderColor: 'primary.dark',
-                    backgroundColor: 'primary.light',
-                    color: 'primary.dark',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 4px 15px rgba(25, 118, 210, 0.2)'
-                  }
-                }}
-              >
-                Réinitialiser
-              </Button>
-            </Box>
-          </Grid>
-        </Grid>
-        
-        {/* Section d'aide */}
+
+
+        {/* Zone de recherche organisée */}
         <Box sx={{ 
-          mt: 3, 
-          p: 2, 
-          bgcolor: 'info.50', 
-          borderRadius: 2, 
-          border: '1px solid',
-          borderColor: 'info.200'
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+          gap: 3,
+          mb: 3
         }}>
-          <Typography variant="body2" sx={{ 
-            color: 'info.700', 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 1,
-            fontSize: '0.8rem'
-          }}>
-            <InfoIcon fontSize="small" />
-            <strong>Astuce :</strong> Utilisez les champs de recherche pour filtrer rapidement les chefs de centre. 
-            Vous pouvez combiner plusieurs critères pour affiner vos résultats.
-          </Typography>
+          <SearchableSelect
+            label="Région"
+            value={filters.regionId}
+            onChange={(value) => handleFilterChange('regionId', value)}
+            options={dropdowns.regions || []}
+            placeholder="Rechercher une région..."
+            getOptionLabel={(option) => option.libelle}
+            getOptionValue={(option) => option.id}
+            fullWidth
+            margin="dense"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                minHeight: '56px'
+              },
+              '& .MuiInputLabel-root': {
+                fontSize: '1rem',
+                fontWeight: 500,
+                color: 'text.primary'
+              }
+            }}
+          />
+          
+          <SearchableSelect
+            label="Ville"
+            value={filters.villeId}
+            onChange={(value) => handleFilterChange('villeId', value)}
+            options={dropdowns.villes || []}
+            placeholder="Rechercher une ville..."
+            getOptionLabel={(option) => option.nom}
+            getOptionValue={(option) => option.id}
+            fullWidth
+            margin="dense"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                minHeight: '56px'
+              },
+              '& .MuiInputLabel-root': {
+                fontSize: '1rem',
+                fontWeight: 500,
+                color: 'text.primary'
+              }
+            }}
+          />
+          
+          <SearchableSelect
+            label="Réseau de ralliement"
+            value={filters.reseauId}
+            onChange={(value) => handleFilterChange('reseauId', value)}
+            options={dropdowns.reseaux || []}
+            placeholder="Rechercher un réseau..."
+            getOptionLabel={(option) => option.nom}
+            getOptionValue={(option) => option.id}
+            fullWidth
+            margin="dense"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                minHeight: '56px'
+              },
+              '& .MuiInputLabel-root': {
+                fontSize: '1rem',
+                fontWeight: 500,
+                color: 'text.primary'
+              }
+            }}
+          />
+          
+          <SearchableSelect
+            label="CCT"
+            value={filters.CCTId}
+            onChange={(value) => handleFilterChange('CCTId', value)}
+            options={dropdowns.ccts || []}
+            placeholder="Rechercher un CCT..."
+            getOptionLabel={(option) => option.nom}
+            getOptionValue={(option) => option.id}
+            fullWidth
+            margin="dense"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                minHeight: '56px'
+              },
+              '& .MuiInputLabel-root': {
+                fontSize: '1rem',
+                fontWeight: 500,
+                color: 'text.primary'
+              }
+            }}
+          />
+          
+          <SearchableSelect
+            label="Formation"
+            value={filters.niveauFormationId}
+            onChange={(value) => handleFilterChange('niveauFormationId', value)}
+            options={dropdowns.niveauxFormation || []}
+            placeholder="Rechercher un niveau..."
+            getOptionLabel={(option) => option.libelle}
+            getOptionValue={(option) => option.id}
+            fullWidth
+            margin="dense"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                minHeight: '56px'
+              },
+              '& .MuiInputLabel-root': {
+                fontSize: '1rem',
+                fontWeight: 500,
+                color: 'text.primary'
+              }
+            }}
+          />
+          
+          <TextField
+            fullWidth
+            size="medium"
+            label="Année d'affectation"
+            value={filters.anneeAffectation}
+            onChange={(e) => handleFilterChange('anneeAffectation', e.target.value)}
+            placeholder="Ex: 2024"
+            InputProps={{
+              startAdornment: (
+                <Box sx={{ mr: 1, color: 'primary.main' }}>
+                  <CalendarIcon fontSize="small" />
+                </Box>
+              ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                minHeight: '56px'
+              },
+              '& .MuiInputLabel-root': {
+                fontSize: '1rem',
+                fontWeight: 500,
+                color: 'text.primary'
+              }
+            }}
+          />
+
+          {/* Boutons d'action sur la même rangée */}
+          <Button
+            variant="contained"
+            onClick={applyFilters}
+            startIcon={<FilterIcon />}
+            sx={{
+              minWidth: '220px',
+              height: '56px',
+              fontSize: '1rem',
+              fontWeight: 600,
+              borderRadius: 2,
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              backgroundColor: '#1976d2',
+              '&:hover': {
+                backgroundColor: '#1565c0'
+              }
+            }}
+          >
+            Rechercher
+          </Button>
+
+          <Button
+            variant="outlined"
+            onClick={clearFilters}
+            startIcon={<ClearIcon />}
+            sx={{
+              minWidth: '220px',
+              height: '56px',
+              fontSize: '1rem',
+              fontWeight: 600,
+              borderRadius: 2,
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              borderColor: 'primary.main',
+              borderWidth: '2px',
+              color: 'primary.main',
+              '&:hover': {
+                borderColor: 'primary.dark',
+                backgroundColor: 'primary.light',
+                color: 'primary.dark'
+              }
+            }}
+          >
+            Réinitialiser
+          </Button>
         </Box>
+        
+
       </Paper>
 
       {/* Section Chefs des Centres */}
@@ -694,7 +566,7 @@ export default function ChefsCentre() {
               onClick={handleAdd}
               startIcon={<AddIcon />}
             >
-              + Ajouter Chef de centre
+              Ajouter chef de centre
             </Button>
           </Box>
         </Box>

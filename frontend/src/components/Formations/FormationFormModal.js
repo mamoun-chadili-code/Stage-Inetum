@@ -73,9 +73,62 @@ export default function FormationFormModal({ open, onClose, onSubmit, initialVal
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
+  const generateIntitule = () => {
+    if (!form.cctId || !form.typeFormationId) {
+      return '';
+    }
+    
+    // Récupérer le CCT et le type de formation
+    const cct = dropdowns.ccts?.find(c => c.id.toString() === form.cctId);
+    const typeFormation = dropdowns.typesFormation?.find(t => t.id.toString() === form.typeFormationId);
+    
+    if (!cct || !typeFormation) {
+      return '';
+    }
+    
+    // Format: {CodeCCT}_{CodeTypeFormation}_{DateHeure}
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).replace(/\//g, '');
+    const timeStr = now.toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    }).replace(/:/g, '');
+    
+    // Utiliser les 3 premières lettres du nom CCT et les 6 premières lettres du libellé
+    const cctCode = cct.nom.substring(0, 3).toUpperCase();
+    const typeCode = typeFormation.libelle.substring(0, 6).toUpperCase().replace(/\s+/g, '');
+    
+    return `${cctCode}_${typeCode}_${dateStr}_${timeStr}`;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(form);
+    
+    // Vérifier que les champs requis sont remplis
+    if (!form.cctId || !form.typeFormationId || !form.matiere || !form.dateDebut || !form.dateFin) {
+      alert('Veuillez remplir tous les champs obligatoires (CCT, Type de formation, Matière, Date début, Date fin).');
+      return;
+    }
+    
+    // Générer l'intitulé automatiquement
+    const intitule = generateIntitule();
+    if (!intitule) {
+      alert('Erreur lors de la génération de l\'intitulé. Veuillez vérifier vos sélections.');
+      return;
+    }
+    
+    // Ajouter l'intitulé généré au formulaire
+    const formWithIntitule = {
+      ...form,
+      intitule: intitule
+    };
+    
+    onSubmit(formWithIntitule);
   };
 
   return (
@@ -86,6 +139,32 @@ export default function FormationFormModal({ open, onClose, onSubmit, initialVal
       <DialogContent>
         <form onSubmit={handleSubmit}>
           <Box sx={{ mt: 2 }}>
+            {/* Section Intitulé généré */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: '#1976d2' }}>
+                Intitulé de la formation (généré automatiquement)
+              </Typography>
+              <Box sx={{ 
+                p: 2, 
+                bgcolor: '#f5f5f5', 
+                borderRadius: 1, 
+                border: '1px solid #e0e0e0',
+                minHeight: '56px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}>
+                <Typography variant="body2" sx={{ fontFamily: 'monospace', color: '#666' }}>
+                  {form.cctId && form.typeFormationId ? generateIntitule() : 'Sélectionnez un CCT et un type de formation pour voir l\'intitulé généré'}
+                </Typography>
+                {form.cctId && form.typeFormationId && (
+                  <Typography variant="caption" sx={{ color: '#1976d2', fontStyle: 'italic' }}>
+                    ⚡ Généré automatiquement
+                  </Typography>
+                )}
+              </Box>
+            </Box>
+
             {/* Section Informations principales */}
             <Box sx={{ mb: 3 }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: '#1976d2' }}>
@@ -97,15 +176,7 @@ export default function FormationFormModal({ open, onClose, onSubmit, initialVal
                 gap: 2,
                 '& > *': { minWidth: '250px', flex: '1 1 250px' }
               }}>
-                <TextField
-                  label="Intitulé*"
-                  value={form.intitule}
-                  onChange={(e) => handleChange('intitule', e.target.value)}
-                  fullWidth
-                  required
-                  margin="dense"
-                  sx={{ minHeight: '56px' }}
-                />
+
                 
                 <FormControl fullWidth margin="dense" sx={{ minHeight: '56px' }}>
                   <InputLabel>CCT</InputLabel>
@@ -148,6 +219,23 @@ export default function FormationFormModal({ open, onClose, onSubmit, initialVal
                     {Array.isArray(dropdowns.chefsCentre) && dropdowns.chefsCentre.map(chef => (
                       <MenuItem key={chef.id} value={chef.id}>
                         {chef.nom} {chef.prenom}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth margin="dense" sx={{ minHeight: '56px' }}>
+                  <InputLabel>Type de formation*</InputLabel>
+                  <Select
+                    value={form.typeFormationId}
+                    onChange={(e) => handleChange('typeFormationId', e.target.value)}
+                    label="Type de formation"
+                    required
+                  >
+                    <MenuItem value="">Sélectionnez</MenuItem>
+                    {Array.isArray(dropdowns.typesFormation) && dropdowns.typesFormation.map(type => (
+                      <MenuItem key={type.id} value={type.id}>
+                        {type.libelle}
                       </MenuItem>
                     ))}
                   </Select>
