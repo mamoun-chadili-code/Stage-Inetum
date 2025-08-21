@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CT_CNEH_API.Models
 {
@@ -6,29 +7,42 @@ namespace CT_CNEH_API.Models
     {
         public int Id { get; set; }
         
+        [Required]
+        public int NumeroLigne { get; set; }
+        
+        [Required]
+        public int CategorieId { get; set; }
+        
+        [Required]
         public int CCTId { get; set; }
         
         [Required]
-        public int NumLigne { get; set; }
-        
-        public int TypeLigneId { get; set; }
-        
         public int StatutId { get; set; }
         
         [Required]
         public DateTime DateStatut { get; set; }
         
-        [Required]
-        public string Decision { get; set; } = string.Empty;
+        public int? DecisionId { get; set; }
         
-        [Required]
-        public DateTime DecisionDate { get; set; }
+        public DateTime? DateDecision { get; set; }
+        
+        public int? AnneeDemarrage { get; set; }
+        
+        public DateTime DateCreation { get; set; } = DateTime.UtcNow;
+        
+        public DateTime? DateModification { get; set; }
         
         // Navigation properties
+        [ForeignKey("CategorieId")]
+        public virtual Categorie Categorie { get; set; } = null!;
+        
+        [ForeignKey("CCTId")]
         public virtual CCT CCT { get; set; } = null!;
-        public virtual CategorieLigne TypeLigne { get; set; } = null!;
-        public virtual StatutLigne Statut { get; set; } = null!;
-        public virtual ICollection<Equipement> Equipements { get; set; } = new List<Equipement>();
-        public virtual ICollection<Descision> Decisions { get; set; } = new List<Descision>();
+        
+        [ForeignKey("StatutId")]
+        public virtual Statut Statut { get; set; } = null!;
+        
+        [ForeignKey("DecisionId")]
+        public virtual Decision? Decision { get; set; }
     }
 } 

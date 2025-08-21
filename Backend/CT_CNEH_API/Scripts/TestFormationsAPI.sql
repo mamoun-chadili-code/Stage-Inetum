@@ -81,6 +81,6 @@ END
 PRINT '';
 PRINT '=== TEST TERMINÉ ===';
 PRINT '📋 Prochaines étapes :';
-PRINT '1. Testez l''API : https://localhost:54875/api/Formations';
+PRINT '1. Testez l''API : http://localhost:7000/api/Formations';
 PRINT '2. Testez l''application : http://localhost:3000/formations';
 PRINT '3. Vérifiez que les données s''affichent correctement'; 

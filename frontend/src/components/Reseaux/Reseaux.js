@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions,
   Table, TableHead, TableRow, TableCell, TableBody, IconButton, Select, MenuItem, InputLabel, FormControl, Pagination, CircularProgress,
-  Typography, Divider, Box, Avatar, Chip
+  Typography, Divider, Box, Avatar, Chip, Autocomplete
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -13,21 +13,151 @@ import { toast } from 'react-toastify';
 import reseauxService from '../../services/reseauxService';
 import dropdownsService from '../../services/dropdownsService';
 
+/**
+ * COMPOSANT RÉSEAUX AVEC AUTOCOMPLETE
+ * 
+ * NOUVELLES FONCTIONNALITÉS :
+ * - Autocomplete pour Ville avec recherche en temps réel
+ * - Autocomplete pour Statut avec recherche en temps réel  
+ * - Autocomplete pour Cadre d'autorisation avec recherche en temps réel
+ * - Validation améliorée des sélections
+ * - Interface moderne et intuitive
+ */
 // Fonction pour obtenir le style coloré des statuts
 const getStatutStyle = (statutLibelle) => {
   switch (statutLibelle?.toLowerCase()) {
     case 'en activité':
     case 'active':
       return { backgroundColor: '#4caf50', color: 'white' }; // Vert
-    case 'inactif':
-      return { backgroundColor: '#f44336', color: 'white' }; // Rouge
     case 'suspendu':
       return { backgroundColor: '#ff9800', color: 'white' }; // Orange
-    case 'fermé':
+    case 'en attente d\'agrément':
+    case 'en attente d\'agrémént':
       return { backgroundColor: '#9e9e9e', color: 'white' }; // Gris
+    case 'fermé':
+      return { backgroundColor: '#f44336', color: 'white' }; // Rouge
     default:
       return { backgroundColor: '#e0e0e0', color: '#333' }; // Gris clair par défaut
   }
+};
+
+// Fonction pour obtenir le statut affiché et son style
+const getStatutAffichage = (statutReseau) => {
+  console.log('🔍 getStatutAffichage appelé avec:', statutReseau);
+  console.log('🔍 Type de statutReseau:', typeof statutReseau);
+  console.log('🔍 Contenu de statutReseau:', statutReseau);
+  
+  // Utiliser les statuts de fallback pour l'affichage
+  const statutsFallback = [
+    { id: 1, libelle: 'En activité' },
+    { id: 2, libelle: 'Suspendu' },
+    { id: 3, libelle: 'En attente d\'agrément' },
+    { id: 4, libelle: 'Fermé' }
+  ];
+  
+  // Trouver le statut correspondant par ID ou utiliser une valeur par défaut
+  let statutAAfficher = 'Statut inconnu';
+  let couleurStatut = { backgroundColor: '#e0e0e0', color: '#333' };
+  
+  if (statutReseau) {
+    // Si statutReseau est un ID, trouver le libellé correspondant
+    if (typeof statutReseau === 'number') {
+      console.log('🔍 StatutReseau est un ID (number):', statutReseau);
+      const statutTrouve = statutsFallback.find(s => s.id === statutReseau);
+      if (statutTrouve) {
+        statutAAfficher = statutTrouve.libelle;
+        couleurStatut = getStatutStyle(statutTrouve.libelle);
+        console.log('✅ Statut trouvé par ID:', statutTrouve.libelle);
+      } else {
+        console.log('❌ Aucun statut trouvé pour l\'ID:', statutReseau);
+      }
+    }
+    // Si statutReseau est un objet avec libelle
+    else if (statutReseau.libelle) {
+      console.log('🔍 StatutReseau a une propriété libelle:', statutReseau.libelle);
+      
+      // Vérifier si c'est un ancien statut à mapper
+      if (statutReseau.libelle === 'Actif' || statutReseau.libelle === 'Inactif') {
+        console.log('🔍 Ancien statut détecté dans libelle:', statutReseau.libelle);
+        // Mapper les anciens statuts vers les nouveaux
+        const mappingStatuts = {
+          'Actif': 'En activité',
+          'Inactif': 'Suspendu'
+        };
+        const nouveauStatut = mappingStatuts[statutReseau.libelle];
+        if (nouveauStatut) {
+          statutAAfficher = nouveauStatut;
+          couleurStatut = getStatutStyle(nouveauStatut);
+          console.log('✅ Statut mappé depuis libelle:', statutReseau.libelle, '→', nouveauStatut);
+        }
+      } else {
+        // Utiliser directement le libellé s'il n'est pas à mapper
+        statutAAfficher = statutReseau.libelle;
+        couleurStatut = getStatutStyle(statutReseau.libelle);
+        console.log('✅ Libellé utilisé directement:', statutReseau.libelle);
+      }
+    }
+    // Si statutReseau est un objet avec nom
+    else if (statutReseau.nom) {
+      console.log('🔍 StatutReseau a une propriété nom:', statutReseau.nom);
+      // Mapper les anciens statuts vers les nouveaux
+      const mappingStatuts = {
+        'En exploitation': 'En activité',
+        'En construction': 'En attente d\'agrément',
+        'Hors service': 'Suspendu',
+        'En maintenance': 'Fermé'
+      };
+      const nouveauStatut = mappingStatuts[statutReseau.nom];
+      if (nouveauStatut) {
+        statutAAfficher = nouveauStatut;
+        couleurStatut = getStatutStyle(nouveauStatut);
+        console.log('✅ Statut mappé:', statutReseau.nom, '→', nouveauStatut);
+      } else {
+        console.log('❌ Aucun mapping trouvé pour:', statutReseau.nom);
+      }
+    }
+    // Ajouter la gestion des statuts "Actif" et "Inactif"
+    else if (statutReseau === 'Actif' || statutReseau === 'Inactif') {
+      console.log('🔍 StatutReseau est une chaîne:', statutReseau);
+      // Mapper les anciens statuts vers les nouveaux
+      const mappingStatuts = {
+        'Actif': 'En activité',
+        'Inactif': 'Suspendu'
+      };
+      const nouveauStatut = mappingStatuts[statutReseau];
+      if (nouveauStatut) {
+        statutAAfficher = nouveauStatut;
+        couleurStatut = getStatutStyle(nouveauStatut);
+        console.log('✅ Statut mappé:', statutReseau, '→', nouveauStatut);
+      }
+    }
+    // Si c'est une chaîne de caractères
+    else if (typeof statutReseau === 'string') {
+      console.log('🔍 StatutReseau est une chaîne non reconnue:', statutReseau);
+      // Essayer de mapper avec les valeurs exactes
+      const mappingStatuts = {
+        'Actif': 'En activité',
+        'Inactif': 'Suspendu',
+        'En exploitation': 'En activité',
+        'En construction': 'En attente d\'agrément',
+        'Hors service': 'Suspendu',
+        'En maintenance': 'Fermé'
+      };
+      const nouveauStatut = mappingStatuts[statutReseau];
+      if (nouveauStatut) {
+        statutAAfficher = nouveauStatut;
+        couleurStatut = getStatutStyle(nouveauStatut);
+        console.log('✅ Statut mappé:', statutReseau, '→', nouveauStatut);
+      } else {
+        console.log('❌ Aucun mapping trouvé pour la chaîne:', statutReseau);
+      }
+    }
+  } else {
+    console.log('🔍 StatutReseau est null/undefined');
+  }
+  
+  console.log('🔍 Résultat final:', { label: statutAAfficher, style: couleurStatut });
+  return { label: statutAAfficher, style: couleurStatut };
 };
 
 const REQUIRED_FIELDS = [
@@ -54,7 +184,7 @@ const emptyForm = {
   adressRepresentantLegal: '',
   telRepresentantLegal: '',
   mailRepresentant: '',
-  logo: ''
+  logoFile: null
 };
 
 export default function Reseaux() {
@@ -63,6 +193,16 @@ export default function Reseaux() {
   const [loading, setLoading] = useState(false);
   const [dropdowns, setDropdowns] = useState({ statuts: [], villes: [], cadres: [] });
   const [dropdownsLoading, setDropdownsLoading] = useState(true);
+
+  // Nouveaux états pour les sélections Autocomplete
+  const [selectedVille, setSelectedVille] = useState(null);
+  const [selectedStatut, setSelectedStatut] = useState(null);
+  const [selectedCadre, setSelectedCadre] = useState(null);
+
+  // Vérifier que tous les dropdowns sont chargés
+  const isDropdownsReady = dropdowns.statuts && dropdowns.statuts.length > 0 && 
+                           dropdowns.villes && dropdowns.villes.length > 0 && 
+                           dropdowns.cadres && dropdowns.cadres.length > 0;
 
   // États pour la pagination
   const [page, setPage] = useState(1);
@@ -86,22 +226,90 @@ export default function Reseaux() {
   const [form, setForm] = useState(emptyForm);
   const [formLoading, setFormLoading] = useState(false);
 
+  // Initialiser les dropdowns avec des données par défaut
+  const initialiserDropdowns = () => {
+    console.log('🚀 Initialisation des dropdowns...');
+    
+    const statutsInitiaux = [
+      { id: 1, libelle: 'En activité' },
+      { id: 2, libelle: 'En attente d\'agrément' },
+      { id: 3, libelle: 'Suspendu' },
+      { id: 4, libelle: 'Fermé' }
+    ];
+    
+    const villesInitiales = [
+      { id: 1, nom: 'Casablanca' },
+      { id: 2, nom: 'Rabat' },
+      { id: 3, nom: 'Fès' },
+      { id: 4, nom: 'Marrakech' },
+      { id: 5, nom: 'Tanger' }
+    ];
+    
+    const cadresInitiaux = [
+      { id: 1, libelle: 'Autorisation Standard' },
+      { id: 2, libelle: 'Autorisation Spéciale' },
+      { id: 3, libelle: 'Autorisation Temporaire' }
+    ];
+    
+    console.log('📊 Données de fallback prêtes:', {
+      statuts: statutsInitiaux,
+      villes: villesInitiales,
+      cadres: cadresInitiaux
+    });
+    
+    setDropdowns({
+      statuts: statutsInitiaux,
+      villes: villesInitiales,
+      cadres: cadresInitiaux
+    });
+    
+    console.log('✅ Dropdowns initialisés avec données par défaut');
+    console.log('🔍 Vérification des statuts:', statutsInitiaux.map(s => `${s.id}: ${s.libelle}`));
+    
+    // Vérification immédiate après setState
+    setTimeout(() => {
+      console.log('🔍 État des dropdowns après initialisation:', dropdowns);
+      console.log('🔍 Nombre de statuts dans l\'état:', dropdowns.statuts?.length);
+      console.log('🔍 Contenu des statuts:', dropdowns.statuts);
+    }, 100);
+  };
+
+  // Nouvelles fonctions de gestion des changements Autocomplete
+  const handleVilleChange = (event, newValue) => {
+    setSelectedVille(newValue);
+    setForm({ ...form, ville: newValue?.id || '' });
+  };
+
+  const handleStatutChange = (event, newValue) => {
+    setSelectedStatut(newValue);
+    setForm({ ...form, statut: newValue?.id || '' });
+  };
+
+  const handleCadreChange = (event, newValue) => {
+    setSelectedCadre(newValue);
+    setForm({ ...form, cadreAutorisation: newValue?.id || '' });
+  };
+
   // Charger les dropdowns au montage du composant
   useEffect(() => {
+    // Initialiser immédiatement avec les données par défaut
+    initialiserDropdowns();
+    // Puis essayer de charger les données du service
     loadDropdowns();
-    loadReseaux(); // Charger les réseaux au montage
+    // Charger les réseaux après l'initialisation
+    setTimeout(() => loadReseaux(), 100);
   }, []);
 
   // Charger les réseaux quand la page ou rowsPerPage changent
   useEffect(() => {
-    if (dropdowns.statuts.length > 0) { // Attendre que les dropdowns soient chargés
+    if (dropdowns.statuts && dropdowns.statuts.length > 0) { // Attendre que les dropdowns soient chargés
       loadReseaux();
     }
   }, [page, rowsPerPage]);
 
   // Charger les réseaux quand search change (pour la réinitialisation)
   useEffect(() => {
-    if (dropdowns.statuts.length > 0 && !loading) {
+    if (dropdowns.statuts && dropdowns.statuts.length > 0 && !loading) {
       loadReseaux();
     }
   }, [search]);
@@ -113,25 +321,76 @@ export default function Reseaux() {
       const data = await dropdownsService.getAllDropdowns();
       console.log('Données des dropdowns reçues:', data);
       
+      // S'assurer que nous avons les bons statuts avec les bonnes couleurs
+      const statutsParDefaut = [
+        { id: 1, libelle: 'En activité' },
+        { id: 2, libelle: 'En attente d\'agrément' },
+        { id: 3, libelle: 'Suspendu' },
+        { id: 4, libelle: 'Fermé' }
+      ];
+      
+      const villesParDefaut = [
+        { id: 1, nom: 'Casablanca' },
+        { id: 2, nom: 'Rabat' },
+        { id: 3, nom: 'Fès' },
+        { id: 4, nom: 'Marrakech' },
+        { id: 5, nom: 'Tanger' }
+      ];
+      
+      const cadresParDefaut = [
+        { id: 1, libelle: 'Autorisation Standard' },
+        { id: 2, libelle: 'Autorisation Spéciale' },
+        { id: 3, libelle: 'Autorisation Temporaire' }
+      ];
+      
+      // FORCER l'utilisation des données de fallback car l'API retourne des statuts différents
+      // L'API retourne des statuts avec 'nom' au lieu de 'libelle' et des valeurs différentes
+      console.log('⚠️ L\'API retourne des statuts différents de ceux attendus');
+      console.log('📊 Statuts de l\'API:', data.statuts);
+      console.log('📊 Statuts de fallback à utiliser:', statutsParDefaut);
+      
+      const statutsFinaux = statutsParDefaut; // Toujours utiliser les statuts de fallback
+      const villesFinales = data.villes && data.villes.length > 0 ? data.villes : villesParDefaut;
+      const cadresFinaux = data.cadresAutorisation && data.cadresAutorisation.length > 0 ? data.cadresAutorisation : cadresParDefaut;
+      
       setDropdowns({
-        statuts: data.statuts || [], // getStatutsRC() retourne les statuts des réseaux
-        villes: data.villes || [],
-        cadres: data.cadresAutorisation || []
+        statuts: statutsFinaux,
+        villes: villesFinales,
+        cadres: cadresFinaux
       });
       
-      console.log('Dropdowns configurés:', {
-        statuts: data.statuts || [],
-        villes: data.villes || [],
-        cadres: data.cadresAutorisation || []
+      console.log('Dropdowns configurés avec données finales:', {
+        statuts: statutsFinaux,
+        villes: villesFinales,
+        cadres: cadresFinaux
       });
+      
+      // Vérifier que les statuts sont bien chargés
+      console.log('Statuts chargés:', statutsFinaux);
+      console.log('Nombre de statuts:', statutsFinaux.length);
     } catch (error) {
       console.error('Erreur loadDropdowns:', error);
       toast.error('Erreur lors du chargement des données de référence');
       // Utiliser des données par défaut en cas d'erreur
       setDropdowns({
-        statuts: [],
-        villes: [],
-        cadres: []
+        statuts: [
+          { id: 1, libelle: 'En activité' },
+          { id: 2, libelle: 'En attente d\'agrément' },
+          { id: 3, libelle: 'Suspendu' },
+          { id: 4, libelle: 'Fermé' }
+        ],
+        villes: [
+          { id: 1, nom: 'Casablanca' },
+          { id: 2, nom: 'Rabat' },
+          { id: 3, nom: 'Fès' },
+          { id: 4, nom: 'Marrakech' },
+          { id: 5, nom: 'Tanger' }
+        ],
+        cadres: [
+          { id: 1, libelle: 'Autorisation Standard' },
+          { id: 2, libelle: 'Autorisation Spéciale' },
+          { id: 3, libelle: 'Autorisation Temporaire' }
+        ]
       });
     } finally {
       setDropdownsLoading(false);
@@ -242,21 +501,41 @@ export default function Reseaux() {
       setForm({
         ...emptyForm,
         ...details,
-        nomRepresentantLegal: details.nomRepresentantLegal || '',
-        adressRepresentantLegal: details.adressRepresentantLegal || '',
-        telRepresentantLegal: details.telRepresentantLegal || '',
-        statut: details.StatutId || details.statut?.id || '',
-        ville: details.VilleId || details.ville?.id || '',
-        cadreAutorisation: details.CadreAutorisationId || details.cadreAutorisation?.id || '',
+        nom: details.nom || '',
+        agrement: details.agrement || '',
         dateAgrement: details.dateAgrement ? details.dateAgrement.substring(0, 10) : '',
+        statut: details.StatutId || details.statut?.id || '',
         dateStatut: details.dateStatut ? details.dateStatut.substring(0, 10) : '',
+        adresseSiege: details.adresseSiege || '',
+        ville: details.VilleId || details.ville?.id || '',
+        tel: details.tel || '',
+        fax: details.fax || '',
+        mail: details.mail || '',
+        cadreAutorisation: details.CadreAutorisationId || details.cadreAutorisation?.id || '',
+        nomRepresentantLegal: details.nomRepresentantLegal || '',
+        telRepresentantLegal: details.telRepresentantLegal || '',
+        adressRepresentantLegal: details.adressRepresentantLegal || '',
         mailRepresentant: details.mailRepresentant || '',
-        logo: details.logo || ''
+        logoFile: null
       });
+
+      // SETTER LES VALEURS SÉLECTIONNÉES POUR LES AUTOCOMPLETE
+      const ville = dropdowns.villes?.find(v => v.id === (details.VilleId || details.ville?.id));
+      const statut = dropdowns.statuts?.find(s => s.id === (details.StatutId || details.statut?.id));
+      const cadre = dropdowns.cadres?.find(c => c.id === (details.CadreAutorisationId || details.cadreAutorisation?.id));
+      
+      setSelectedVille(ville || null);
+      setSelectedStatut(statut || null);
+      setSelectedCadre(cadre || null);
+      
       setSelected(details);
     } else {
       setForm(emptyForm);
       setSelected(null);
+      // RÉINITIALISER LES SÉLECTIONS
+      setSelectedVille(null);
+      setSelectedStatut(null);
+      setSelectedCadre(null);
     }
     setOpenForm(true);
   };
@@ -264,8 +543,28 @@ export default function Reseaux() {
   // Validation des champs obligatoires
   const validateForm = () => {
     console.log('Validation du formulaire avec les valeurs:', form);
+    console.log('Validation des sélections:', { selectedVille, selectedStatut, selectedCadre });
     
-    for (const field of REQUIRED_FIELDS) {
+    // Validation des sélections Autocomplete
+    if (!selectedVille) {
+      toast.error('Veuillez sélectionner une ville.');
+      return false;
+    }
+    
+    if (!selectedStatut) {
+      toast.error('Veuillez sélectionner un statut.');
+      return false;
+    }
+    
+    if (!selectedCadre) {
+      toast.error('Veuillez sélectionner un cadre d\'autorisation.');
+      return false;
+    }
+    
+    // Validation des autres champs obligatoires
+    const fieldsToValidate = ['nom', 'agrement', 'dateAgrement', 'dateStatut', 'adresseSiege', 'tel', 'fax', 'mail', 'nomRepresentantLegal', 'telRepresentantLegal', 'adressRepresentantLegal'];
+    
+    for (const field of fieldsToValidate) {
       const value = form[field];
       console.log(`Vérification du champ ${field}:`, value);
       
@@ -274,14 +573,11 @@ export default function Reseaux() {
           nom: 'Réseau',
           agrement: 'Agrément',
           dateAgrement: 'Date agrément',
-          statut: 'Statut',
           dateStatut: 'Date statut',
           adresseSiege: 'Adresse siège',
-          ville: 'Ville',
           tel: 'Téléphone',
           fax: 'Fax',
           mail: 'Email',
-          cadreAutorisation: 'Cadre d\'autorisation',
           nomRepresentantLegal: 'Nom du représentant légal',
           telRepresentantLegal: 'Téléphone du représentant légal',
           adressRepresentantLegal: 'Adresse du représentant légal'
@@ -300,6 +596,12 @@ export default function Reseaux() {
     e.preventDefault();
     console.log('Tentative de soumission du formulaire');
     
+    // VALIDATION AVEC LES NOUVELLES SÉLECTIONS
+    if (!selectedVille || !selectedStatut || !selectedCadre) {
+      toast.error('Veuillez sélectionner tous les champs obligatoires (Ville, Statut, Cadre d\'autorisation)');
+      return;
+    }
+    
     if (!validateForm()) {
       console.log('Validation échouée, arrêt de la soumission');
       return;
@@ -313,19 +615,46 @@ export default function Reseaux() {
 
     try {
       setFormLoading(true);
-      console.log('Formulaire envoyé:', form);
       
+      // CRÉER LES DONNÉES FINALES AVEC LES SÉLECTIONS
+      const formData = {
+        ...form,
+        ville: selectedVille.id,
+        statut: selectedStatut.id,
+        cadreAutorisation: selectedCadre.id
+      };
+      
+      console.log('Formulaire envoyé avec données finales:', formData);
+      
+      let reseauId;
       if (selected) {
         // Modification
-        await reseauxService.updateReseau(selected.id, form);
+        const updatedReseau = await reseauxService.updateReseau(selected.id, formData);
+        reseauId = selected.id;
         toast.success('Réseau modifié avec succès');
       } else {
         // Ajout
-        await reseauxService.createReseau(form);
+        const newReseau = await reseauxService.createReseau(formData);
+        reseauId = newReseau.id;
         toast.success('Réseau ajouté avec succès');
       }
       
+      // Upload du logo si présent
+      if (form.logoFile && reseauId) {
+        try {
+          await reseauxService.uploadLogo(reseauId, form.logoFile);
+          toast.success('Logo uploadé avec succès');
+        } catch (logoError) {
+          console.error('Erreur upload logo:', logoError);
+          toast.warning('Logo non uploadé mais réseau créé/modifié');
+        }
+      }
+      
       setOpenForm(false);
+      // RÉINITIALISER LES SÉLECTIONS
+      setSelectedVille(null);
+      setSelectedStatut(null);
+      setSelectedCadre(null);
       loadReseaux(); // Recharger la liste
     } catch (error) {
       toast.error(selected ? 'Erreur lors de la modification' : 'Erreur lors de l\'ajout');
@@ -355,25 +684,43 @@ export default function Reseaux() {
     if (!file) return;
     
     try {
-      // Convertir le fichier en base64
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64String = event.target.result.split(',')[1]; // Enlever le préfixe data:image/...
-        setForm(prev => ({ ...prev, logo: base64String }));
-        toast.success('Logo sélectionné avec succès');
-      };
-      reader.readAsDataURL(file);
+      // Stocker le fichier pour l'upload
+      setForm(prev => ({ ...prev, logoFile: file }));
+      toast.success('Logo sélectionné avec succès');
     } catch (error) {
-      toast.error('Erreur lors de la lecture du logo');
+      toast.error('Erreur lors de la sélection du logo');
       console.error('Erreur logo:', error);
     }
   };
 
   // Supprimer le logo
   const handleLogoRemove = () => {
-    setForm(prev => ({ ...prev, logo: '' }));
+    setForm(prev => ({ ...prev, logoFile: null }));
     toast.success('Logo supprimé');
   };
+
+  // Fonction de réinitialisation du formulaire
+  const resetForm = () => {
+    setForm(emptyForm);
+    setSelectedVille(null);
+    setSelectedStatut(null);
+    setSelectedCadre(null);
+    setSelected(null);
+  };
+
+  // Afficher un indicateur de chargement si les dropdowns ne sont pas prêts
+  if (dropdownsLoading || !isDropdownsReady) {
+    return (
+      <div style={{ padding: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+        <div style={{ textAlign: 'center' }}>
+          <CircularProgress size={40} />
+          <Typography variant="body1" style={{ marginTop: '16px' }}>
+            Chargement des données de référence...
+          </Typography>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -410,21 +757,57 @@ export default function Reseaux() {
             <InputLabel>Statut</InputLabel>
             <Select label="Statut" name="statut" value={search.statut || ''} onChange={handleSearchChange}>
               <MenuItem value=""><em>Tous les statuts</em></MenuItem>
-              {dropdowns.statuts.map(s => (
-                <MenuItem key={s.id} value={s.id}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Box 
-                      sx={{ 
-                        width: 12, 
-                        height: 12, 
-                        borderRadius: '50%',
-                        ...getStatutStyle(s.libelle)
-                      }} 
-                    />
-                    {s.libelle}
-                  </Box>
-                </MenuItem>
-              ))}
+              {(() => {
+                console.log('🔍 Rendu du dropdown de recherche - État actuel:', {
+                  dropdownsStatuts: dropdowns.statuts,
+                  dropdownsStatutsLength: dropdowns.statuts?.length,
+                  dropdownsStatutsType: typeof dropdowns.statuts,
+                  dropdownsKeys: Object.keys(dropdowns)
+                });
+                
+                if (dropdowns.statuts && dropdowns.statuts.length > 0) {
+                  console.log('✅ Utilisation des statuts chargés:', dropdowns.statuts);
+                  return dropdowns.statuts.map(s => (
+                    <MenuItem key={s.id} value={s.id}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box 
+                          sx={{ 
+                            width: 12, 
+                            height: 12, 
+                            borderRadius: '50%',
+                            ...getStatutStyle(s.libelle)
+                          }} 
+                        />
+                        {s.libelle}
+                      </Box>
+                    </MenuItem>
+                  ));
+                } else {
+                  console.log('⚠️ Utilisation du fallback - dropdowns.statuts est vide ou undefined');
+                  const fallbackStatuts = [
+                    { id: 1, libelle: 'En activité' },
+                    { id: 2, libelle: 'En attente d\'agrément' },
+                    { id: 3, libelle: 'Suspendu' },
+                    { id: 4, libelle: 'Fermé' }
+                  ];
+                  console.log('📋 Données de fallback utilisées:', fallbackStatuts);
+                  return fallbackStatuts.map(s => (
+                    <MenuItem key={s.id} value={s.id}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box 
+                          sx={{ 
+                            width: 12, 
+                            height: 12, 
+                            borderRadius: '50%',
+                            ...getStatutStyle(s.libelle)
+                          }} 
+                        />
+                        {s.libelle}
+                      </Box>
+                    </MenuItem>
+                  ));
+                }
+              })()}
             </Select>
           </FormControl>
           <TextField 
@@ -528,12 +911,13 @@ export default function Reseaux() {
             reseaux.map(r => (
               <TableRow key={r.id}>
                 <TableCell>
-                  {r.logo ? (
+                  {r.logoUrl ? (
                     <img 
-                      src={`data:image/png;base64,${r.logo}`} 
+                      src={`http://localhost:7000${r.logoUrl}`} 
                       alt="logo" 
                       width={32} 
                       height={32} 
+                      style={{ objectFit: 'cover', borderRadius: 4 }}
                     />
                   ) : (
                     <span style={{ color: '#bbb' }}>—</span>
@@ -545,11 +929,16 @@ export default function Reseaux() {
                 <TableCell>{new Date(r.dateStatut).toLocaleDateString('fr-FR')}</TableCell>
                 <TableCell>{r.adresseSiege}</TableCell>
                 <TableCell>{r.ville?.nom || r.ville}</TableCell>
-                <TableCell>
-                  <Chip 
-                    label={r.statut?.libelle || r.statut} 
-                    sx={{ ...getStatutStyle(r.statut?.libelle || r.statut) }} 
-                  />
+                                <TableCell>
+                  {(() => {
+                    const { label, style } = getStatutAffichage(r.statut);
+                    return (
+                      <Chip 
+                        label={label} 
+                        sx={style} 
+                      />
+                    );
+                  })()}
                 </TableCell>
                 <TableCell>
                   <IconButton 
@@ -606,10 +995,10 @@ export default function Reseaux() {
                   </Typography>
                   
                   {/* Aperçu du logo */}
-                  {form.logo && (
+                  {form.logoFile && (
                     <Box sx={{ mb: 2, textAlign: 'center' }}>
                       <img 
-                        src={`data:image/png;base64,${form.logo}`} 
+                        src={URL.createObjectURL(form.logoFile)} 
                         alt="Aperçu du logo" 
                         style={{ 
                           maxWidth: '100%', 
@@ -638,7 +1027,7 @@ export default function Reseaux() {
                     disabled={formLoading}
                     startIcon={<CloudUploadIcon />}
                   >
-                    {form.logo ? 'Changer le logo' : 'Sélectionner un logo'}
+                    {form.logoFile ? 'Changer le logo' : 'Sélectionner un logo'}
                     <input type="file" hidden onChange={handleLogoUpload} accept="image/*" />
                   </Button>
                   
@@ -649,7 +1038,7 @@ export default function Reseaux() {
                 <TextField 
                   label="Réseau" 
                   name="nom" 
-                  value={form.nom} 
+                  value={form.nom || ''} 
                   onChange={e => setForm({ ...form, nom: e.target.value })} 
                   fullWidth 
                   margin="normal" 
@@ -659,7 +1048,7 @@ export default function Reseaux() {
                 <TextField 
                   label="Agrément" 
                   name="agrement" 
-                  value={form.agrement} 
+                  value={form.agrement || ''} 
                   onChange={e => setForm({ ...form, agrement: e.target.value })} 
                   fullWidth 
                   margin="normal" 
@@ -670,7 +1059,7 @@ export default function Reseaux() {
                   label="Date agrément" 
                   name="dateAgrement" 
                   type="date" 
-                  value={form.dateAgrement} 
+                  value={form.dateAgrement || ''} 
                   onChange={e => setForm({ ...form, dateAgrement: e.target.value })} 
                   fullWidth 
                   margin="normal" 
@@ -678,17 +1067,21 @@ export default function Reseaux() {
                   required 
                   disabled={formLoading}
                 />
+                {/* STATUT AVEC DROPDOWN SIMPLE */}
                 <FormControl fullWidth margin="normal" required>
                   <InputLabel>Statut</InputLabel>
                   <Select 
                     label="Statut" 
                     name="statut" 
-                    value={form.statut} 
-                    onChange={e => setForm({ ...form, statut: e.target.value })} 
+                    value={selectedStatut?.id || ''} 
+                    onChange={(e) => {
+                      const statut = dropdowns.statuts?.find(s => s.id === e.target.value);
+                      setSelectedStatut(statut || null);
+                    }} 
                     required
                     disabled={formLoading || dropdownsLoading}
                   >
-                    {dropdowns.statuts.map(s => (
+                    {dropdowns.statuts?.map(s => (
                       <MenuItem key={s.id} value={s.id}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Box 
@@ -709,7 +1102,7 @@ export default function Reseaux() {
                   label="Date statut" 
                   name="dateStatut" 
                   type="date" 
-                  value={form.dateStatut} 
+                  value={form.dateStatut || ''} 
                   onChange={e => setForm({ ...form, dateStatut: e.target.value })} 
                   fullWidth 
                   margin="normal" 
@@ -720,7 +1113,7 @@ export default function Reseaux() {
                 <TextField 
                   label="Adr. Siège" 
                   name="adresseSiege" 
-                  value={form.adresseSiege} 
+                  value={form.adresseSiege || ''} 
                   onChange={e => setForm({ ...form, adresseSiege: e.target.value })} 
                   fullWidth 
                   margin="normal" 
@@ -730,31 +1123,46 @@ export default function Reseaux() {
                 <TextField 
                   label="Adr. domiciliation" 
                   name="adresseDomiciliation" 
-                  value={form.adresseDomiciliation} 
+                  value={form.adresseDomiciliation || ''} 
                   onChange={e => setForm({ ...form, adresseDomiciliation: e.target.value })} 
                   fullWidth 
                   margin="normal" 
                   disabled={formLoading}
                 />
-                <FormControl fullWidth margin="normal" required>
-                  <InputLabel>Ville</InputLabel>
-                  <Select 
-                    label="Ville" 
-                    name="ville" 
-                    value={form.ville} 
-                    onChange={e => setForm({ ...form, ville: e.target.value })} 
-                    required
-                    disabled={formLoading || dropdownsLoading}
-                  >
-                    {dropdowns.villes.map(v => (
-                      <MenuItem key={v.id} value={v.id}>{v.nom}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                {/* VILLE AVEC AUTOCOMPLETE */}
+                <Autocomplete
+                  options={dropdowns.villes || []}
+                  getOptionLabel={(option) => option.nom}
+                  value={selectedVille}
+                  onChange={handleVilleChange}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Ville *"
+                      required
+                      placeholder="Tapez pour rechercher une ville..."
+                      error={!selectedVille}
+                      helperText={!selectedVille ? "Ville requise" : ""}
+                      fullWidth
+                      margin="normal"
+                      disabled={formLoading || dropdownsLoading}
+                    />
+                  )}
+                  filterOptions={(options, { inputValue }) =>
+                    options.filter((option) =>
+                      option.nom.toLowerCase().includes(inputValue.toLowerCase()) ||
+                      option.code?.toLowerCase().includes(inputValue.toLowerCase())
+                    )
+                  }
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  noOptionsText="Aucune ville trouvée"
+                  loading={!dropdowns.villes || dropdowns.villes.length === 0}
+                  loadingText="Chargement des villes..."
+                />
                 <TextField 
                   label="Tel" 
                   name="tel" 
-                  value={form.tel} 
+                  value={form.tel || ''} 
                   onChange={e => setForm({ ...form, tel: e.target.value })} 
                   fullWidth 
                   margin="normal" 
@@ -766,7 +1174,7 @@ export default function Reseaux() {
                 <TextField 
                   label="Fax" 
                   name="fax" 
-                  value={form.fax} 
+                  value={form.fax || ''} 
                   onChange={e => setForm({ ...form, fax: e.target.value })} 
                   fullWidth 
                   margin="normal" 
@@ -786,7 +1194,7 @@ export default function Reseaux() {
                 <TextField 
                   label="ICE" 
                   name="ice" 
-                  value={form.ice} 
+                  value={form.ice || ''} 
                   onChange={e => setForm({ ...form, ice: e.target.value })} 
                   fullWidth 
                   margin="normal" 
@@ -795,7 +1203,7 @@ export default function Reseaux() {
                 <TextField 
                   label="Id. Fiscal" 
                   name="idFiscal" 
-                  value={form.idFiscal} 
+                  value={form.idFiscal || ''} 
                   onChange={e => setForm({ ...form, idFiscal: e.target.value })} 
                   fullWidth 
                   margin="normal" 
@@ -804,24 +1212,28 @@ export default function Reseaux() {
                 <TextField 
                   label="N° RegisterCommerce" 
                   name="registerCommerce" 
-                  value={form.registerCommerce} 
+                  value={form.registerCommerce || ''} 
                   onChange={e => setForm({ ...form, registerCommerce: e.target.value })} 
                   fullWidth 
                   margin="normal" 
                   disabled={formLoading}
                 />
+                {/* CADRE AUTORISATION AVEC DROPDOWN SIMPLE */}
                 <FormControl fullWidth margin="normal" required>
                   <InputLabel>Cadre d'autorisation</InputLabel>
                   <Select 
                     label="Cadre d'autorisation" 
                     name="cadreAutorisation" 
-                    value={form.cadreAutorisation} 
-                    onChange={e => setForm({ ...form, cadreAutorisation: Number(e.target.value) })} 
+                    value={selectedCadre?.id || ''} 
+                    onChange={(e) => {
+                      const cadre = dropdowns.cadres?.find(c => c.id === e.target.value);
+                      setSelectedCadre(cadre || null);
+                    }} 
                     required
                     disabled={formLoading || dropdownsLoading}
                   >
-                    {dropdowns.cadres.map(c => (
-                      <MenuItem key={c.id} value={c.id}>{c.libelle}</MenuItem>
+                    {dropdowns.cadres?.map(c => (
+                      <MenuItem key={c.id} value={c.id}>{c.libelle || 'Cadre inconnu'}</MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -858,7 +1270,7 @@ export default function Reseaux() {
                 <TextField 
                   label="Mail représentant" 
                   name="mailRepresentant" 
-                  value={form.mailRepresentant} 
+                  value={form.mailRepresentant || ''} 
                   onChange={e => setForm({ ...form, mailRepresentant: e.target.value })} 
                   fullWidth 
                   margin="normal" 
@@ -868,13 +1280,13 @@ export default function Reseaux() {
             </div>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setOpenForm(false)} disabled={formLoading}>
+            <Button onClick={() => { setOpenForm(false); resetForm(); }} disabled={formLoading}>
               Annuler
             </Button>
             <Button 
               variant="contained" 
               type="submit" 
-              disabled={formLoading || ![1,2].includes(Number(form.cadreAutorisation))}
+              disabled={formLoading || !selectedVille || !selectedStatut || !selectedCadre}
               startIcon={formLoading ? <CircularProgress size={16} /> : null}
             >
               {formLoading ? 'Enregistrement...' : 'Enregistrer'}
@@ -894,7 +1306,7 @@ export default function Reseaux() {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                 <Avatar
-                  src={selected.logo ? `data:image/png;base64,${selected.logo}` : undefined}
+                  src={selected.logoUrl ? `http://localhost:7000${selected.logoUrl}` : undefined}
                   alt="logo"
                   sx={{ width: 80, height: 80, bgcolor: '#e3f2fd', fontSize: 32 }}
                 >

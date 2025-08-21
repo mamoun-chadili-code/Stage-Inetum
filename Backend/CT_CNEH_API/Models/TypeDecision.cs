@@ -18,6 +18,6 @@ namespace CT_CNEH_API.Models
         public bool IsSanction { get; set; }
         
         // Navigation properties
-        public virtual ICollection<Descision> Decisions { get; set; } = new List<Descision>();
+
     }
 } 

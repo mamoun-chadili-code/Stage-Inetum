@@ -18,7 +18,7 @@ namespace CT_CNEH_API.Services
 
         public async Task<string?> AuthenticateAsync(string username, string password)
         {
-            var user = await _context.Users.FindAsync(username);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
             
             if (user == null || !user.IsActive)
                 return null;

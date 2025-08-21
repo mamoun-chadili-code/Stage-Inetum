@@ -53,13 +53,27 @@ builder.Services.AddCors(options =>
                    .AllowAnyHeader()
                    .AllowAnyMethod()
                    .AllowCredentials()
-                   .WithExposedHeaders("X-Total-Count", "X-Page-Count");
+                   .WithExposedHeaders("X-Total-Count", "X-Page-Count")
+                   .SetIsOriginAllowedToAllowWildcardSubdomains();
+        });
+    
+    // Configuration CORS plus permissive pour le développement
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
         });
 });
 
 // Injection des services
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<ChefCentreService>();
+builder.Services.AddScoped<LigneService>();
+builder.Services.AddScoped<IDecisionService, DecisionService>();
+builder.Services.AddScoped<IEquipementService, EquipementService>();
 
 // Configuration d'AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
@@ -73,10 +87,23 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
-// Utilisation de CORS
+// Utilisation de CORS AVANT la redirection HTTPS
 app.UseCors("AllowReactApp");
+
+// Désactiver la redirection HTTPS en développement pour éviter les problèmes CORS
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+// Configuration des fichiers statiques pour les uploads
+app.UseStaticFiles(); // Pour servir les fichiers statiques par défaut
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "uploads")),
+    RequestPath = "/uploads"
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -86,11 +113,33 @@ app.MapControllers();
 // Création de la base de données si elle n'existe pas et seeding des données
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.EnsureCreated();
-    
-    // Seeding des données de test
-    await SeedData.InitializeAsync(context);
+    try
+    {
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        
+        // Vérifier si la base existe, sinon la créer
+        if (!context.Database.CanConnect())
+        {
+            context.Database.EnsureCreated();
+            Console.WriteLine("Base de données créée avec succès !");
+        }
+        
+        // Seeding des données de test seulement si nécessaire
+        if (!context.Users.Any())
+        {
+            await SeedData.InitializeAsync(context);
+            Console.WriteLine("Base de données peuplée avec succès !");
+        }
+        else
+        {
+            Console.WriteLine("Base de données déjà peuplée, seeding ignoré.");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Erreur lors de l'initialisation de la base : {ex.Message}");
+        Console.WriteLine($"Stack trace : {ex.StackTrace}");
+    }
 }
 
 app.Run(); 

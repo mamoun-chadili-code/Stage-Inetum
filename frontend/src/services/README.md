@@ -28,7 +28,7 @@
 ### URL de l'API Backend
 L'URL de l'API est configurée dans `api.js` :
 ```javascript
-baseURL: 'https://localhost:54875/api'
+baseURL: 'http://localhost:7000/api'
 ```
 
 ### Modification de l'URL

@@ -30,7 +30,7 @@ export const testApiConnectivity = async () => {
     
     if (error.code === 'ECONNREFUSED') {
       console.error('🔌 Erreur de connexion: Le serveur backend n\'est pas accessible');
-      console.error('💡 Vérifiez que votre backend est démarré sur https://localhost:54875');
+      console.error('💡 Vérifiez que votre backend est démarré sur http://localhost:7000');
     } else if (error.response?.status === 404) {
       console.error('🔍 Erreur 404: L\'endpoint n\'existe pas');
       console.error('💡 Vérifiez que votre API backend a bien les routes /Lignes configurées');

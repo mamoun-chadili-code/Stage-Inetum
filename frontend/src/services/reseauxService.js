@@ -170,8 +170,9 @@ export const reseauxService = {
   async uploadLogo(id, file) {
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('reseauId', id);
     
-    const response = await api.post(`/Reseaux/${id}/logo`, formData, {
+    const response = await api.post(`/Logos/upload`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;

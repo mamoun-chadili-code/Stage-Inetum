@@ -18,16 +18,16 @@ namespace CT_CNEH_API.Controllers
 
         // GET: api/Statuts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<StatutRC>>> GetStatuts()
+        public async Task<ActionResult<IEnumerable<Statut>>> GetStatuts()
         {
-            return await _context.StatutRCs.ToListAsync();
+            return await _context.Statuts.ToListAsync();
         }
 
         // GET: api/Statuts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<StatutRC>> GetStatut(int id)
+        public async Task<ActionResult<Statut>> GetStatut(int id)
         {
-            var statut = await _context.StatutRCs.FindAsync(id);
+            var statut = await _context.Statuts.FindAsync(id);
 
             if (statut == null)
                 return NotFound();

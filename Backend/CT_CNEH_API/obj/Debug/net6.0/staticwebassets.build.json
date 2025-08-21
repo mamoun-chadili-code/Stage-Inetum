@@ -1,12 +1,743 @@
 {
   "Version": 1,
-  "Hash": "gzOKtqJYDYaVk+apIHZtzbjdPmiWNriKW8NtOlkiAas=",
+  "Hash": "ZY/LoSL0obNQrPo2jIgvGL7m6/yW1xi6WdWSEnqndL8=",
   "Source": "CT_CNEH_API",
   "BasePath": "_content/CT_CNEH_API",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": [],
-  "Endpoints": []
+  "DiscoveryPatterns": [
+    {
+      "Name": "CT_CNEH_API\\wwwroot",
+      "Source": "CT_CNEH_API",
+      "ContentRoot": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\",
+      "BasePath": "_content/CT_CNEH_API",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\.gitkeep",
+      "SourceId": "CT_CNEH_API",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\",
+      "BasePath": "_content/CT_CNEH_API",
+      "RelativePath": "uploads/logos/#[.{fingerprint}]?.gitkeep",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "adlstgnntv",
+      "Integrity": "LgjR9gAK71QXl9AIwFrDb02+v7NsusVhV4jm/MWzAKc=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\logos\\.gitkeep"
+    },
+    {
+      "Identity": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\4b5f2631-d1a3-4594-a2c6-17f09cdd812e_.jpg",
+      "SourceId": "CT_CNEH_API",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\",
+      "BasePath": "_content/CT_CNEH_API",
+      "RelativePath": "uploads/logos/4b5f2631-d1a3-4594-a2c6-17f09cdd812e_#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "josnv68bpg",
+      "Integrity": "DXimdbL1t1L5O2NYQmHcOsdpYaQPxUQGLcCpMZ4528g=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\logos\\4b5f2631-d1a3-4594-a2c6-17f09cdd812e_.jpg"
+    },
+    {
+      "Identity": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\66e0ce8a-9a88-43da-a12e-f894d04c1e72_.png",
+      "SourceId": "CT_CNEH_API",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\",
+      "BasePath": "_content/CT_CNEH_API",
+      "RelativePath": "uploads/logos/66e0ce8a-9a88-43da-a12e-f894d04c1e72_#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "21ggxo2qcw",
+      "Integrity": "JnaFcamglfcqxXCZDnI4QToiekSuEV9csmOBahFCHpY=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\logos\\66e0ce8a-9a88-43da-a12e-f894d04c1e72_.png"
+    },
+    {
+      "Identity": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\adad9ed1-f41d-42be-a474-df97a555fcb1_.jpg",
+      "SourceId": "CT_CNEH_API",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\",
+      "BasePath": "_content/CT_CNEH_API",
+      "RelativePath": "uploads/logos/adad9ed1-f41d-42be-a474-df97a555fcb1_#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "josnv68bpg",
+      "Integrity": "DXimdbL1t1L5O2NYQmHcOsdpYaQPxUQGLcCpMZ4528g=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\logos\\adad9ed1-f41d-42be-a474-df97a555fcb1_.jpg"
+    },
+    {
+      "Identity": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\e2379ef2-6306-4783-9a5c-d6087cff01fe_.png",
+      "SourceId": "CT_CNEH_API",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\",
+      "BasePath": "_content/CT_CNEH_API",
+      "RelativePath": "uploads/logos/e2379ef2-6306-4783-9a5c-d6087cff01fe_#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "21ggxo2qcw",
+      "Integrity": "JnaFcamglfcqxXCZDnI4QToiekSuEV9csmOBahFCHpY=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\logos\\e2379ef2-6306-4783-9a5c-d6087cff01fe_.png"
+    },
+    {
+      "Identity": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\logo_reseau_centre.png",
+      "SourceId": "CT_CNEH_API",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\",
+      "BasePath": "_content/CT_CNEH_API",
+      "RelativePath": "uploads/logos/logo_reseau_centre#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "mytf8d1tmj",
+      "Integrity": "bvHwsv9E+FBmKW2xPt1X6jBK3GuBGYBiCt4rcF45eoM=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\logos\\logo_reseau_centre.png"
+    },
+    {
+      "Identity": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\logo_reseau_nord.png",
+      "SourceId": "CT_CNEH_API",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\",
+      "BasePath": "_content/CT_CNEH_API",
+      "RelativePath": "uploads/logos/logo_reseau_nord#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "mytf8d1tmj",
+      "Integrity": "bvHwsv9E+FBmKW2xPt1X6jBK3GuBGYBiCt4rcF45eoM=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\logos\\logo_reseau_nord.png"
+    }
+  ],
+  "Endpoints": [
+    {
+      "Route": "uploads/logos/.adlstgnntv.gitkeep",
+      "AssetFile": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\.gitkeep",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"LgjR9gAK71QXl9AIwFrDb02+v7NsusVhV4jm/MWzAKc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 18 Aug 2025 22:22:35 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "adlstgnntv"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/logos/.gitkeep"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-LgjR9gAK71QXl9AIwFrDb02+v7NsusVhV4jm/MWzAKc="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/logos/.gitkeep",
+      "AssetFile": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\.gitkeep",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"LgjR9gAK71QXl9AIwFrDb02+v7NsusVhV4jm/MWzAKc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 18 Aug 2025 22:22:35 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-LgjR9gAK71QXl9AIwFrDb02+v7NsusVhV4jm/MWzAKc="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/logos/4b5f2631-d1a3-4594-a2c6-17f09cdd812e_.josnv68bpg.jpg",
+      "AssetFile": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\4b5f2631-d1a3-4594-a2c6-17f09cdd812e_.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "21492"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"DXimdbL1t1L5O2NYQmHcOsdpYaQPxUQGLcCpMZ4528g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 20 Aug 2025 12:21:24 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "josnv68bpg"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/logos/4b5f2631-d1a3-4594-a2c6-17f09cdd812e_.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-DXimdbL1t1L5O2NYQmHcOsdpYaQPxUQGLcCpMZ4528g="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/logos/4b5f2631-d1a3-4594-a2c6-17f09cdd812e_.jpg",
+      "AssetFile": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\4b5f2631-d1a3-4594-a2c6-17f09cdd812e_.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "21492"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"DXimdbL1t1L5O2NYQmHcOsdpYaQPxUQGLcCpMZ4528g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 20 Aug 2025 12:21:24 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-DXimdbL1t1L5O2NYQmHcOsdpYaQPxUQGLcCpMZ4528g="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/logos/66e0ce8a-9a88-43da-a12e-f894d04c1e72_.21ggxo2qcw.png",
+      "AssetFile": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\66e0ce8a-9a88-43da-a12e-f894d04c1e72_.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "42389"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"JnaFcamglfcqxXCZDnI4QToiekSuEV9csmOBahFCHpY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 18 Aug 2025 23:05:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "21ggxo2qcw"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/logos/66e0ce8a-9a88-43da-a12e-f894d04c1e72_.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-JnaFcamglfcqxXCZDnI4QToiekSuEV9csmOBahFCHpY="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/logos/66e0ce8a-9a88-43da-a12e-f894d04c1e72_.png",
+      "AssetFile": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\66e0ce8a-9a88-43da-a12e-f894d04c1e72_.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "42389"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"JnaFcamglfcqxXCZDnI4QToiekSuEV9csmOBahFCHpY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 18 Aug 2025 23:05:58 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-JnaFcamglfcqxXCZDnI4QToiekSuEV9csmOBahFCHpY="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/logos/adad9ed1-f41d-42be-a474-df97a555fcb1_.josnv68bpg.jpg",
+      "AssetFile": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\adad9ed1-f41d-42be-a474-df97a555fcb1_.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "21492"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"DXimdbL1t1L5O2NYQmHcOsdpYaQPxUQGLcCpMZ4528g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 20 Aug 2025 05:38:28 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "josnv68bpg"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/logos/adad9ed1-f41d-42be-a474-df97a555fcb1_.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-DXimdbL1t1L5O2NYQmHcOsdpYaQPxUQGLcCpMZ4528g="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/logos/adad9ed1-f41d-42be-a474-df97a555fcb1_.jpg",
+      "AssetFile": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\adad9ed1-f41d-42be-a474-df97a555fcb1_.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "21492"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"DXimdbL1t1L5O2NYQmHcOsdpYaQPxUQGLcCpMZ4528g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 20 Aug 2025 05:38:28 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-DXimdbL1t1L5O2NYQmHcOsdpYaQPxUQGLcCpMZ4528g="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/logos/e2379ef2-6306-4783-9a5c-d6087cff01fe_.21ggxo2qcw.png",
+      "AssetFile": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\e2379ef2-6306-4783-9a5c-d6087cff01fe_.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "42389"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"JnaFcamglfcqxXCZDnI4QToiekSuEV9csmOBahFCHpY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 20 Aug 2025 02:18:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "21ggxo2qcw"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/logos/e2379ef2-6306-4783-9a5c-d6087cff01fe_.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-JnaFcamglfcqxXCZDnI4QToiekSuEV9csmOBahFCHpY="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/logos/e2379ef2-6306-4783-9a5c-d6087cff01fe_.png",
+      "AssetFile": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\e2379ef2-6306-4783-9a5c-d6087cff01fe_.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "42389"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"JnaFcamglfcqxXCZDnI4QToiekSuEV9csmOBahFCHpY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 20 Aug 2025 02:18:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-JnaFcamglfcqxXCZDnI4QToiekSuEV9csmOBahFCHpY="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/logos/logo_reseau_centre.mytf8d1tmj.png",
+      "AssetFile": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\logo_reseau_centre.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "72"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"bvHwsv9E+FBmKW2xPt1X6jBK3GuBGYBiCt4rcF45eoM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 18 Aug 2025 22:43:41 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "mytf8d1tmj"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/logos/logo_reseau_centre.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-bvHwsv9E+FBmKW2xPt1X6jBK3GuBGYBiCt4rcF45eoM="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/logos/logo_reseau_centre.png",
+      "AssetFile": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\logo_reseau_centre.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "72"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"bvHwsv9E+FBmKW2xPt1X6jBK3GuBGYBiCt4rcF45eoM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 18 Aug 2025 22:43:41 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-bvHwsv9E+FBmKW2xPt1X6jBK3GuBGYBiCt4rcF45eoM="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/logos/logo_reseau_nord.mytf8d1tmj.png",
+      "AssetFile": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\logo_reseau_nord.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "72"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"bvHwsv9E+FBmKW2xPt1X6jBK3GuBGYBiCt4rcF45eoM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 18 Aug 2025 22:43:34 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "mytf8d1tmj"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/logos/logo_reseau_nord.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-bvHwsv9E+FBmKW2xPt1X6jBK3GuBGYBiCt4rcF45eoM="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/logos/logo_reseau_nord.png",
+      "AssetFile": "C:\\Users\\Chadili Mamoun\\Desktop\\Stage  Inetum\\Backend\\CT_CNEH_API\\wwwroot\\uploads\\logos\\logo_reseau_nord.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "72"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"bvHwsv9E+FBmKW2xPt1X6jBK3GuBGYBiCt4rcF45eoM=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 18 Aug 2025 22:43:34 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-bvHwsv9E+FBmKW2xPt1X6jBK3GuBGYBiCt4rcF45eoM="
+        }
+      ]
+    }
+  ]
 }

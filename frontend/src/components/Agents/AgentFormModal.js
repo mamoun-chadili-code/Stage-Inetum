@@ -120,7 +120,10 @@ export default function AgentFormModal({ open, onClose, onSubmit, initialValues,
       PaperProps={{
         sx: {
           borderRadius: 2,
-          boxShadow: 4
+          boxShadow: 4,
+          minWidth: '1100px',
+          width: '95vw',
+          maxWidth: '1400px'
         }
       }}
     >
@@ -141,16 +144,14 @@ export default function AgentFormModal({ open, onClose, onSubmit, initialValues,
       </DialogTitle>
 
       <form onSubmit={handleSubmit}>
-        <DialogContent sx={{ p: 3 }}>
-          <Grid container spacing={3}>
-            {/* Informations personnelles */}
-            <Grid item xs={12}>
-              <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold', mb: 2, pb: 1, borderBottom: '2px solid #e0e0e0' }}>
-                Informations personnelles
-              </Typography>
-            </Grid>
-
-            <Grid item xs={12} md={6}>
+        <DialogContent sx={{ p: 4, minWidth: '1000px' }}>
+          {/* Section Informations personnelles */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold', mb: 3, pb: 2, borderBottom: '2px solid #e0e0e0' }}>
+              Informations personnelles
+            </Typography>
+            
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 3 }}>
               <TextField
                 fullWidth
                 label="Nom *"
@@ -159,9 +160,7 @@ export default function AgentFormModal({ open, onClose, onSubmit, initialValues,
                 required
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
-            </Grid>
 
-            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Prénom *"
@@ -170,9 +169,7 @@ export default function AgentFormModal({ open, onClose, onSubmit, initialValues,
                 required
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
-            </Grid>
 
-            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="CIN *"
@@ -181,9 +178,7 @@ export default function AgentFormModal({ open, onClose, onSubmit, initialValues,
                 required
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
-            </Grid>
 
-            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Téléphone"
@@ -191,9 +186,7 @@ export default function AgentFormModal({ open, onClose, onSubmit, initialValues,
                 onChange={(e) => handleChange('tel', e.target.value)}
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
-            </Grid>
 
-            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Email"
@@ -202,9 +195,7 @@ export default function AgentFormModal({ open, onClose, onSubmit, initialValues,
                 onChange={(e) => handleChange('mail', e.target.value)}
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
-            </Grid>
 
-            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="CNSS"
@@ -212,29 +203,37 @@ export default function AgentFormModal({ open, onClose, onSubmit, initialValues,
                 onChange={(e) => handleChange('cnss', e.target.value)}
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
-            </Grid>
+            </Box>
+          </Box>
 
-            {/* Affectation et CAP */}
-            <Grid item xs={12}>
-              <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold', mb: 2, pb: 1, borderBottom: '2px solid #e0e0e0', mt: 2 }}>
-                Affectation et CAP
-              </Typography>
-            </Grid>
+          {/* Section Affectation et CAP */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold', mb: 3, pb: 2, borderBottom: '2px solid #e0e0e0' }}>
+              Affectation et CAP
+            </Typography>
+            
+            {/* CCT - Champ principal */}
+            <Box sx={{ mb: 3 }}>
+              <FormControl fullWidth margin="normal" required>
+                <InputLabel>CCT *</InputLabel>
+                <Select 
+                  label="CCT *" 
+                  name="cctId" 
+                  value={formData.cctId || ''} 
+                  onChange={(e) => handleChange('cctId', e.target.value)} 
+                  required
+                >
+                  {dropdowns.ccts?.map(cct => (
+                    <MenuItem key={cct.id} value={cct.id}>
+                      {cct.nom}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
 
-            <Grid item xs={12} md={6}>
-              <SearchableSelect
-                label="CCT *"
-                value={formData.cctId}
-                onChange={(value) => handleChange('cctId', value)}
-                options={dropdowns.ccts || []}
-                placeholder="Rechercher un CCT..."
-                getOptionLabel={(option) => option.nom}
-                getOptionValue={(option) => option.id}
-                required
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
+            {/* Champs CAP en grille 2 colonnes */}
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 3, mb: 3 }}>
               <TextField
                 fullWidth
                 label="Numéro CAP"
@@ -242,9 +241,7 @@ export default function AgentFormModal({ open, onClose, onSubmit, initialValues,
                 onChange={(e) => handleChange('numeroCAP', e.target.value)}
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
-            </Grid>
 
-            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Date CAP"
@@ -254,9 +251,7 @@ export default function AgentFormModal({ open, onClose, onSubmit, initialValues,
                 InputLabelProps={{ shrink: true }}
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
-            </Grid>
 
-            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Date Expiration CAP"
@@ -266,24 +261,7 @@ export default function AgentFormModal({ open, onClose, onSubmit, initialValues,
                 InputLabelProps={{ shrink: true }}
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
-            </Grid>
 
-            <Grid item xs={12} md={6}>
-              <SearchableSelect
-                label="Catégorie CAP *"
-                value={formData.categorieCAPId}
-                onChange={(value) => handleChange('categorieCAPId', value)}
-                options={dropdowns.categories || []}
-                placeholder="Rechercher une catégorie CAP..."
-                getOptionLabel={(option) => option.libelle}
-                getOptionValue={(option) => option.id}
-                required
-                isStatusField={false}
-                showDescriptions={true}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Numéro décision renouvellement"
@@ -291,28 +269,48 @@ export default function AgentFormModal({ open, onClose, onSubmit, initialValues,
                 onChange={(e) => handleChange('numDecisionRenouv', e.target.value)}
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
-            </Grid>
+            </Box>
 
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Date décision renouvellement"
-                type="date"
-                value={formData.dateDecisionRenouv}
-                onChange={(e) => handleChange('dateDecisionRenouv', e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-              />
-            </Grid>
+            {/* Date décision renouvellement - pleine largeur */}
+            <TextField
+              fullWidth
+              label="Date décision renouvellement"
+              type="date"
+              value={formData.dateDecisionRenouv}
+              onChange={(e) => handleChange('dateDecisionRenouv', e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+            />
 
-            {/* Statut et autorisation */}
-            <Grid item xs={12}>
-              <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold', mb: 2, pb: 1, borderBottom: '2px solid #e0e0e0', mt: 2 }}>
-                Statut et autorisation
-              </Typography>
-            </Grid>
+            {/* Catégorie CAP */}
+            <Box sx={{ mt: 3 }}>
+              <FormControl fullWidth margin="normal" required>
+                <InputLabel>Catégorie CAP *</InputLabel>
+                <Select 
+                  label="Catégorie CAP *" 
+                  name="categorieCAPId" 
+                  value={formData.categorieCAPId || ''} 
+                  onChange={(e) => handleChange('categorieCAPId', e.target.value)} 
+                  required
+                >
+                  {dropdowns.categories?.map(cat => (
+                    <MenuItem key={cat.id} value={cat.id}>
+                      {cat.libelle}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          </Box>
 
-            <Grid item xs={12} md={6}>
+          {/* Section Statut et autorisation */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold', mb: 3, pb: 2, borderBottom: '2px solid #e0e0e0' }}>
+              Statut et autorisation
+            </Typography>
+            
+            {/* Statut administratif avec descriptions et couleurs */}
+            <Box sx={{ mb: 3 }}>
               <SearchableSelect
                 label="Statut administratif *"
                 value={formData.statutAdministratifId}
@@ -322,11 +320,19 @@ export default function AgentFormModal({ open, onClose, onSubmit, initialValues,
                 getOptionLabel={(option) => option.libelle}
                 getOptionValue={(option) => option.id}
                 isStatusField={true}
+                showDescriptions={true}
                 required
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    minHeight: '56px'
+                  }
+                }}
               />
-            </Grid>
+            </Box>
 
-            <Grid item xs={12} md={6}>
+            {/* Champs autorisation en grille 2 colonnes */}
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 3 }}>
               <TextField
                 fullWidth
                 label="Année autorisation"
@@ -335,9 +341,7 @@ export default function AgentFormModal({ open, onClose, onSubmit, initialValues,
                 onChange={(e) => handleChange('anneeAutorisation', e.target.value)}
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
-            </Grid>
 
-            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Date affectation CCT"
@@ -347,20 +351,25 @@ export default function AgentFormModal({ open, onClose, onSubmit, initialValues,
                 InputLabelProps={{ shrink: true }}
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
-            </Grid>
+            </Box>
+          </Box>
 
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Adresse"
-                value={formData.adresse}
-                onChange={(e) => handleChange('adresse', e.target.value)}
-                multiline
-                rows={3}
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
-              />
-            </Grid>
-          </Grid>
+          {/* Section Adresse */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold', mb: 3, pb: 2, borderBottom: '2px solid #e0e0e0' }}>
+              Adresse
+            </Typography>
+            
+            <TextField
+              fullWidth
+              label="Adresse"
+              value={formData.adresse}
+              onChange={(e) => handleChange('adresse', e.target.value)}
+              multiline
+              rows={3}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+            />
+          </Box>
         </DialogContent>
 
         <DialogActions sx={{ p: 3, pt: 1 }}>

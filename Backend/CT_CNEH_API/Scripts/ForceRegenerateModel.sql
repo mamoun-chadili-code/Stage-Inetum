@@ -48,4 +48,4 @@ PRINT '✓ Modèle prêt pour régénération';
 PRINT '';
 PRINT '🎯 Prochaines étapes :';
 PRINT '1. Redémarrez l''API avec nettoyage complet';
-PRINT '2. Testez : https://localhost:54875/api/Formations/5'; 
+PRINT '2. Testez : http://localhost:7000/api/Formations/5'; 

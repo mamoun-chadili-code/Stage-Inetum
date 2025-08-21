@@ -20,6 +20,9 @@ namespace CT_CNEH_API.Services
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_configuration["JwtSettings:SecretKey"]!);
             
+            var now = DateTime.UtcNow;
+            var expirationHours = Convert.ToDouble(_configuration["JwtSettings:ExpirationHours"]);
+            
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
@@ -29,7 +32,9 @@ namespace CT_CNEH_API.Services
                     new Claim(ClaimTypes.Email, user.Email ?? ""),
                     new Claim(ClaimTypes.Role, user.Role)
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["JwtSettings:ExpirationInMinutes"])),
+                NotBefore = now,
+                IssuedAt = now,
+                Expires = now.AddHours(expirationHours).AddMinutes(1), // Ajouter 1 minute pour éviter le conflit
                 Issuer = _configuration["JwtSettings:Issuer"],
                 Audience = _configuration["JwtSettings:Audience"],
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

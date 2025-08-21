@@ -15,7 +15,6 @@ import {
   IconButton,
   Typography,
   Paper,
-  Grid,
   FormControl,
   InputLabel,
   Select,
@@ -29,10 +28,7 @@ import {
   Switch,
   Alert,
   CircularProgress,
-  Tooltip,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails
+  Tooltip
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -42,7 +38,6 @@ import {
   Search as SearchIcon,
   FilterList as FilterIcon,
   Clear as ClearIcon,
-  ExpandMore as ExpandMoreIcon,
   School as SchoolIcon,
   DateRange as DateRangeIcon,
   Person as PersonIcon,
@@ -248,30 +243,33 @@ export default function Formations() {
 
       {/* Section Recherche */}
       <Paper sx={{ p: 3, mb: 3, bgcolor: 'grey.50' }}>
-        <Accordion defaultExpanded>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="h6" sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+        <Box sx={{ 
+          bgcolor: 'white', 
+          borderRadius: 2, 
+          p: 2, 
+          mb: 2,
+          border: '1px solid #e0e0e0'
+        }}>
+          <Typography variant="h6" sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1,
+            color: 'primary.main',
+            fontWeight: 600,
+            mb: 2
+          }}>
+            <SearchIcon />
+            RECHERCHE
+          </Typography>
+            <Box sx={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
               gap: 1,
-              color: 'primary.main',
-              fontWeight: 600
+              mb: 2
             }}>
-              <SearchIcon />
-              RECHERCHE
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Grid container spacing={3}>
-              {/* Lieu et Agents */}
-              <Grid item xs={12}>
-                <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
-                  Lieu et Agents
-                </Typography>
-              </Grid>
+
               
-              <Grid item xs={12} md={3}>
-                <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1 }}>
+                <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}>
                   <InputLabel>Réseau</InputLabel>
                   <Select
                     value={filters.reseauId}
@@ -286,10 +284,8 @@ export default function Formations() {
                     ))}
                   </Select>
                 </FormControl>
-              </Grid>
               
-              <Grid item xs={12} md={3}>
-                <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1 }}>
+                <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}>
                   <InputLabel>CCT</InputLabel>
                   <Select
                     value={filters.cctId}
@@ -304,47 +300,42 @@ export default function Formations() {
                     ))}
                   </Select>
                 </FormControl>
-              </Grid>
               
-              <Grid item xs={12} md={3}>
-                <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1 }}>
+                <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}>
                   <InputLabel>Chef centre</InputLabel>
                   <Select
                     value={filters.chefCentreId}
                     onChange={(e) => handleFilterChange('chefCentreId', e.target.value)}
                     label="Chef centre"
                   >
-                                      <MenuItem value="">Sélectionnez</MenuItem>
-                  {Array.isArray(dropdowns.chefsCentre) && dropdowns.chefsCentre.map(chef => (
-                    <MenuItem key={chef.id} value={chef.id}>
-                      {chef.nom} {chef.prenom}
-                    </MenuItem>
-                  ))}
+                    <MenuItem value="">Sélectionnez</MenuItem>
+                    {Array.isArray(dropdowns.chefsCentre) && dropdowns.chefsCentre.map(chef => (
+                      <MenuItem key={chef.id} value={chef.id}>
+                        {chef.nom} {chef.prenom}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
-              </Grid>
               
-              <Grid item xs={12} md={3}>
-                <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1 }}>
+                              <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}>
                   <InputLabel>Agent</InputLabel>
                   <Select
                     value={filters.agentId}
                     onChange={(e) => handleFilterChange('agentId', e.target.value)}
                     label="Agent"
                   >
-                                      <MenuItem value="">Sélectionnez</MenuItem>
-                  {Array.isArray(dropdowns.agents) && dropdowns.agents.map(agent => (
-                    <MenuItem key={agent.id} value={agent.id}>
-                      {agent.nom} {agent.prenom}
-                    </MenuItem>
-                  ))}
+                    <MenuItem value="">Sélectionnez</MenuItem>
+                    {Array.isArray(dropdowns.agents) && dropdowns.agents.map(agent => (
+                      <MenuItem key={agent.id} value={agent.id}>
+                        {agent.nom} {agent.prenom}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
-              </Grid>
 
-              {/* Autres filtres */}
-              <Grid item xs={12} md={3}>
-                <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1 }}>
+
+              
+                <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}>
                   <InputLabel>Type formation</InputLabel>
                   <Select
                     value={filters.typeFormationId}
@@ -352,29 +343,25 @@ export default function Formations() {
                     label="Type formation"
                   >
                     <MenuItem value="">Sélectionnez un élément</MenuItem>
-                                      {Array.isArray(dropdowns.typesFormation) && dropdowns.typesFormation.map(type => (
-                    <MenuItem key={type.id} value={type.id}>
-                      {type.libelle}
-                    </MenuItem>
-                  ))}
+                    {Array.isArray(dropdowns.typesFormation) && dropdowns.typesFormation.map(type => (
+                      <MenuItem key={type.id} value={type.id}>
+                        {type.libelle}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
-              </Grid>
+                
+                              <TextField
+                fullWidth
+                size="small"
+                label="Période"
+                type="date"
+                value={filters.dateDebut}
+                onChange={(e) => handleFilterChange('dateDebut', e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}
+              />
               
-              <Grid item xs={12} md={3}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  label="Période"
-                  type="date"
-                  value={filters.dateDebut}
-                  onChange={(e) => handleFilterChange('dateDebut', e.target.value)}
-                  InputLabelProps={{ shrink: true }}
-                  sx={{ bgcolor: 'white', borderRadius: 1 }}
-                />
-              </Grid>
-              
-              <Grid item xs={12} md={3}>
                 <TextField
                   fullWidth
                   size="small"
@@ -383,11 +370,19 @@ export default function Formations() {
                   value={filters.dateFin}
                   onChange={(e) => handleFilterChange('dateFin', e.target.value)}
                   InputLabelProps={{ shrink: true }}
-                  sx={{ bgcolor: 'white', borderRadius: 1 }}
+                  sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}
                 />
-              </Grid>
               
-              <Grid item xs={12} md={3}>
+              <Box sx={{ 
+                gridColumn: '1 / -1', 
+                display: 'flex', 
+                gap: 2, 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                pt: 1,
+                borderTop: '1px solid #e0e0e0',
+                mt: 1
+              }}>
                 <FormControlLabel
                   control={
                     <Switch
@@ -396,33 +391,34 @@ export default function Formations() {
                     />
                   }
                   label="Validé"
-                  sx={{ mt: 1 }}
+                  sx={{ 
+                    minHeight: '48px',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
                 />
-              </Grid>
-              
-              <Grid item xs={12}>
-                <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-                  <Button
-                    variant="contained"
-                    onClick={applyFilters}
-                    startIcon={<FilterIcon />}
-                    sx={{ minWidth: 120, height: 40 }}
-                  >
-                    Rechercher
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    onClick={clearFilters}
-                    startIcon={<ClearIcon />}
-                    sx={{ minWidth: 120, height: 40 }}
-                  >
-                    Annuler
-                  </Button>
+                
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                <Button
+                  variant="contained"
+                  onClick={applyFilters}
+                  startIcon={<FilterIcon />}
+                  sx={{ minWidth: 120, height: 48, borderRadius: 2 }}
+                >
+                  Rechercher
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={clearFilters}
+                  startIcon={<ClearIcon />}
+                  sx={{ minWidth: 120, height: 48, borderRadius: 2 }}
+                >
+                  Annuler
+                </Button>
                 </Box>
-              </Grid>
-            </Grid>
-          </AccordionDetails>
-        </Accordion>
+              </Box>
+                                      </Box>
+            </Box>
       </Paper>
 
       {/* Section Formations */}

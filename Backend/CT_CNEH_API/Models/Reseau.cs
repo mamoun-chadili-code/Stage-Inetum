@@ -17,7 +17,7 @@ namespace CT_CNEH_API.Models
         
         // FK et navigation pour Statut
         public int StatutId { get; set; }
-        public virtual StatutRC? Statut { get; set; }
+        public virtual StatutCCT? Statut { get; set; }
 
         [Required]
         public DateTime DateStatut { get; set; }
@@ -40,7 +40,7 @@ namespace CT_CNEH_API.Models
         [Required]
         public string Mail { get; set; } = string.Empty;
 
-        public byte[]? Logo { get; set; }
+        public string? LogoUrl { get; set; }
 
         public string? Ice { get; set; }
         public string? IdFiscal { get; set; }
@@ -65,6 +65,7 @@ namespace CT_CNEH_API.Models
 
         // Navigation properties
         public virtual ICollection<CCT> CCTs { get; set; } = new List<CCT>();
-        public virtual ICollection<Descision> Decisions { get; set; } = new List<Descision>();
+        public virtual ICollection<Logo> Logos { get; set; } = new List<Logo>();
+
     }
 } 

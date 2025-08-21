@@ -11,8 +11,10 @@ import SchoolIcon from '@mui/icons-material/School';
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import DevicesIcon from '@mui/icons-material/Devices';
 import GavelIcon from '@mui/icons-material/Gavel';
+import LogoutIcon from '@mui/icons-material/Logout';
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import authService from '../services/authService';
 
 const menu = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
@@ -28,6 +30,13 @@ const menu = [
 ];
 
 export default function Sidebar({ onThemeToggle, darkMode }) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    authService.logout();
+    navigate('/login');
+  };
+
   return (
     <Drawer variant="permanent" anchor="left" sx={{ width: 220, flexShrink: 0, '& .MuiDrawer-paper': { width: 220, boxSizing: 'border-box' } }}>
       <List>
@@ -37,6 +46,24 @@ export default function Sidebar({ onThemeToggle, darkMode }) {
             <ListItemText primary={item.text} />
           </ListItem>
         ))}
+        
+        {/* Bouton de déconnexion */}
+        <ListItem 
+          onClick={handleLogout} 
+          sx={{ 
+            marginTop: 'auto', 
+            borderTop: '1px solid #e0e0e0',
+            cursor: 'pointer',
+            '&:hover': {
+              backgroundColor: 'rgba(0, 0, 0, 0.04)'
+            }
+          }}
+        >
+          <ListItemIcon>
+            <LogoutIcon />
+          </ListItemIcon>
+          <ListItemText primary="Déconnexion" />
+        </ListItem>
       </List>
     </Drawer>
   );

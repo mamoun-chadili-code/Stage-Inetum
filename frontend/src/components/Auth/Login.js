@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
+import authService from '../../services/authService';
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -12,13 +13,25 @@ export default function Login({ onLogin }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Remplacer par un vrai appel API
-    if (username === 'admin' && password === 'admin123') {
-      toast.success('Connexion réussie !');
-      onLogin();
-      navigate('/dashboard');
-    } else {
-      toast.error('Identifiants invalides');
+    
+    if (!username || !password) {
+      toast.error('Veuillez remplir tous les champs');
+      return;
+    }
+
+    try {
+      const result = await authService.login(username, password);
+      
+      if (result.success) {
+        toast.success('Connexion réussie !');
+        onLogin();
+        navigate('/dashboard');
+      } else {
+        toast.error(result.message || 'Identifiants invalides');
+      }
+    } catch (error) {
+      console.error('Erreur de connexion:', error);
+      toast.error('Erreur de connexion au serveur');
     }
   };
 

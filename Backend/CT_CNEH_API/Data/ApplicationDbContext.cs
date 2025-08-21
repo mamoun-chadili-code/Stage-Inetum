@@ -15,11 +15,12 @@ namespace CT_CNEH_API.Data
         public DbSet<Region> Regions { get; set; } = null!;
         public DbSet<Province> Provinces { get; set; } = null!;
         public DbSet<Ville> Villes { get; set; } = null!;
-        public DbSet<StatutRC> StatutRCs { get; set; } = null!;
+
         public DbSet<CadreAutorisation> CadreAutorisations { get; set; } = null!;
         public DbSet<Reseau> Reseaux { get; set; } = null!;
         public DbSet<CategorieCCT> CategorieCCTs { get; set; } = null!;
         public DbSet<TypeCTT> TypeCTTs { get; set; } = null!;
+        public DbSet<StatutCCT> StatutCCTs { get; set; } = null!;
         public DbSet<StatutAdministratif> StatutAdministratifs { get; set; } = null!;
         public DbSet<CCT> CCTs { get; set; } = null!;
         public DbSet<Agent> Agents { get; set; } = null!;
@@ -27,17 +28,21 @@ namespace CT_CNEH_API.Data
         public DbSet<NiveauFormation> NiveauFormations { get; set; } = null!;
         public DbSet<StatutLigne> StatutLignes { get; set; } = null!;
         public DbSet<CategorieLigne> CategorieLignes { get; set; } = null!;
+        public DbSet<Categorie> Categories { get; set; } = null!;
+        public DbSet<Statut> Statuts { get; set; } = null!;
         public DbSet<Ligne> Lignes { get; set; } = null!;
         public DbSet<CibleFormation> CibleFormations { get; set; } = null!;
-        // public DbSet<LexiqueFormation> LexiqueFormations { get; set; } = null!;
         public DbSet<Formation> Formations { get; set; } = null!;
         public DbSet<TypeFormation> TypesFormation { get; set; } = null!;
         public DbSet<TypeEquipement> TypeEquipements { get; set; } = null!;
+        public DbSet<StatutEquipement> StatutsEquipement { get; set; } = null!;
         public DbSet<Equipement> Equipements { get; set; } = null!;
         public DbSet<TypeDecision> TypeDecisions { get; set; } = null!;
         public DbSet<TypeEntite> TypeEntites { get; set; } = null!;
-        public DbSet<Descision> Decisions { get; set; } = null!;
+        public DbSet<Decision> Decisions { get; set; } = null!;
         public DbSet<HistoriqueCCT> HistoriqueCCTs { get; set; } = null!;
+        public DbSet<HistoriqueAffectation> HistoriqueAffectations { get; set; } = null!;
+        public DbSet<Logo> Logos { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -81,15 +86,28 @@ namespace CT_CNEH_API.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Ligne>()
-                .HasOne(l => l.TypeLigne)
-                .WithMany(cl => cl.Lignes)
-                .HasForeignKey(l => l.TypeLigneId)
+                .HasOne(l => l.Categorie)
+                .WithMany(c => c.Lignes)
+                .HasForeignKey(l => l.CategorieId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Ligne>()
                 .HasOne(l => l.Statut)
                 .WithMany(sl => sl.Lignes)
                 .HasForeignKey(l => l.StatutId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configuration des nouveaux modèles refactorés
+            modelBuilder.Entity<Equipement>()
+                .HasOne(e => e.Ligne)
+                .WithMany()
+                .HasForeignKey(e => e.LigneId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Equipement>()
+                .HasOne(e => e.TypeEquipement)
+                .WithMany()
+                .HasForeignKey(e => e.TypeEquipementId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Formation>()
@@ -109,60 +127,6 @@ namespace CT_CNEH_API.Data
                 .WithMany(cc => cc.Formations)
                 .HasForeignKey(f => f.ChefCentreId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Equipement>()
-                .HasOne(e => e.Type)
-                .WithMany(t => t.Equipements)
-                .HasForeignKey(e => e.TypeId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Descision>()
-                .HasOne(d => d.Type)
-                .WithMany(t => t.Decisions)
-                .HasForeignKey(d => d.TypeId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Descision>()
-                .HasOne(d => d.TypeEntite)
-                .WithMany(te => te.Decisions)
-                .HasForeignKey(d => d.TypeEntiteId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Descision>()
-                .HasOne(d => d.CCT)
-                .WithMany(c => c.Decisions)
-                .HasForeignKey(d => d.CCTId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Descision>()
-                .HasOne(d => d.Agent)
-                .WithMany(a => a.Decisions)
-                .HasForeignKey(d => d.AgentId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Descision>()
-                .HasOne(d => d.ChefCentre)
-                .WithMany(cc => cc.Decisions)
-                .HasForeignKey(d => d.ChefCentreId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Descision>()
-                .HasOne(d => d.Reseau)
-                .WithMany(r => r.Decisions)
-                .HasForeignKey(d => d.ReseauId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Descision>()
-                .HasOne(d => d.Ligne)
-                .WithMany(l => l.Decisions)
-                .HasForeignKey(d => d.LigneId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // modelBuilder.Entity<LexiqueFormation>()
-            //     .HasOne(lf => lf.CibleFormation)
-            //     .WithMany(cf => cf.LexiqueFormations)
-            //     .HasForeignKey(lf => lf.CibleFormationId)
-            //     .OnDelete(DeleteBehavior.Restrict);
 
             // Relations pour Reseau
             modelBuilder.Entity<Reseau>()
@@ -191,10 +155,12 @@ namespace CT_CNEH_API.Data
                 .Property(r => r.Nom)
                 .IsRequired()
                 .HasMaxLength(100);
+
             modelBuilder.Entity<CCT>()
                 .Property(c => c.Nom)
                 .IsRequired()
                 .HasMaxLength(100);
+
             modelBuilder.Entity<Agent>()
                 .Property(a => a.Nom)
                 .IsRequired()
@@ -204,6 +170,27 @@ namespace CT_CNEH_API.Data
                 .Property(cc => cc.Nom)
                 .IsRequired()
                 .HasMaxLength(50);
+
+            // CONTRAINTES D'UNICITÉ CRITIQUES
+            modelBuilder.Entity<Reseau>()
+                .HasIndex(r => r.Agrement)
+                .IsUnique();
+
+            modelBuilder.Entity<CCT>()
+                .HasIndex(c => new { c.Nom, c.VilleId })
+                .IsUnique();
+
+            modelBuilder.Entity<Ligne>()
+                .HasIndex(l => new { l.CCTId, l.NumeroLigne })
+                .IsUnique();
+
+            modelBuilder.Entity<Agent>()
+                .HasIndex(a => a.CIN)
+                .IsUnique();
+
+            modelBuilder.Entity<ChefCentre>()
+                .HasIndex(cc => cc.CIN)
+                .IsUnique();
 
             // Configuration pour éviter les cycles de clés étrangères
             modelBuilder.Entity<HistoriqueCCT>()
@@ -217,6 +204,20 @@ namespace CT_CNEH_API.Data
                 .WithMany()
                 .HasForeignKey(h => h.ReseauId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            // Configuration pour HistoriqueAffectation
+            modelBuilder.Entity<HistoriqueAffectation>()
+                .HasOne(h => h.CCT)
+                .WithMany()
+                .HasForeignKey(h => h.CCTId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configuration pour Logo
+            modelBuilder.Entity<Logo>()
+                .HasOne(l => l.Reseau)
+                .WithMany(r => r.Logos)
+                .HasForeignKey(l => l.ReseauId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 } 

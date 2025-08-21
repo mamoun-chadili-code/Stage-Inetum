@@ -180,11 +180,22 @@ namespace CT_CNEH_API.Controllers
         [HttpGet("{id}/logo")]
         public async Task<IActionResult> GetLogo(int id)
         {
-            var reseau = await _context.Reseaux.FindAsync(id);
-            if (reseau?.Logo == null)
+            var reseau = await _context.Reseaux
+                .Include(r => r.Logos)
+                .FirstOrDefaultAsync(r => r.Id == id);
+            
+            if (reseau?.Logos == null || !reseau.Logos.Any())
                 return NotFound();
 
-            return File(reseau.Logo, "image/png");
+            var logo = reseau.Logos.OrderByDescending(l => l.DateUpload).First();
+            if (string.IsNullOrEmpty(logo.CheminStockage))
+                return NotFound();
+
+            if (!System.IO.File.Exists(logo.CheminStockage))
+                return NotFound();
+
+            var fileBytes = await System.IO.File.ReadAllBytesAsync(logo.CheminStockage);
+            return File(fileBytes, logo.TypeMime);
         }
 
         // POST: api/Reseaux/5/logo
@@ -198,12 +209,8 @@ namespace CT_CNEH_API.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest("Aucun fichier fourni");
 
-            using var memoryStream = new MemoryStream();
-            await file.CopyToAsync(memoryStream);
-            reseau.Logo = memoryStream.ToArray();
-
-            await _context.SaveChangesAsync();
-            return NoContent();
+            // Rediriger vers le contrôleur Logos pour l'upload
+            return RedirectToAction("UploadLogo", "Logos", new { file, reseauId = id });
         }
 
         private bool ReseauExists(int id)

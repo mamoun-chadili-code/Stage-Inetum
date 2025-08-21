@@ -2,185 +2,145 @@
 
 ## Vue d'ensemble
 
-Le module CCT permet la gestion complète des Centres de Contrôle Technique avec une interface moderne et intuitive.
+Le module CCT (Centres de Contrôle Technique) est une interface complète pour la gestion des centres de contrôle technique des véhicules. Il permet aux utilisateurs de rechercher, consulter, ajouter, modifier et supprimer des centres de contrôle technique.
 
 ## Fonctionnalités principales
 
-### 1. Gestion des CCTs
-- **Création** : Ajout de nouveaux CCTs avec validation des données
-- **Modification** : Édition des informations existantes
-- **Suppression** : Suppression sécurisée avec confirmation
-- **Consultation** : Affichage détaillé des informations
+### 1. Section Recherche
+- **Région** : Menu déroulant pour sélectionner une région
+- **Ville** : Menu déroulant pour sélectionner une ville  
+- **Réseau de ralliement** : Menu déroulant pour sélectionner un réseau
+- **Année de démarrage** : Champ pour spécifier l'année de démarrage
+- **Boutons** : Rechercher et Annuler
 
-### 2. Interface utilisateur améliorée
-- **Design moderne** : Interface Material-UI avec thème cohérent
-- **Responsive** : Adaptation automatique aux différentes tailles d'écran
-- **Accessibilité** : Tooltips, labels clairs et navigation intuitive
+### 2. Section CCTs
+- **Affichage** : Sélection du nombre d'éléments par page (5, 10, 20, 50)
+- **Recherche** : Champ de recherche pour filtrer les résultats
+- **Bouton Ajouter** : "+ Ajouter CCT" pour créer un nouveau centre
 
-### 3. Filtrage et recherche avancés
-- **Filtres multiples** : Région, ville, réseau, année de démarrage
-- **Recherche textuelle** : Recherche par nom, agrément ou adresse
-- **Pagination** : Navigation efficace dans de grandes listes
-- **Tri intelligent** : Organisation logique des données
+### 3. Liste des CCTs
+Le tableau affiche les colonnes suivantes :
+- **CCT** : Nom du centre de contrôle technique
+- **Agrément** : Numéro d'agrément du centre
+- **Catégorie** : Catégorie de véhicules contrôlés
+- **Réseau** : Nom du réseau auquel le centre est rattaché
+- **Ville** : Ville où le centre est situé
+- **Statut** : Statut actuel du centre (avec code couleur)
+- **Actions** : 5 boutons d'action pour chaque CCT
 
-## Améliorations apportées
+### 4. Actions disponibles
+- **Détails** (Info) : Voir les détails complets du CCT
+- **Modifier** (Crayon) : Éditer les informations du centre
+- **Supprimer** (Poubelle) : Supprimer le centre
+- **Gérer le personnel** (Personne) : Gérer le personnel du centre
+- **Gérer les équipements** (Rouage) : Gérer les équipements du centre
 
-### Champ Province avec saisie libre
-- **Autocomplétion** : Suggestions basées sur les provinces existantes
-- **Saisie libre** : Possibilité de saisir du texte personnalisé
-- **Validation intelligente** : Gestion des erreurs avec messages clairs
+### 5. Pagination
+- Navigation entre les pages
+- Affichage du nombre total d'éléments
+- Sélection du nombre d'éléments par page
 
-### Validation des données
-- **Champs obligatoires** : Validation côté client avant envoi
-- **Messages d'erreur** : Indication claire des problèmes à corriger
-- **Prévention des erreurs** : Vérification des données avant soumission
+## Formulaire d'ajout/modification
 
-### Gestion des états
-- **Loading states** : Indicateurs visuels pendant les opérations
-- **Gestion d'erreurs** : Messages d'erreur contextuels
-- **Optimisation** : Chargement intelligent des données
+### Champs obligatoires (*)
+- **CCT** : Nom du centre
+- **Agrément** : Numéro d'agrément
+- **Date agrément** : Date d'obtention de l'agrément
+- **Catégorie** : Catégorie de véhicules
+- **Statut** : Statut du centre
+- **Date statut** : Date de mise à jour du statut
+- **Réseau** : Réseau de rattachement
+- **Date ralliement** : Date de ralliement au réseau
+- **Région** : Région géographique
+- **Province** : Province géographique
+- **Ville** : Ville géographique
+- **Adresse** : Adresse du centre
+- **Latitude/Longitude** : Coordonnées géographiques
+- **Téléphone** : Numéro de contact
+- **Cadre d'autorisation** : Cadre légal
+- **Type** : Type de centre
+- **Quota VL** : Quota véhicules légers
+- **Personne morale** : Case à cocher
 
-### Interface utilisateur
-- **Skeletons** : Placeholders pendant le chargement
-- **Hover effects** : Interactions visuelles améliorées
-- **Icônes contextuelles** : Navigation plus intuitive
-- **Couleurs cohérentes** : Thème unifié avec l'application
+### Champs optionnels
+- **Adresse siège** : Adresse du siège social
+- **Adresse domiciliation** : Adresse de domiciliation
+- **Fax** : Numéro de fax
+- **Email** : Adresse email
+- **ICE** : Identifiant Commun de l'Entreprise
+- **Id. Fiscal** : Identifiant fiscal
+- **Engagements spécifiques** : Engagements particuliers
+- **Quota PL** : Quota poids lourds
 
-## Structure des composants
+## Modal de détails
 
-### CCTs.js (Composant principal)
-- Gestion de la liste des CCTs
-- Filtres et recherche
-- Pagination
-- Actions CRUD
+### Onglet "DETAILS DE CCT"
+- **Informations d'identification** : CCT, agrément, dates, catégorie, statut, réseau, type
+- **Informations géographiques** : Région, province, ville, adresse, coordonnées
+- **Informations de contact** : Adresses, téléphone, fax, email, ICE, ID fiscal
+- **Informations complémentaires** : Engagements, personne morale, quotas
 
-### CCTFormModal.js (Formulaire)
-- Création et modification
-- Validation des données
-- Gestion des erreurs
-- Interface responsive
+### Onglet "LIGNES / AGENTS CCT"
+- Tableau des lignes de contrôle avec :
+  - Numéro de ligne
+  - Catégorie de véhicules
+  - Nom de l'agent
+  - CIN (Carte d'Identité Nationale)
+  - CAP (Certificat d'Aptitude Professionnelle)
 
-### CCTDetailsModal.js (Détails)
-- Affichage des informations complètes
-- Onglets organisés
-- Actions contextuelles
-
-## Utilisation
-
-### Ajouter un nouveau CCT
-1. Cliquer sur "Nouveau CCT"
-2. Remplir les champs obligatoires (marqués *)
-3. Saisir librement la province ou sélectionner une option
-4. Valider le formulaire
-
-### Modifier un CCT existant
-1. Cliquer sur l'icône de modification
-2. Modifier les champs souhaités
-3. Sauvegarder les modifications
-
-### Filtrer les CCTs
-1. Utiliser les filtres en haut de la page
-2. Combiner plusieurs critères
-3. Appliquer les filtres
-4. Réinitialiser si nécessaire
-
-### Rechercher un CCT
-1. Utiliser la barre de recherche
-2. Saisir le nom, agrément ou adresse
-3. Résultats en temps réel
+### Onglet "HISTORIQUE CCT"
+- Tableau de l'historique des ralliements avec :
+  - Nom du CCT
+  - Réseau
+  - Date de ralliement
+  - Date de fin de ralliement
 
 ## Validation des données
 
-### Champs obligatoires
-- Nom du CCT
-- Agrément
-- Date d'agrément
-- Catégorie
-- Statut
-- Date de statut
-- Réseau
-- Date de ralliement
-- Région
-- Ville
-- Adresse
-- Latitude/Longitude
-- Cadre d'autorisation
-- Type
-
-### Règles de validation
-- Les dates doivent être au format valide
-- Les coordonnées géographiques doivent être numériques
-- Les champs texte ne peuvent pas être vides
-- Les sélections doivent correspondre aux options disponibles
+Le système valide automatiquement :
+- Les champs obligatoires
+- Les types de données (string, number, boolean, date)
+- Les formats de dates
+- Les valeurs numériques
 
 ## Gestion des erreurs
 
-### Types d'erreurs
-- **Validation** : Données manquantes ou invalides
-- **Réseau** : Problèmes de connexion
-- **Serveur** : Erreurs côté backend
-- **Autorisation** : Droits insuffisants
+- Messages d'erreur clairs et contextuels
+- Validation côté client et serveur
+- Gestion des erreurs de réseau
+- Logs détaillés pour le débogage
 
-### Messages d'erreur
-- Explication claire du problème
-- Suggestion de solution
-- Localisation du champ concerné
+## Style et interface
+
+- Design moderne et responsive
+- Couleurs cohérentes avec le thème de l'application
+- Icônes Material-UI pour une meilleure UX
+- Layout en grille pour une organisation claire
+- Modals pour les formulaires et détails
+
+## Navigation
+
+- Intégration avec le système de routage React
+- Sidebar avec accès direct au module CCT
+- Breadcrumbs et navigation contextuelle
 
 ## Performance
 
-### Optimisations
-- Chargement différé des données
 - Pagination côté serveur
+- Chargement asynchrone des données
 - Mise en cache des dropdowns
-- Gestion intelligente des états
-
-### Monitoring
-- Indicateurs de chargement
-- Gestion des timeouts
-- Retry automatique en cas d'échec
+- Optimisation des requêtes API
 
 ## Sécurité
 
-### Validation
-- Vérification côté client et serveur
-- Sanitisation des entrées
+- Validation des données côté client et serveur
+- Gestion des permissions utilisateur
 - Protection contre les injections
-
-### Autorisation
-- Vérification des droits d'accès
-- Logs des actions sensibles
-- Confirmation des suppressions
+- Logs d'audit des actions
 
 ## Maintenance
 
-### Code
-- Structure modulaire
-- Composants réutilisables
-- Gestion d'état centralisée
-- Documentation inline
-
-### Tests
-- Validation des composants
-- Tests d'intégration
-- Gestion des cas d'erreur
-
-## Évolutions futures
-
-### Fonctionnalités prévues
-- Export des données
-- Import en lot
-- Historique des modifications
-- Notifications en temps réel
-
-### Améliorations techniques
-- Optimisation des performances
-- Support offline
-- Synchronisation multi-appareils
-- API GraphQL
-
-## Support
-
-Pour toute question ou problème :
-- Consulter la documentation technique
-- Vérifier les logs d'erreur
-- Contacter l'équipe de développement
+- Code modulaire et réutilisable
+- Documentation complète
+- Tests unitaires et d'intégration
+- Gestion des erreurs robuste

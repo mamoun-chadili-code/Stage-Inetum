@@ -27,7 +27,7 @@ export default function SearchableSelect({
   // S'assurer que la valeur n'est jamais undefined
   const controlledValue = value || '';
 
-  // Fonction pour obtenir la couleur du statut CAP
+  // Fonction pour obtenir la couleur du statut
   const getStatusColor = (statusText) => {
     const text = statusText.toLowerCase();
     
@@ -50,21 +50,36 @@ export default function SearchableSelect({
       return '#795548'; // Marron pour annulé
     }
     
-    // Couleurs par défaut pour les autres statuts
+    // Couleurs spécifiques pour les statuts CCT
     if (text.includes('activité') || text.includes('active')) {
-      return '#4caf50';
-    } else if (text.includes('inactif')) {
-      return '#f44336';
+      return '#4caf50'; // Vert
     } else if (text.includes('suspendu')) {
-      return '#ff9800';
-    } else if (text.includes('fermer') || text.includes('fermé')) {
-      return '#9e9e9e';
+      return '#ff9800'; // Orange
+    } else if (text.includes('cours d\'ouverture') || text.includes('ouverture') || text.includes('cours')) {
+      return '#87ceeb'; // Bleu ciel
+    } else if (text.includes('fermé') || text.includes('definitivement')) {
+      return '#f44336'; // Rouge
+    } else if (text.includes('attente') || text.includes('agrément')) {
+      return '#9e9e9e'; // Gris
     }
+    
     return null;
   };
 
   const handleChange = (event, newValue) => {
-    const value = newValue ? getOptionValue(newValue) : '';
+    // Gérer explicitement le cas où aucune option n'est sélectionnée
+    if (!newValue) {
+      onChange('');
+      return;
+    }
+    
+    // Gérer le cas de l'option "Sélectionnez un élément" avec id vide
+    if (newValue.id === '') {
+      onChange('');
+      return;
+    }
+    
+    const value = getOptionValue(newValue);
     console.log('SearchableSelect - Changement de valeur:', { field: label, value, type: typeof value });
     onChange(value);
   };
@@ -73,13 +88,19 @@ export default function SearchableSelect({
   const selectedOption = options.find(option => getOptionValue(option) === controlledValue);
 
   return (
-    <FormControl fullWidth={fullWidth} required={required} margin={margin}>
+    <FormControl fullWidth={fullWidth} required={required} margin={margin} sx={{ width: '100%', minWidth: '100%' }}>
       <Autocomplete
         value={selectedOption || null}
         onChange={handleChange}
         options={options}
         getOptionLabel={getOptionLabel}
-        isOptionEqualToValue={(option, value) => getOptionValue(option) === getOptionValue(value)}
+        isOptionEqualToValue={(option, value) => {
+          // Gérer le cas spécial de l'option vide
+          if (option.id === '' && value === '') {
+            return true;
+          }
+          return getOptionValue(option) === getOptionValue(value);
+        }}
         disabled={disabled}
         placeholder={placeholder}
         renderInput={(params) => (
@@ -103,9 +124,16 @@ export default function SearchableSelect({
                 flexDirection: 'column', 
                 alignItems: 'flex-start', 
                 gap: 0.5,
-                width: '100%'
+                width: '100%',
+                minHeight: 'auto',
+                padding: '8px 0'
               }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'flex-start', 
+                  gap: 1,
+                  width: '100%'
+                }}>
                   {statusColor && (
                     <Box
                       sx={{
@@ -113,20 +141,31 @@ export default function SearchableSelect({
                         height: 12,
                         borderRadius: '50%',
                         backgroundColor: statusColor,
-                        flexShrink: 0
+                        flexShrink: 0,
+                        mt: 0.5
                       }}
                     />
                   )}
-                  <Box sx={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
+                  <Box sx={{ 
+                    fontWeight: 'bold', 
+                    fontSize: '0.95rem',
+                    lineHeight: 1.4,
+                    wordBreak: 'break-word',
+                    whiteSpace: 'normal',
+                    flex: 1
+                  }}>
                     {statusText}
                   </Box>
                 </Box>
                 {hasDescription && (
                   <Box sx={{ 
-                    fontSize: '0.75rem', 
+                    fontSize: '0.8rem', 
                     color: 'text.secondary',
                     ml: 3,
-                    fontStyle: 'italic'
+                    fontStyle: 'italic',
+                    lineHeight: 1.3,
+                    wordBreak: 'break-word',
+                    whiteSpace: 'normal'
                   }}>
                     {option.description}
                   </Box>
@@ -172,8 +211,35 @@ export default function SearchableSelect({
         openText="Ouvrir"
         closeText="Fermer"
         sx={{
+          width: '100%',
+          minWidth: '100%',
           '& .MuiAutocomplete-input': {
             cursor: 'text'
+          },
+          '& .MuiAutocomplete-popper': {
+            '& .MuiPaper-root': {
+              minWidth: '800px !important',
+              maxWidth: '98vw !important',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.12) !important'
+            }
+          },
+          '& .MuiAutocomplete-listbox': {
+            '& .MuiAutocomplete-option': {
+              whiteSpace: 'normal !important',
+              wordBreak: 'break-word !important',
+              padding: '12px 16px !important',
+              minHeight: 'auto !important',
+              borderBottom: '1px solid #f0f0f0'
+            },
+            '& .MuiAutocomplete-option:hover': {
+              backgroundColor: '#f5f5f5'
+            }
+          },
+          '& .MuiOutlinedInput-root': {
+            '& .MuiAutocomplete-input': {
+              fontSize: '14px',
+              lineHeight: 1.5
+            }
           }
         }}
       />

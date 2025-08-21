@@ -24,9 +24,12 @@ namespace CT_CNEH_API.Controllers
             public string? Agrement { get; set; }
             public DateTime DateAgrement { get; set; }
             public string? Categorie { get; set; }
+            public int? CategorieId { get; set; }  // Ajout de l'ID
             public string? Statut { get; set; }
+            public int? StatutId { get; set; }     // Ajout de l'ID
             public DateTime DateStatut { get; set; }
             public string? Reseau { get; set; }
+            public int? ReseauId { get; set; }     // Ajout de l'ID
             public DateTime DateRalliement { get; set; }
             public string AdresseCCT { get; set; } = string.Empty;
             public string Latitude { get; set; } = string.Empty;
@@ -34,19 +37,24 @@ namespace CT_CNEH_API.Controllers
             public string? AdresseSiege { get; set; }
             public string? AdresseDomiciliation { get; set; }
             public string? Ville { get; set; }
+            public int? VilleId { get; set; }      // Ajout de l'ID
             public string Tel { get; set; } = string.Empty;
             public string? Fax { get; set; }
             public string? Mail { get; set; }
             public string? Ice { get; set; }
             public string? IdFiscal { get; set; }
             public string? CadreAutorisation { get; set; }
+            public int? CadreAutorisationId { get; set; }  // Ajout de l'ID
             public string? EngagementSpecifique { get; set; }
             public bool IsPersonneMorale { get; set; }
             public string? Type { get; set; }
+            public int? TypeId { get; set; }       // Ajout de l'ID
             public int? QuotaVL { get; set; }
             public int? QuotaPL { get; set; }
             public string? Province { get; set; }
+            public int? ProvinceId { get; set; }   // Ajout de l'ID
             public string? Region { get; set; }
+            public int? RegionId { get; set; }     // Ajout de l'ID
         }
 
         public class CCTUpdateDto
@@ -80,6 +88,17 @@ namespace CT_CNEH_API.Controllers
             public int? ProvinceId { get; set; }
             public int? RegionId { get; set; }
             public string? ThumbprintCertificat { get; set; }
+        }
+
+        // GET: api/CCTs/all
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<CCT>>> GetAllCCTs()
+        {
+            var ccts = await _context.CCTs
+                .Select(c => new { c.Id, c.Nom })
+                .ToListAsync();
+            
+            return Ok(ccts);
         }
 
         // GET: api/CCTs
@@ -134,9 +153,12 @@ namespace CT_CNEH_API.Controllers
                 Agrement = c.Agrement,
                 DateAgrement = c.DateAgrement,
                 Categorie = c.Categorie?.Libelle,
+                CategorieId = c.CategorieId,
                 Statut = c.Statut?.Libelle,
+                StatutId = c.StatutId,
                 DateStatut = c.DateStatut,
                 Reseau = c.Reseau?.Nom,
+                ReseauId = c.ReseauId,
                 DateRalliement = c.DateRalliement,
                 AdresseCCT = c.AdresseCCT,
                 Latitude = c.Latitude,
@@ -144,19 +166,24 @@ namespace CT_CNEH_API.Controllers
                 AdresseSiege = c.AdresseSiege,
                 AdresseDomiciliation = c.AdresseDomiciliation,
                 Ville = c.Ville?.Nom,
+                VilleId = c.VilleId,
                 Tel = c.Tel,
                 Fax = c.Fax,
                 Mail = c.Mail,
                 Ice = c.Ice,
                 IdFiscal = c.IdFiscal,
                 CadreAutorisation = c.CadreAutorisation?.Libelle,
+                CadreAutorisationId = c.CadreAutorisationId,
                 EngagementSpecifique = c.EngagementSpecifique,
                 IsPersonneMorale = c.IsPersonneMorale,
                 Type = c.Type?.Libelle,
+                TypeId = c.TypeId,
                 QuotaVL = c.QuotaVL,
                 QuotaPL = c.QuotaPL,
                 Province = c.Province?.Libelle,
-                Region = c.Region?.Libelle
+                ProvinceId = c.ProvinceId,
+                Region = c.Region?.Libelle,
+                RegionId = c.RegionId
             }).ToList();
 
             return Ok(cctDtos);
@@ -336,8 +363,9 @@ namespace CT_CNEH_API.Controllers
         public async Task<ActionResult<IEnumerable<Ligne>>> GetCCTLignes(int id)
         {
             var lignes = await _context.Lignes
-                .Include(l => l.TypeLigne)
+                .Include(l => l.Categorie)
                 .Include(l => l.Statut)
+                .Include(l => l.Decision)
                 .Where(l => l.CCTId == id)
                 .ToListAsync();
 
@@ -349,9 +377,9 @@ namespace CT_CNEH_API.Controllers
         public async Task<ActionResult<IEnumerable<Equipement>>> GetCCTEquipements(int id)
         {
             var equipements = await _context.Equipements
-                .Include(e => e.Type)
+                .Include(e => e.TypeEquipement)
                 .Include(e => e.Ligne)
-                .Where(e => e.CCTCreationId == id)
+                .Where(e => e.Ligne.CCTId == id)
                 .ToListAsync();
 
             return Ok(equipements);

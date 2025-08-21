@@ -4,9 +4,10 @@ import api from './api';
 export const dropdownsService = {
   // Données mockées en fallback si l'API n'existe pas
   MOCK_STATUTS: [
-    { id: 1, libelle: 'En activité' },
-    { id: 2, libelle: 'Suspendue' },
-    { id: 3, libelle: 'Fermée' }
+    { id: 1, nom: 'En exploitation', description: 'Ligne en exploitation normale' },
+    { id: 2, nom: 'En construction', description: 'Ligne en cours de construction' },
+    { id: 3, nom: 'Hors service', description: 'Ligne hors service' },
+    { id: 4, nom: 'En maintenance', description: 'Ligne en maintenance' }
   ],
   
   MOCK_VILLES: [
@@ -85,24 +86,16 @@ export const dropdownsService = {
     { id: 32, libelle: 'ZAGORA', code: 'ZAG' }
   ],
 
-  MOCK_CATEGORIES: [
-    { id: 1, libelle: 'Véhicules toute catégorie', code: 'VTC', description: 'Autorisation pour tous types de véhicules' },
-    { id: 2, libelle: 'Véhicules légers', code: 'VL', description: 'Véhicules de moins de 3,5 tonnes' },
-    { id: 3, libelle: 'Véhicules lourds', code: 'VH', description: 'Véhicules de plus de 3,5 tonnes' },
-    { id: 4, libelle: 'Véhicules de transport en commun', code: 'VTC', description: 'Bus, minibus et autocars' },
-    { id: 5, libelle: 'Véhicules de transport de marchandises', code: 'VTM', description: 'Camions et véhicules utilitaires' }
-    // Supprimé temporairement les autres catégories jusqu'à vérification de la base
-  ],
+  // MOCK_CATEGORIES supprimées - utilisation exclusive de l'API
 
   MOCK_STATUTS_RC: [
     { id: 1, libelle: 'En activité', code: 'ACT' },
     { id: 2, libelle: 'Suspendu', code: 'SUS' }
   ],
 
-  MOCK_TYPES_CTT: [
-    { id: 1, libelle: 'RALLIES', code: 'RALL' },
-    { id: 2, libelle: 'INDEPENDANT', code: 'IND' }
-  ],
+  // MOCK_STATUTS_CCT supprimées - utilisation exclusive de l'API
+
+  // MOCK_TYPES_CTT supprimées - utilisation exclusive de l'API
 
   MOCK_PROVINCES: [
     { id: 1, libelle: 'AGADIR', code: 'AGD' },
@@ -360,12 +353,14 @@ export const dropdownsService = {
   async getCategoriesCCT() {
     try {
       const response = await api.get('/CategorieCCTs');
+      console.log('✅ Catégories CCT récupérées depuis l\'API:', response.data);
       // Trier les catégories par ordre alphabétique
       const sortedCategories = response.data.sort((a, b) => a.libelle.localeCompare(b.libelle, 'fr'));
       return sortedCategories;
     } catch (error) {
-      console.warn('API CategorieCCTs non disponible, utilisation des données mockées');
-      return this.MOCK_CATEGORIES;
+      console.error('❌ ERREUR: API CategorieCCTs non disponible. Aucune donnée mockée configurée.');
+      console.error('Veuillez vérifier que l\'API backend est démarrée et que la table CategorieCCTs contient des données.');
+      throw new Error('API CategorieCCTs non disponible - Aucune donnée de fallback');
     }
   },
 
@@ -384,10 +379,26 @@ export const dropdownsService = {
   async getTypesCTT() {
     try {
       const response = await api.get('/TypeCTTs');
+      console.log('✅ Types CTT récupérés depuis l\'API:', response.data);
       return response.data;
     } catch (error) {
-      console.warn('API TypeCTTs non disponible, utilisation des données mockées');
-      return this.MOCK_TYPES_CTT;
+      console.error('❌ ERREUR: API TypeCTTs non disponible. Aucune donnée mockée configurée.');
+      console.error('Veuillez vérifier que l\'API backend est démarrée et que la table TypeCTTs contient des données.');
+      throw new Error('API TypeCTTs non disponible - Aucune donnée de fallback');
+    }
+  },
+
+  // Récupérer les statuts CCT
+  async getStatutsCCT() {
+    try {
+      const response = await api.get('/StatutCCTs');
+      console.log('✅ Statuts CCT récupérés depuis l\'API:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ ERREUR: API StatutCCTs non disponible. Aucune donnée mockée configurée.');
+      console.error('Veuillez vérifier que l\'API backend est démarrée et que la table StatutCCTs contient des données.');
+      console.error('Si la table n\'existe pas, exécutez d\'abord le script SQL de création.');
+      throw new Error('API StatutCCTs non disponible - Aucune donnée de fallback');
     }
   },
 
@@ -453,13 +464,20 @@ export const dropdownsService = {
     return this.MOCK_STATUTS_ADMINISTRATIFS;
   },
 
-  // Récupérer les catégories
+  // Récupérer les catégories (pour compatibilité)
   async getCategories() {
+    return this.getCategoriesLignes();
+  },
+
+  // Récupérer les catégories de lignes
+  async getCategoriesLignes() {
     try {
-      const response = await api.get('/CategorieCCTs');
+      const response = await api.get('/Categories');
+      console.log('✅ Catégories de lignes récupérées depuis l\'API:', response.data);
       return response.data;
     } catch (error) {
-      console.warn('API CategorieCCTs non disponible, utilisation des données mockées');
+      console.warn('API Categories non disponible, utilisation des données mockées:', error.message);
+      console.log('Utilisation des catégories mockées:', this.MOCK_CATEGORIES);
       return this.MOCK_CATEGORIES;
     }
   },
@@ -561,6 +579,23 @@ export const dropdownsService = {
            return this.MOCK_STATUTS;
          }
        },
+
+  // Récupérer les décisions
+  async getDecisions() {
+    try {
+      const response = await api.get('/Decisions');
+      return response.data;
+    } catch (error) {
+      console.error('Erreur lors de la récupération des décisions:', error);
+      // Retourner des données mockées en cas d'erreur
+      return [
+        { id: 1, nom: 'Approbation', description: 'Décision d\'approbation' },
+        { id: 2, nom: 'Rejet', description: 'Décision de rejet' },
+        { id: 3, nom: 'Suspension', description: 'Décision de suspension' },
+        { id: 4, nom: 'En attente', description: 'Décision en attente' }
+      ];
+    }
+  },
 
   // Récupérer toutes les données des dropdowns en une fois
   async getAllDropdowns() {

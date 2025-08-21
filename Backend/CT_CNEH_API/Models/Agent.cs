@@ -58,6 +58,7 @@ namespace CT_CNEH_API.Models
         public virtual CategorieCCT? CategorieCAP { get; set; }
         public virtual StatutAdministratif StatutAdministratif { get; set; } = null!;
         public virtual ICollection<Formation> Formations { get; set; } = new List<Formation>();
-        public virtual ICollection<Descision> Decisions { get; set; } = new List<Descision>();
+        public virtual ICollection<HistoriqueAffectation> HistoriqueAffectations { get; set; } = new List<HistoriqueAffectation>();
+
     }
 } 

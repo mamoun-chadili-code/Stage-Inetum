@@ -93,6 +93,15 @@ namespace CT_CNEH_API.Controllers
                             .Where(c => c.Id == a.CCTId.Value)
                             .Select(c => c.Nom)
                             .FirstOrDefault() : null,
+                        // Ajouter Ville et Réseau via CCT
+                        Ville = a.CCTId.HasValue ? _context.CCTs
+                            .Where(c => c.Id == a.CCTId.Value)
+                            .Select(c => c.Ville.Nom)
+                            .FirstOrDefault() : null,
+                        Reseau = a.CCTId.HasValue ? _context.CCTs
+                            .Where(c => c.Id == a.CCTId.Value)
+                            .Select(c => c.Reseau.Nom)
+                            .FirstOrDefault() : null,
                         NumeroCAP = a.NumeroCAP,
                         DateCAP = a.DateCAP,
                         DateExpirationCAP = a.DateExpirationCAP,
@@ -138,8 +147,12 @@ namespace CT_CNEH_API.Controllers
         {
             try
             {
-                // Récupérer l'agent avec ses relations
+                // Récupérer l'agent avec ses relations incluant Ville et Réseau via CCT
                 var agent = await _context.Agents
+                    .Include(a => a.CCT)
+                    .ThenInclude(cct => cct.Ville)
+                    .Include(a => a.CCT)
+                    .ThenInclude(cct => cct.Reseau)
                     .Where(a => a.Id == id)
                     .Select(a => new AgentDto
                     {
@@ -154,6 +167,15 @@ namespace CT_CNEH_API.Controllers
                         CCT = a.CCTId.HasValue ? _context.CCTs
                             .Where(c => c.Id == a.CCTId.Value)
                             .Select(c => c.Nom)
+                            .FirstOrDefault() : null,
+                        // Ajouter Ville et Réseau via CCT
+                        Ville = a.CCTId.HasValue ? _context.CCTs
+                            .Where(c => c.Id == a.CCTId.Value)
+                            .Select(c => c.Ville.Nom)
+                            .FirstOrDefault() : null,
+                        Reseau = a.CCTId.HasValue ? _context.CCTs
+                            .Where(c => c.Id == a.CCTId.Value)
+                            .Select(c => c.Reseau.Nom)
                             .FirstOrDefault() : null,
                         NumeroCAP = a.NumeroCAP,
                         DateCAP = a.DateCAP,
@@ -325,6 +347,8 @@ namespace CT_CNEH_API.Controllers
         public string? CNSS { get; set; }
         public int? CCTId { get; set; }
         public string? CCT { get; set; }
+        public string? Ville { get; set; }
+        public string? Reseau { get; set; }
         public string NumeroCAP { get; set; } = string.Empty;
         public DateTime? DateCAP { get; set; }
         public DateTime? DateExpirationCAP { get; set; }

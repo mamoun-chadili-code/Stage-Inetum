@@ -4,7 +4,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Grid,
   TextField,
   Button,
   FormControl,
@@ -86,71 +85,81 @@ export default function FormationFormModal({ open, onClose, onSubmit, initialVal
       </DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Intitulé*"
-                value={form.intitule}
-                onChange={(e) => handleChange('intitule', e.target.value)}
-                fullWidth
-                required
-                margin="dense"
-              />
-            </Grid>
+          <Box sx={{ mt: 2 }}>
+            {/* Section Informations principales */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: '#1976d2' }}>
+                Informations principales
+              </Typography>
+              <Box sx={{ 
+                display: 'flex', 
+                flexWrap: 'wrap', 
+                gap: 2,
+                '& > *': { minWidth: '250px', flex: '1 1 250px' }
+              }}>
+                <TextField
+                  label="Intitulé*"
+                  value={form.intitule}
+                  onChange={(e) => handleChange('intitule', e.target.value)}
+                  fullWidth
+                  required
+                  margin="dense"
+                  sx={{ minHeight: '56px' }}
+                />
+                
+                <FormControl fullWidth margin="dense" sx={{ minHeight: '56px' }}>
+                  <InputLabel>CCT</InputLabel>
+                  <Select
+                    value={form.cctId}
+                    onChange={(e) => handleChange('cctId', e.target.value)}
+                    label="CCT"
+                  >
+                    <MenuItem value="">Sélectionnez</MenuItem>
+                    {Array.isArray(dropdowns.ccts) && dropdowns.ccts.map(cct => (
+                      <MenuItem key={cct.id} value={cct.id}>{cct.nom}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
             
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth margin="dense">
-                <InputLabel>CCT</InputLabel>
-                <Select
-                  value={form.cctId}
-                  onChange={(e) => handleChange('cctId', e.target.value)}
-                  label="CCT"
-                >
-                  <MenuItem value="">Sélectionnez</MenuItem>
-                  {Array.isArray(dropdowns.ccts) && dropdowns.ccts.map(cct => (
-                    <MenuItem key={cct.id} value={cct.id}>{cct.nom}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
+                <FormControl fullWidth margin="dense" sx={{ minHeight: '56px' }}>
+                  <InputLabel>Agent</InputLabel>
+                  <Select
+                    value={form.agentId}
+                    onChange={(e) => handleChange('agentId', e.target.value)}
+                    label="Agent"
+                  >
+                    <MenuItem value="">Sélectionnez</MenuItem>
+                    {Array.isArray(dropdowns.agents) && dropdowns.agents.map(agent => (
+                      <MenuItem key={agent.id} value={agent.id}>
+                        {agent.nom} {agent.prenom}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                
+                <FormControl fullWidth margin="dense" sx={{ minHeight: '56px' }}>
+                  <InputLabel>Chef centre</InputLabel>
+                  <Select
+                    value={form.chefCentreId}
+                    onChange={(e) => handleChange('chefCentreId', e.target.value)}
+                    label="Chef centre"
+                  >
+                    <MenuItem value="">Sélectionnez</MenuItem>
+                    {Array.isArray(dropdowns.chefsCentre) && dropdowns.chefsCentre.map(chef => (
+                      <MenuItem key={chef.id} value={chef.id}>
+                        {chef.nom} {chef.prenom}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+            </Box>
             
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth margin="dense">
-                <InputLabel>Agent</InputLabel>
-                <Select
-                  value={form.agentId}
-                  onChange={(e) => handleChange('agentId', e.target.value)}
-                  label="Agent"
-                >
-                  <MenuItem value="">Sélectionnez</MenuItem>
-                  {Array.isArray(dropdowns.agents) && dropdowns.agents.map(agent => (
-                    <MenuItem key={agent.id} value={agent.id}>
-                      {agent.nom} {agent.prenom}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth margin="dense">
-                <InputLabel>Chef centre</InputLabel>
-                <Select
-                  value={form.chefCentreId}
-                  onChange={(e) => handleChange('chefCentreId', e.target.value)}
-                  label="Chef centre"
-                >
-                  <MenuItem value="">Sélectionnez</MenuItem>
-                  {Array.isArray(dropdowns.chefsCentre) && dropdowns.chefsCentre.map(chef => (
-                    <MenuItem key={chef.id} value={chef.id}>
-                      {chef.nom} {chef.prenom}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            
-            <Grid item xs={12}>
+            {/* Section Matière */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: '#1976d2' }}>
+                Matière
+              </Typography>
               <TextField
                 label="Matière*"
                 value={form.matiere}
@@ -159,92 +168,125 @@ export default function FormationFormModal({ open, onClose, onSubmit, initialVal
                 required
                 margin="dense"
                 multiline
-                rows={2}
+                rows={3}
+                sx={{ minHeight: '80px' }}
               />
-            </Grid>
+            </Box>
             
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Début*"
-                type="datetime-local"
-                value={form.dateDebut}
-                onChange={(e) => handleChange('dateDebut', e.target.value)}
-                fullWidth
-                required
-                margin="dense"
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
+            {/* Section Dates */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: '#1976d2' }}>
+                Période de formation
+              </Typography>
+              <Box sx={{ 
+                display: 'flex', 
+                flexWrap: 'wrap', 
+                gap: 2,
+                '& > *': { minWidth: '250px', flex: '1 1 250px' }
+              }}>
+                <TextField
+                  label="Début*"
+                  type="datetime-local"
+                  value={form.dateDebut}
+                  onChange={(e) => handleChange('dateDebut', e.target.value)}
+                  fullWidth
+                  required
+                  margin="dense"
+                  InputLabelProps={{ shrink: true }}
+                  sx={{ minHeight: '56px' }}
+                />
+                
+                <TextField
+                  label="Fin*"
+                  type="datetime-local"
+                  value={form.dateFin}
+                  onChange={(e) => handleChange('dateFin', e.target.value)}
+                  fullWidth
+                  required
+                  margin="dense"
+                  InputLabelProps={{ shrink: true }}
+                  sx={{ minHeight: '56px' }}
+                />
+              </Box>
+            </Box>
             
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Fin*"
-                type="datetime-local"
-                value={form.dateFin}
-                onChange={(e) => handleChange('dateFin', e.target.value)}
-                fullWidth
-                required
-                margin="dense"
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
+            {/* Section Validation */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: '#1976d2' }}>
+                Validation
+              </Typography>
+              <Box sx={{ 
+                display: 'flex', 
+                flexWrap: 'wrap', 
+                gap: 3,
+                '& > *': { minWidth: '200px' }
+              }}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={form.valideParFormateur}
+                      onChange={(e) => handleChange('valideParFormateur', e.target.checked)}
+                    />
+                  }
+                  label="Validé par formateur(s)"
+                  sx={{ minHeight: '56px', display: 'flex', alignItems: 'center' }}
+                />
+                
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={form.valideCHEH}
+                      onChange={(e) => handleChange('valideCHEH', e.target.checked)}
+                    />
+                  }
+                  label="Validé CHEH"
+                  sx={{ minHeight: '56px', display: 'flex', alignItems: 'center' }}
+                />
+              </Box>
+            </Box>
             
-            <Grid item xs={12} md={6}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={form.valideParFormateur}
-                    onChange={(e) => handleChange('valideParFormateur', e.target.checked)}
-                  />
-                }
-                label="Validé par formateur(s)"
-              />
-            </Grid>
-            
-            <Grid item xs={12} md={6}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={form.valideCHEH}
-                    onChange={(e) => handleChange('valideCHEH', e.target.checked)}
-                  />
-                }
-                label="Validé CHEH"
-              />
-            </Grid>
-            
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="1er Animateur"
-                value={form.premierAnimateur}
-                onChange={(e) => handleChange('premierAnimateur', e.target.value)}
-                fullWidth
-                margin="dense"
-              />
-            </Grid>
-            
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="2ème Animateur"
-                value={form.deuxiemeAnimateur}
-                onChange={(e) => handleChange('deuxiemeAnimateur', e.target.value)}
-                fullWidth
-                margin="dense"
-              />
-            </Grid>
-            
-            <Grid item xs={12} md={6}>
-              <TextField
-                label="Validé le"
-                type="date"
-                value={form.valideLe}
-                onChange={(e) => handleChange('valideLe', e.target.value)}
-                fullWidth
-                margin="dense"
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-          </Grid>
+            {/* Section Animateurs */}
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: '#1976d2' }}>
+                Animateurs
+              </Typography>
+              <Box sx={{ 
+                display: 'flex', 
+                flexWrap: 'wrap', 
+                gap: 2,
+                '& > *': { minWidth: '250px', flex: '1 1 250px' }
+              }}>
+                <TextField
+                  label="1er Animateur"
+                  value={form.premierAnimateur}
+                  onChange={(e) => handleChange('premierAnimateur', e.target.value)}
+                  fullWidth
+                  margin="dense"
+                  sx={{ minHeight: '56px' }}
+                />
+                
+                <TextField
+                  label="2ème Animateur"
+                  value={form.deuxiemeAnimateur}
+                  onChange={(e) => handleChange('deuxiemeAnimateur', e.target.value)}
+                  fullWidth
+                  margin="dense"
+                  sx={{ minHeight: '56px' }}
+                />
+                
+                <TextField
+                  label="Validé le"
+                  type="date"
+                  value={form.valideLe}
+                  onChange={(e) => handleChange('valideLe', e.target.value)}
+                  fullWidth
+                  margin="dense"
+                  InputLabelProps={{ shrink: true }}
+                  sx={{ minHeight: '56px' }}
+                />
+              </Box>
+            </Box>
+          </Box>
         </form>
       </DialogContent>
       <DialogActions>

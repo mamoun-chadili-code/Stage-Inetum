@@ -145,8 +145,28 @@ const agentService = {
   // Récupérer les détails d'un agent
   getAgentDetails: async (id) => {
     try {
-      const response = await api.get(`/Agents/${id}`);
-      return response;
+      const [agentResponse, historiqueResponse] = await Promise.all([
+        api.get(`/Agents/${id}`),
+        api.get(`/Agents/${id}/historique`)
+      ]);
+      
+      const agentData = agentResponse.data;
+      const historiqueData = historiqueResponse.data;
+      
+      console.log('Données agent:', agentData);
+      console.log('Données historique:', historiqueData);
+      
+      // Combiner les données
+      const combinedData = {
+        ...agentData,
+        historique: historiqueData.historique || []
+      };
+      
+      console.log('Données combinées:', combinedData);
+      
+      return {
+        data: combinedData
+      };
     } catch (error) {
       console.error('Erreur lors de la récupération des détails de l\'agent:', error);
       throw error;

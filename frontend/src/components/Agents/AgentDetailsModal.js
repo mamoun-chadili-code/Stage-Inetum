@@ -114,7 +114,13 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
             onClick={() => setActiveTab(1)}
             startIcon={<HistoryIcon />}
           >
-            Historique
+            Historique {details.historique && details.historique.length > 0 && (
+              <Chip 
+                label={details.historique.length} 
+                size="small" 
+                sx={{ ml: 1, backgroundColor: '#1976d2', color: 'white' }}
+              />
+            )}
           </Button>
         </Box>
 
@@ -185,11 +191,15 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
                     </Grid>
                     <Grid item xs={6}>
                       <Typography variant="subtitle2" color="textSecondary">Réseau</Typography>
-                      <Typography variant="body1">{details.reseau || '-'}</Typography>
+                      <Typography variant="body1">
+                        {details.reseau || '-'}
+                      </Typography>
                     </Grid>
                     <Grid item xs={6}>
                       <Typography variant="subtitle2" color="textSecondary">Ville</Typography>
-                      <Typography variant="body1">{details.ville || '-'}</Typography>
+                      <Typography variant="body1">
+                        {details.ville || '-'}
+                      </Typography>
                     </Grid>
                     <Grid item xs={6}>
                       <Typography variant="subtitle2" color="textSecondary">Statut Administratif</Typography>
@@ -252,28 +262,59 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>CCT</TableCell>
-                        <TableCell>Date Début Affectation</TableCell>
-                        <TableCell>Date Fin Affectation</TableCell>
-                        <TableCell>Date Mise à Jour</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>CCT</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Date Affectation</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Date Fin Affectation</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Motif Affectation</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Motif Fin Affectation</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {details.historique.map((item, index) => (
-                        <TableRow key={index}>
+                        <TableRow key={index} sx={{ '&:hover': { backgroundColor: '#f8f9fa' } }}>
                           <TableCell>{item.cct || '-'}</TableCell>
-                          <TableCell>{formatDate(item.dateDebutAffectation)}</TableCell>
+                          <TableCell>{formatDate(item.dateAffectation)}</TableCell>
                           <TableCell>{formatDate(item.dateFinAffectation)}</TableCell>
-                          <TableCell>{formatDate(item.dateMiseAJour)}</TableCell>
+                          <TableCell>
+                            <Chip 
+                              label={item.motifAffectation || '-'} 
+                              size="small"
+                              sx={{ 
+                                backgroundColor: '#e3f2fd',
+                                color: '#1976d2',
+                                fontWeight: 'medium'
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            {item.motifFinAffectation ? (
+                              <Chip 
+                                label={item.motifFinAffectation} 
+                                size="small"
+                                sx={{ 
+                                  backgroundColor: '#ffebee',
+                                  color: '#d32f2f',
+                                  fontWeight: 'medium'
+                                }}
+                              />
+                            ) : (
+                              '-'
+                            )}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 </TableContainer>
               ) : (
-                <Typography variant="body1" color="textSecondary" sx={{ textAlign: 'center', py: 3 }}>
-                  Aucun historique disponible pour cet agent.
-                </Typography>
+                <Box sx={{ textAlign: 'center', py: 4 }}>
+                  <Typography variant="h6" color="textSecondary" gutterBottom>
+                    📋 Aucun historique disponible
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Cet agent n'a pas encore d'historique d'affectation.
+                  </Typography>
+                </Box>
               )}
             </CardContent>
           </Card>

@@ -27,16 +27,7 @@ namespace CT_CNEH_API.Scripts
             context.Users.Add(adminUser);
             await context.SaveChangesAsync();
 
-            // Créer des statuts RC
-            var statutsRC = new List<StatutRC>
-            {
-                new StatutRC { Libelle = "Actif", Code = "ACT" },
-                new StatutRC { Libelle = "Inactif", Code = "INA" },
-                new StatutRC { Libelle = "Suspendu", Code = "SUS" }
-            };
 
-            context.StatutRCs.AddRange(statutsRC);
-            await context.SaveChangesAsync();
 
             // Créer des cadres d'autorisation
             var cadresAuth = new List<CadreAutorisation>
@@ -72,6 +63,19 @@ namespace CT_CNEH_API.Scripts
             };
 
             context.Villes.AddRange(villes);
+            await context.SaveChangesAsync();
+
+            // Créer des provinces
+            var provinces = new List<Province>
+            {
+                new Province { Libelle = "Province de Casablanca", Code = "PROV_CASA", RegionId = 1 },
+                new Province { Libelle = "Province de Rabat", Code = "PROV_RAB", RegionId = 2 },
+                new Province { Libelle = "Province de Fès", Code = "PROV_FES", RegionId = 3 },
+                new Province { Libelle = "Province de Marrakech", Code = "PROV_MAR", RegionId = 4 },
+                new Province { Libelle = "Province de Tanger", Code = "PROV_TAN", RegionId = 5 }
+            };
+
+            context.Provinces.AddRange(provinces);
             await context.SaveChangesAsync();
 
             // Créer des réseaux
@@ -123,6 +127,49 @@ namespace CT_CNEH_API.Scripts
             };
 
             context.Reseaux.AddRange(reseaux);
+            await context.SaveChangesAsync();
+
+            // Créer des logos de test pour les réseaux
+            var logos = new List<Logo>
+            {
+                new Logo { 
+                    ReseauId = 1, 
+                    NomFichier = "logo_reseau_nord.png", 
+                    TypeMime = "image/png", 
+                    TailleFichier = 1024, 
+                    CheminStockage = "uploads/logos/logo_reseau_nord.png",
+                    AltText = "Logo du Réseau Nord",
+                    DateUpload = DateTime.UtcNow,
+                    IsActive = true
+                },
+                new Logo { 
+                    ReseauId = 2, 
+                    NomFichier = "logo_reseau_centre.png", 
+                    TypeMime = "image/png", 
+                    TailleFichier = 1024, 
+                    CheminStockage = "uploads/logos/logo_reseau_centre.png",
+                    AltText = "Logo du Réseau Centre",
+                    DateUpload = DateTime.UtcNow,
+                    IsActive = true
+                }
+            };
+
+            context.Logos.AddRange(logos);
+            await context.SaveChangesAsync();
+
+            // Mettre à jour les LogoUrl des réseaux
+            var reseauNord = await context.Reseaux.FindAsync(1);
+            if (reseauNord != null)
+            {
+                reseauNord.LogoUrl = "/uploads/logos/logo_reseau_nord.png";
+            }
+
+            var reseauCentre = await context.Reseaux.FindAsync(2);
+            if (reseauCentre != null)
+            {
+                reseauCentre.LogoUrl = "/uploads/logos/logo_reseau_centre.png";
+            }
+
             await context.SaveChangesAsync();
 
             // Créer des catégories CCT
@@ -185,10 +232,22 @@ namespace CT_CNEH_API.Scripts
             {
                 new TypeEquipement { Libelle = "Informatique" },
                 new TypeEquipement { Libelle = "Bureau" },
-                new TypeEquipement { Libelle = "Technique" }
+                new TypeEquipement { Libelle = "Technique" },
+                new TypeEquipement { Libelle = "Sécurité" }
             };
 
             context.TypeEquipements.AddRange(typesEquipements);
+            await context.SaveChangesAsync();
+
+            // Créer des statuts d'équipements de test
+            var statutsEquipements = new List<StatutEquipement>
+            {
+                new StatutEquipement { Libelle = "En service", Description = "Équipement en service normal" },
+                new StatutEquipement { Libelle = "En maintenance", Description = "Équipement en maintenance" },
+                new StatutEquipement { Libelle = "Hors service", Description = "Équipement hors service" },
+                new StatutEquipement { Libelle = "En réparation", Description = "Équipement en réparation" }
+            };
+            context.StatutsEquipement.AddRange(statutsEquipements);
             await context.SaveChangesAsync();
 
             // Créer des types de décisions
@@ -212,6 +271,40 @@ namespace CT_CNEH_API.Scripts
 
             context.TypeEntites.AddRange(typesEntites);
             await context.SaveChangesAsync();
+
+            // Créer des types de formation
+            var typesFormation = new List<TypeFormation>
+            {
+                new TypeFormation { Libelle = "Formation initiale" },
+                new TypeFormation { Libelle = "Formation continue" },
+                new TypeFormation { Libelle = "Formation spécialisée" }
+            };
+
+            context.TypesFormation.AddRange(typesFormation);
+            await context.SaveChangesAsync();
+
+            // Créer des catégories de lignes
+            var categoriesLigne = new List<Categorie>
+            {
+                new Categorie { Nom = "Ligne principale", Description = "Lignes principales du réseau" },
+                new Categorie { Nom = "Ligne secondaire", Description = "Lignes secondaires du réseau" },
+                new Categorie { Nom = "Ligne de desserte", Description = "Lignes de desserte locale" }
+            };
+            context.Categories.AddRange(categoriesLigne);
+            await context.SaveChangesAsync();
+
+            // Créer des statuts de lignes
+            var statutsLigne = new List<Statut>
+            {
+                new Statut { Nom = "En exploitation", Description = "Ligne en exploitation normale" },
+                new Statut { Nom = "En construction", Description = "Ligne en cours de construction" },
+                new Statut { Nom = "Hors service", Description = "Ligne hors service" },
+                new Statut { Nom = "En maintenance", Description = "Ligne en maintenance" }
+            };
+            context.Statuts.AddRange(statutsLigne);
+            await context.SaveChangesAsync();
+
+
 
             // Créer des CCTs de test
             var ccts = new List<CCT>
@@ -367,16 +460,16 @@ namespace CT_CNEH_API.Scripts
                     ThumbprintCertificat = "CERT005"
                 },
                 // 10 CCTs de test supplémentaires pour la pagination
-                new CCT { Nom = "CCT Test 1", Agrement = "CCT006", DateAgrement = DateTime.Now, CategorieId = 1, StatutId = 1, DateStatut = DateTime.Now, ReseauId = 6, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 1", Latitude = "33.5731", Longitude = "-7.5898", VilleId = 1, Tel = "0522-000001", Mail = "cct.test1@ctcneh.com", CadreAutorisationId = 1, IsPersonneMorale = true, TypeId = 1, QuotaVL = 500, QuotaPL = 250, ProvinceId = 1, RegionId = 1 },
-                new CCT { Nom = "CCT Test 2", Agrement = "CCT007", DateAgrement = DateTime.Now, CategorieId = 2, StatutId = 2, DateStatut = DateTime.Now, ReseauId = 7, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 2", Latitude = "34.0209", Longitude = "-6.8416", VilleId = 2, Tel = "0537-000002", Mail = "cct.test2@ctcneh.com", CadreAutorisationId = 2, IsPersonneMorale = false, TypeId = 2, QuotaVL = 600, QuotaPL = 300, ProvinceId = 2, RegionId = 2 },
-                new CCT { Nom = "CCT Test 3", Agrement = "CCT008", DateAgrement = DateTime.Now, CategorieId = 3, StatutId = 1, DateStatut = DateTime.Now, ReseauId = 8, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 3", Latitude = "34.0181", Longitude = "-5.0078", VilleId = 3, Tel = "0535-000003", Mail = "cct.test3@ctcneh.com", CadreAutorisationId = 1, IsPersonneMorale = true, TypeId = 3, QuotaVL = 700, QuotaPL = 350, ProvinceId = 3, RegionId = 3 },
-                new CCT { Nom = "CCT Test 4", Agrement = "CCT009", DateAgrement = DateTime.Now, CategorieId = 1, StatutId = 2, DateStatut = DateTime.Now, ReseauId = 9, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 4", Latitude = "31.6295", Longitude = "-7.9811", VilleId = 4, Tel = "0524-000004", Mail = "cct.test4@ctcneh.com", CadreAutorisationId = 2, IsPersonneMorale = false, TypeId = 1, QuotaVL = 800, QuotaPL = 400, ProvinceId = 4, RegionId = 4 },
-                new CCT { Nom = "CCT Test 5", Agrement = "CCT010", DateAgrement = DateTime.Now, CategorieId = 2, StatutId = 1, DateStatut = DateTime.Now, ReseauId = 10, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 5", Latitude = "35.7595", Longitude = "-5.8340", VilleId = 5, Tel = "0539-000005", Mail = "cct.test5@ctcneh.com", CadreAutorisationId = 1, IsPersonneMorale = true, TypeId = 2, QuotaVL = 900, QuotaPL = 450, ProvinceId = 5, RegionId = 5 },
-                new CCT { Nom = "CCT Test 6", Agrement = "CCT011", DateAgrement = DateTime.Now, CategorieId = 3, StatutId = 2, DateStatut = DateTime.Now, ReseauId = 11, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 6", Latitude = "33.5731", Longitude = "-7.5898", VilleId = 1, Tel = "0522-000006", Mail = "cct.test6@ctcneh.com", CadreAutorisationId = 2, IsPersonneMorale = false, TypeId = 3, QuotaVL = 1000, QuotaPL = 500, ProvinceId = 1, RegionId = 1 },
-                new CCT { Nom = "CCT Test 7", Agrement = "CCT012", DateAgrement = DateTime.Now, CategorieId = 1, StatutId = 1, DateStatut = DateTime.Now, ReseauId = 12, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 7", Latitude = "34.0209", Longitude = "-6.8416", VilleId = 2, Tel = "0537-000007", Mail = "cct.test7@ctcneh.com", CadreAutorisationId = 1, IsPersonneMorale = true, TypeId = 1, QuotaVL = 1100, QuotaPL = 550, ProvinceId = 2, RegionId = 2 },
-                new CCT { Nom = "CCT Test 8", Agrement = "CCT013", DateAgrement = DateTime.Now, CategorieId = 2, StatutId = 2, DateStatut = DateTime.Now, ReseauId = 13, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 8", Latitude = "34.0181", Longitude = "-5.0078", VilleId = 3, Tel = "0535-000008", Mail = "cct.test8@ctcneh.com", CadreAutorisationId = 2, IsPersonneMorale = false, TypeId = 2, QuotaVL = 1200, QuotaPL = 600, ProvinceId = 3, RegionId = 3 },
-                new CCT { Nom = "CCT Test 9", Agrement = "CCT014", DateAgrement = DateTime.Now, CategorieId = 3, StatutId = 1, DateStatut = DateTime.Now, ReseauId = 14, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 9", Latitude = "31.6295", Longitude = "-7.9811", VilleId = 4, Tel = "0524-000009", Mail = "cct.test9@ctcneh.com", CadreAutorisationId = 1, IsPersonneMorale = true, TypeId = 3, QuotaVL = 1300, QuotaPL = 650, ProvinceId = 4, RegionId = 4 },
-                new CCT { Nom = "CCT Test 10", Agrement = "CCT015", DateAgrement = DateTime.Now, CategorieId = 1, StatutId = 2, DateStatut = DateTime.Now, ReseauId = 15, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 10", Latitude = "35.7595", Longitude = "-5.8340", VilleId = 5, Tel = "0539-000010", Mail = "cct.test10@ctcneh.com", CadreAutorisationId = 2, IsPersonneMorale = false, TypeId = 1, QuotaVL = 1400, QuotaPL = 700, ProvinceId = 5, RegionId = 5 }
+                new CCT { Nom = "CCT Test 1", Agrement = "CCT006", DateAgrement = DateTime.Now, CategorieId = 1, StatutId = 1, DateStatut = DateTime.Now, ReseauId = 1, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 1", Latitude = "33.5731", Longitude = "-7.5898", VilleId = 1, Tel = "0522-000001", Mail = "cct.test1@ctcneh.com", CadreAutorisationId = 1, IsPersonneMorale = true, TypeId = 1, QuotaVL = 500, QuotaPL = 250, ProvinceId = 1, RegionId = 1 },
+                new CCT { Nom = "CCT Test 2", Agrement = "CCT007", DateAgrement = DateTime.Now, CategorieId = 2, StatutId = 2, DateStatut = DateTime.Now, ReseauId = 2, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 2", Latitude = "34.0209", Longitude = "-6.8416", VilleId = 2, Tel = "0537-000002", Mail = "cct.test2@ctcneh.com", CadreAutorisationId = 2, IsPersonneMorale = false, TypeId = 2, QuotaVL = 600, QuotaPL = 300, ProvinceId = 2, RegionId = 2 },
+                new CCT { Nom = "CCT Test 3", Agrement = "CCT008", DateAgrement = DateTime.Now, CategorieId = 3, StatutId = 1, DateStatut = DateTime.Now, ReseauId = 3, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 3", Latitude = "34.0181", Longitude = "-5.0078", VilleId = 3, Tel = "0535-000003", Mail = "cct.test3@ctcneh.com", CadreAutorisationId = 1, IsPersonneMorale = true, TypeId = 3, QuotaVL = 700, QuotaPL = 350, ProvinceId = 3, RegionId = 3 },
+                new CCT { Nom = "CCT Test 4", Agrement = "CCT009", DateAgrement = DateTime.Now, CategorieId = 1, StatutId = 2, DateStatut = DateTime.Now, ReseauId = 4, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 4", Latitude = "31.6295", Longitude = "-7.9811", VilleId = 4, Tel = "0524-000004", Mail = "cct.test4@ctcneh.com", CadreAutorisationId = 2, IsPersonneMorale = false, TypeId = 1, QuotaVL = 800, QuotaPL = 400, ProvinceId = 4, RegionId = 4 },
+                new CCT { Nom = "CCT Test 5", Agrement = "CCT010", DateAgrement = DateTime.Now, CategorieId = 2, StatutId = 1, DateStatut = DateTime.Now, ReseauId = 5, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 5", Latitude = "35.7595", Longitude = "-5.8340", VilleId = 5, Tel = "0539-000005", Mail = "cct.test5@ctcneh.com", CadreAutorisationId = 1, IsPersonneMorale = true, TypeId = 2, QuotaVL = 900, QuotaPL = 450, ProvinceId = 5, RegionId = 5 },
+                new CCT { Nom = "CCT Test 6", Agrement = "CCT011", DateAgrement = DateTime.Now, CategorieId = 3, StatutId = 2, DateStatut = DateTime.Now, ReseauId = 6, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 6", Latitude = "33.5731", Longitude = "-7.5898", VilleId = 1, Tel = "0522-000006", Mail = "cct.test6@ctcneh.com", CadreAutorisationId = 2, IsPersonneMorale = false, TypeId = 3, QuotaVL = 1000, QuotaPL = 500, ProvinceId = 1, RegionId = 1 },
+                new CCT { Nom = "CCT Test 7", Agrement = "CCT012", DateAgrement = DateTime.Now, CategorieId = 1, StatutId = 1, DateStatut = DateTime.Now, ReseauId = 7, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 7", Latitude = "34.0209", Longitude = "-6.8416", VilleId = 2, Tel = "0537-000007", Mail = "cct.test7@ctcneh.com", CadreAutorisationId = 1, IsPersonneMorale = true, TypeId = 1, QuotaVL = 1100, QuotaPL = 550, ProvinceId = 2, RegionId = 2 },
+                new CCT { Nom = "CCT Test 8", Agrement = "CCT013", DateAgrement = DateTime.Now, CategorieId = 2, StatutId = 2, DateStatut = DateTime.Now, ReseauId = 8, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 8", Latitude = "34.0181", Longitude = "-5.0078", VilleId = 3, Tel = "0535-000008", Mail = "cct.test8@ctcneh.com", CadreAutorisationId = 2, IsPersonneMorale = false, TypeId = 2, QuotaVL = 1200, QuotaPL = 600, ProvinceId = 3, RegionId = 3 },
+                new CCT { Nom = "CCT Test 9", Agrement = "CCT014", DateAgrement = DateTime.Now, CategorieId = 3, StatutId = 1, DateStatut = DateTime.Now, ReseauId = 9, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 9", Latitude = "31.6295", Longitude = "-7.9811", VilleId = 4, Tel = "0524-000009", Mail = "cct.test9@ctcneh.com", CadreAutorisationId = 1, IsPersonneMorale = true, TypeId = 3, QuotaVL = 1300, QuotaPL = 650, ProvinceId = 4, RegionId = 4 },
+                new CCT { Nom = "CCT Test 10", Agrement = "CCT015", DateAgrement = DateTime.Now, CategorieId = 1, StatutId = 2, DateStatut = DateTime.Now, ReseauId = 10, DateRalliement = DateTime.Now, AdresseCCT = "Adresse CCT 10", Latitude = "35.7595", Longitude = "-5.8340", VilleId = 5, Tel = "0539-000010", Mail = "cct.test10@ctcneh.com", CadreAutorisationId = 2, IsPersonneMorale = false, TypeId = 1, QuotaVL = 1400, QuotaPL = 700, ProvinceId = 5, RegionId = 5 }
             };
 
             context.CCTs.AddRange(ccts);
@@ -495,6 +588,306 @@ namespace CT_CNEH_API.Scripts
             };
 
             context.Agents.AddRange(agents);
+            await context.SaveChangesAsync();
+
+            // Créer des chefs de centre de test
+            var chefsCentre = new List<ChefCentre>
+            {
+                new ChefCentre {
+                    Nom = "Benali",
+                    Prenom = "Karim",
+                    CIN = "BK123456",
+                    CCTId = 1,
+                    ReferenceApprobationCNEH = "REF001",
+                    DateApprobationCNEH = DateTime.Now.AddYears(-1),
+                    Tel = "0612345678",
+                    Mail = "karim.benali@ctcneh.com",
+                    CNSS = "CNSS001",
+                    Sexe = true,
+                    DateNaissance = new DateTime(1985, 5, 15),
+                    NiveauFormationInitialId = 1,
+                    DateAffectationCCT = DateTime.Now.AddYears(-1),
+                    AnneeAutorisation = 2022
+                },
+                new ChefCentre {
+                    Nom = "Tazi",
+                    Prenom = "Amina",
+                    CIN = "TA789012",
+                    CCTId = 2,
+                    ReferenceApprobationCNEH = "REF002",
+                    DateApprobationCNEH = DateTime.Now.AddYears(-2),
+                    Tel = "0698765432",
+                    Mail = "amina.tazi@ctcneh.com",
+                    CNSS = "CNSS002",
+                    Sexe = false,
+                    DateNaissance = new DateTime(1988, 8, 22),
+                    NiveauFormationInitialId = 2,
+                    DateAffectationCCT = DateTime.Now.AddYears(-2),
+                    AnneeAutorisation = 2021
+                }
+            };
+            context.ChefCentres.AddRange(chefsCentre);
+            await context.SaveChangesAsync();
+
+            // Créer des lignes de test
+            var lignes = new List<Ligne>
+            {
+                new Ligne { NumeroLigne = 1, CategorieId = 1, CCTId = 1, StatutId = 1, DateStatut = DateTime.Now, AnneeDemarrage = 2023 },
+                new Ligne { NumeroLigne = 2, CategorieId = 2, CCTId = 2, StatutId = 1, DateStatut = DateTime.Now, AnneeDemarrage = 2023 },
+                new Ligne { NumeroLigne = 3, CategorieId = 1, CCTId = 3, StatutId = 2, DateStatut = DateTime.Now, AnneeDemarrage = 2024 },
+                new Ligne { NumeroLigne = 4, CategorieId = 3, CCTId = 4, StatutId = 1, DateStatut = DateTime.Now, AnneeDemarrage = 2023 },
+                new Ligne { NumeroLigne = 5, CategorieId = 2, CCTId = 5, StatutId = 1, DateStatut = DateTime.Now, AnneeDemarrage = 2023 }
+            };
+            context.Lignes.AddRange(lignes);
+            await context.SaveChangesAsync();
+
+            // Créer des équipements de test
+            var equipements = new List<Equipement>
+            {
+                new Equipement
+                {
+                    Marque = "Bosch",
+                    Modele = "FSA 740",
+                    LigneId = 1,
+                    TypeEquipementId = 1,
+                    Protocole = "ISO 17025",
+                    RefHomologation = "HOM-2024-001",
+                    DateHomologation = new DateTime(2024, 1, 15),
+                    DateMiseService = new DateTime(2024, 2, 1),
+                    DateEtalonnage = new DateTime(2024, 2, 1),
+                    DateExpirationEtalonnage = new DateTime(2025, 2, 1),
+                    CreatedAt = DateTime.Now
+                },
+                new Equipement
+                {
+                    Marque = "Siemens",
+                    Modele = "VAG 6.0",
+                    LigneId = 2,
+                    TypeEquipementId = 2,
+                    Protocole = "ISO 17025",
+                    RefHomologation = "HOM-2024-002",
+                    DateHomologation = new DateTime(2024, 3, 10),
+                    DateMiseService = new DateTime(2024, 4, 1),
+                    DateEtalonnage = new DateTime(2024, 4, 1),
+                    DateExpirationEtalonnage = new DateTime(2025, 4, 1),
+                    CreatedAt = DateTime.Now
+                },
+                new Equipement
+                {
+                    Marque = "Hella",
+                    Modele = "KTL 6",
+                    LigneId = 3,
+                    TypeEquipementId = 1,
+                    Protocole = "ISO 17025",
+                    RefHomologation = "HOM-2024-003",
+                    DateHomologation = new DateTime(2024, 5, 20),
+                    DateMiseService = new DateTime(2024, 6, 1),
+                    DateEtalonnage = new DateTime(2024, 6, 1),
+                    DateExpirationEtalonnage = new DateTime(2025, 6, 1),
+                    CreatedAt = DateTime.Now
+                },
+                new Equipement
+                {
+                    Marque = "Mahle",
+                    Modele = "Beissbarth",
+                    LigneId = 4,
+                    TypeEquipementId = 2,
+                    Protocole = "ISO 17025",
+                    RefHomologation = "HOM-2024-004",
+                    DateHomologation = new DateTime(2024, 7, 15),
+                    DateMiseService = new DateTime(2024, 8, 1),
+                    DateEtalonnage = new DateTime(2024, 8, 1),
+                    DateExpirationEtalonnage = new DateTime(2025, 8, 1),
+                    CreatedAt = DateTime.Now
+                },
+                new Equipement
+                {
+                    Marque = "Snap-on",
+                    Modele = "Modis Ultra",
+                    LigneId = 5,
+                    TypeEquipementId = 1,
+                    Protocole = "ISO 17025",
+                    RefHomologation = "HOM-2024-005",
+                    DateHomologation = new DateTime(2024, 9, 10),
+                    DateMiseService = new DateTime(2024, 10, 1),
+                    DateEtalonnage = new DateTime(2024, 10, 1),
+                    DateExpirationEtalonnage = new DateTime(2025, 10, 1),
+                    CreatedAt = DateTime.Now
+                }
+            };
+            context.Equipements.AddRange(equipements);
+            await context.SaveChangesAsync();
+
+            // Créer des historiques d'affectation pour les agents
+            var historiquesAgents = new List<HistoriqueAffectation>
+            {
+                new HistoriqueAffectation { EntiteId = 1, TypeEntite = "Agent", CCTId = 1, DateAffectation = DateTime.Now.AddYears(-1), MotifAffectation = "Affectation initiale", IsActive = true },
+                new HistoriqueAffectation { EntiteId = 2, TypeEntite = "Agent", CCTId = 2, DateAffectation = DateTime.Now.AddYears(-2), MotifAffectation = "Affectation initiale", IsActive = true },
+                new HistoriqueAffectation { EntiteId = 3, TypeEntite = "Agent", CCTId = 1, DateAffectation = DateTime.Now.AddMonths(-6), MotifAffectation = "Transfert depuis CCT 3", IsActive = true }
+            };
+            context.HistoriqueAffectations.AddRange(historiquesAgents);
+            await context.SaveChangesAsync();
+
+            // Créer des historiques d'affectation pour les chefs de centre
+            var historiquesChefs = new List<HistoriqueAffectation>
+            {
+                new HistoriqueAffectation { EntiteId = 1, TypeEntite = "ChefCentre", CCTId = 1, DateAffectation = DateTime.Now.AddYears(-1), MotifAffectation = "Nomination comme chef de centre", IsActive = true },
+                new HistoriqueAffectation { EntiteId = 2, TypeEntite = "ChefCentre", CCTId = 2, DateAffectation = DateTime.Now.AddYears(-2), MotifAffectation = "Affectation initiale", IsActive = true }
+            };
+            context.HistoriqueAffectations.AddRange(historiquesChefs);
+            await context.SaveChangesAsync();
+
+            // Créer des décisions de test (après avoir créé tous les autres entités)
+            var decisions = new List<Decision>
+            {
+                new Decision
+                {
+                    TypeDecision = "Changement de nom",
+                    EntiteType = "Agent",
+                    EntiteId = 1,
+                    DateReference = new DateTime(2024, 2, 8),
+                    DateDebut = new DateTime(2024, 5, 21),
+                    DateFin = new DateTime(2024, 5, 21),
+                    Montant = 1500.00m,
+                    Observation = "Changement de nom suite à mariage",
+                    ReseauId = 1,
+                    CCTId = 1,
+                    CreatedAt = DateTime.Now
+                },
+                new Decision
+                {
+                    TypeDecision = "Promotion",
+                    EntiteType = "ChefCentre",
+                    EntiteId = 1,
+                    DateReference = new DateTime(2024, 3, 15),
+                    DateDebut = new DateTime(2024, 6, 1),
+                    Montant = 2500.00m,
+                    Observation = "Promotion au grade de chef de centre principal",
+                    ReseauId = 1,
+                    CCTId = 1,
+                    CreatedAt = DateTime.Now
+                },
+                new Decision
+                {
+                    TypeDecision = "Suspension",
+                    EntiteType = "Agent",
+                    EntiteId = 2,
+                    DateReference = new DateTime(2024, 4, 10),
+                    DateDebut = new DateTime(2024, 4, 10),
+                    DateFin = new DateTime(2024, 7, 10),
+                    Observation = "Suspension temporaire pour manquement professionnel",
+                    ReseauId = 1,
+                    CCTId = 2,
+                    CreatedAt = DateTime.Now
+                },
+                new Decision
+                {
+                    TypeDecision = "Création",
+                    EntiteType = "Ligne",
+                    EntiteId = 1,
+                    DateReference = new DateTime(2024, 1, 20),
+                    DateDebut = new DateTime(2024, 1, 20),
+                    Observation = "Création d'une nouvelle ligne de contrôle",
+                    ReseauId = 1,
+                    CCTId = 1,
+                    CreatedAt = DateTime.Now
+                },
+                new Decision
+                {
+                    TypeDecision = "Formation",
+                    EntiteType = "Agent",
+                    EntiteId = 3,
+                    DateReference = new DateTime(2024, 5, 5),
+                    DateDebut = new DateTime(2024, 8, 1),
+                    DateFin = new DateTime(2024, 8, 15),
+                    Montant = 800.00m,
+                    Observation = "Formation continue sur les nouvelles normes",
+                    ReseauId = 1,
+                    CCTId = 1,
+                    CreatedAt = DateTime.Now
+                }
+            };
+            context.Decisions.AddRange(decisions);
+            await context.SaveChangesAsync();
+
+            // Créer des formations de test
+            var formations = new List<Formation>
+            {
+                new Formation
+                {
+                    TypeFormationId = 1,
+                    CCTId = 1,
+                    AgentId = 1,
+                    Intitule = "Formation sécurité routière",
+                    Matiere = "Sécurité routière et réglementation",
+                    DateDebut = new DateTime(2024, 6, 15),
+                    DateFin = new DateTime(2024, 6, 20),
+                    ValideParFormateur = true,
+                    PremierAnimateur = "Dr. Ahmed Benali",
+                    DeuxiemeAnimateur = "Ing. Fatima Zahra",
+                    ValideCHEH = true,
+                    DateValidation = new DateTime(2024, 6, 25),
+                    CreatedAt = DateTime.Now
+                },
+                new Formation
+                {
+                    TypeFormationId = 2,
+                    CCTId = 2,
+                    ChefCentreId = 1,
+                    Intitule = "Formation management",
+                    Matiere = "Gestion d'équipe et leadership",
+                    DateDebut = new DateTime(2024, 7, 10),
+                    DateFin = new DateTime(2024, 7, 15),
+                    ValideParFormateur = true,
+                    PremierAnimateur = "Prof. Karim Mansouri",
+                    ValideCHEH = false,
+                    CreatedAt = DateTime.Now
+                },
+                new Formation
+                {
+                    TypeFormationId = 3,
+                    CCTId = 1,
+                    AgentId = 2,
+                    Intitule = "Formation nouvelles normes",
+                    Matiere = "Normes ISO et procédures",
+                    DateDebut = new DateTime(2024, 8, 5),
+                    DateFin = new DateTime(2024, 8, 10),
+                    ValideParFormateur = false,
+                    PremierAnimateur = "Ing. Hassan Tazi",
+                    ValideCHEH = false,
+                    CreatedAt = DateTime.Now
+                },
+                new Formation
+                {
+                    TypeFormationId = 1,
+                    CCTId = 3,
+                    Intitule = "Formation continue équipements",
+                    Matiere = "Maintenance et étalonnage",
+                    DateDebut = new DateTime(2024, 9, 1),
+                    DateFin = new DateTime(2024, 9, 5),
+                    ValideParFormateur = true,
+                    PremierAnimateur = "Tech. Mohamed El Amrani",
+                    ValideCHEH = true,
+                    DateValidation = new DateTime(2024, 9, 10),
+                    CreatedAt = DateTime.Now
+                },
+                new Formation
+                {
+                    TypeFormationId = 2,
+                    CCTId = 2,
+                    AgentId = 3,
+                    Intitule = "Formation qualité",
+                    Matiere = "Système de management qualité",
+                    DateDebut = new DateTime(2024, 10, 15),
+                    DateFin = new DateTime(2024, 10, 20),
+                    ValideParFormateur = true,
+                    PremierAnimateur = "Audit. Amina Benjelloun",
+                    DeuxiemeAnimateur = "Qual. Rachid El Fassi",
+                    ValideCHEH = false,
+                    CreatedAt = DateTime.Now
+                }
+            };
+            context.Formations.AddRange(formations);
             await context.SaveChangesAsync();
 
             Console.WriteLine("Données de test créées avec succès !");

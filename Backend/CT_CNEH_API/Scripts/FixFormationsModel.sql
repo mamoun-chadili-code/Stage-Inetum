@@ -110,5 +110,5 @@ PRINT '✓ Colonnes incorrectes supprimées';
 PRINT '';
 PRINT '📋 Prochaines étapes :';
 PRINT '1. Redémarrez l''API backend';
-PRINT '2. Testez l''API : https://localhost:54875/api/Formations';
+PRINT '2. Testez l''API : http://localhost:7000/api/Formations';
 PRINT '3. Testez l''application : http://localhost:3000/formations'; 

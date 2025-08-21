@@ -1,0 +1,33 @@
+### Test de l'API CT_CNEH
+
+### 1. Test de l'endpoint des décisions
+GET http://localhost:7000/api/Decisions?Page=1&PageSize=5
+Content-Type: application/json
+
+### 2. Test de l'endpoint des décisions avec filtres
+GET http://localhost:7000/api/Decisions?Page=1&PageSize=10&TypeDecision=Formation
+Content-Type: application/json
+
+### 3. Test de l'endpoint des CCTs
+GET http://localhost:7000/api/CCTs?Page=1&PageSize=5
+Content-Type: application/json
+
+### 4. Test de l'endpoint des agents
+GET http://localhost:7000/api/Agents?Page=1&PageSize=5
+Content-Type: application/json
+
+### 5. Test de l'endpoint des formations
+GET http://localhost:7000/api/Formations?Page=1&PageSize=5
+Content-Type: application/json
+
+### 6. Test de l'endpoint des équipements
+GET http://localhost:7000/api/Equipements?Page=1&PageSize=5
+Content-Type: application/json
+
+### 7. Test de l'endpoint des lignes
+GET http://localhost:7000/api/Lignes?Page=1&PageSize=5
+Content-Type: application/json
+
+### 8. Test de l'endpoint des réseaux
+GET http://localhost:7000/api/Reseaux?Page=1&PageSize=5
+Content-Type: application/json

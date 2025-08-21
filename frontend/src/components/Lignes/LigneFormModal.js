@@ -6,390 +6,506 @@ import {
   DialogActions,
   Button,
   TextField,
-  Grid,
-  Box,
-  Typography,
-  IconButton,
-  Alert,
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Grid,
+  Box,
+  Typography,
+  Alert,
+  Chip,
+  Divider,
+  Paper,
+  IconButton,
+  Tooltip,
+  Fade,
+  FormHelperText
 } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { fr } from 'date-fns/locale';
 import {
-  Close as CloseIcon,
-  Save as SaveIcon,
-  Cancel as CancelIcon,
+  Add as AddIcon,
   Edit as EditIcon,
-  Add as AddIcon
+  Close as CloseIcon,
+  Info as InfoIcon,
+  Business as BusinessIcon,
+  Category as CategoryIcon,
+  Assignment as AssignmentIcon,
+  Schedule as ScheduleIcon,
+  Event as EventIcon,
+  CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
-import { toast } from 'react-toastify';
 
-export default function LigneFormModal({ open, onClose, onSubmit, editingLigne, dropdowns }) {
+const LigneFormModal = ({ 
+  open, 
+  onClose, 
+  onSubmit, 
+  ligne, 
+  categories, 
+  ccts, 
+  statuts, 
+  regions, 
+  villes, 
+  reseaux,
+  decisions
+}) => {
   const [formData, setFormData] = useState({
-    cctId: '',
     numeroLigne: '',
     categorieId: '',
+    cctId: '',
     statutId: '',
-    dateStatut: ''
+    dateStatut: new Date(),
+    decisionId: '',
+    dateDecision: null,
+    anneeDemarrage: ''
   });
 
   const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // Réinitialiser le formulaire quand il s'ouvre
+  // Initialiser le formulaire
   useEffect(() => {
-    if (open) {
-      if (editingLigne) {
-        // Mode édition - remplir avec les données existantes
-        console.log('🚨 === MODE ÉDITION - FORMULAIRE ===');
-        console.log('🚨 editingLigne reçu:', editingLigne);
-        console.log('🚨 Structure editingLigne:', {
-          id: editingLigne.id,
-          cctId: editingLigne.cctId,
-          numLigne: editingLigne.numLigne,
-          categorieId: editingLigne.categorieId,
-          statutId: editingLigne.statutId,
-          dateStatut: editingLigne.dateStatut
-        });
-        
-        // Récupérer les anciennes valeurs
-        const oldValues = {
-          cctId: editingLigne.cctId || '', // Utiliser cctId si disponible
-          numeroLigne: editingLigne.numLigne || '', // Utiliser numLigne (nom du champ dans la base)
-          categorieId: editingLigne.categorieId || '', // Utiliser categorieId si disponible
-          statutId: editingLigne.statutId || '', // Utiliser statutId si disponible
-          dateStatut: editingLigne.dateStatut ? 
-            (editingLigne.dateStatut.includes('T') ? 
-              editingLigne.dateStatut.split('T')[0] : 
-              editingLigne.dateStatut
-            ) : ''
-        };
-        
-        console.log('🚨 Anciennes valeurs récupérées:', oldValues);
-        console.log('🚨 Types des valeurs:', {
-          cctId: typeof oldValues.cctId,
-          numeroLigne: typeof oldValues.numeroLigne,
-          categorieId: typeof oldValues.categorieId,
-          statutId: typeof oldValues.statutId,
-          dateStatut: typeof oldValues.dateStatut
-        });
-        
-        setFormData(oldValues);
-        
-      } else {
-        // Mode ajout - formulaire vide
-        console.log('🚨 Mode ajout - formulaire vide');
-        setFormData({
-          cctId: '',
-          numeroLigne: '',
-          categorieId: '',
-          statutId: '',
-          dateStatut: ''
-        });
-      }
-      setErrors({});
-      setIsSubmitting(false);
+    if (ligne) {
+      // Mode modification
+      setFormData({
+        numeroLigne: ligne.numeroLigne || '',
+        categorieId: ligne.categorieId || '',
+        cctId: ligne.cctId || '',
+        statutId: ligne.statutId || '',
+        dateStatut: ligne.dateStatut ? new Date(ligne.dateStatut) : new Date(),
+        decisionId: ligne.decisionId || '',
+        dateDecision: ligne.dateDecision ? new Date(ligne.dateDecision) : null,
+        anneeDemarrage: ligne.anneeDemarrage || ''
+      });
+    } else {
+      // Mode ajout
+      setFormData({
+        numeroLigne: '',
+        categorieId: '',
+        cctId: '',
+        statutId: '',
+        dateStatut: new Date(),
+        decisionId: '',
+        dateDecision: null,
+        anneeDemarrage: ''
+      });
     }
-  }, [editingLigne, open]);
+    setErrors({});
+  }, [ligne, open]);
 
-  const handleInputChange = (field, value) => {
-    console.log(`🚨 handleInputChange - ${field}:`, value);
-    console.log(`🚨 Type de ${field}:`, typeof value);
-    
-    setFormData(prev => {
-      const newData = { ...prev, [field]: value };
-      console.log(`🚨 formData après mise à jour de ${field}:`, newData);
-      return newData;
-    });
-    
+  // Gérer les changements de formulaire
+  const handleChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+
     // Effacer l'erreur du champ modifié
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors(prev => ({
+        ...prev,
+        [field]: ''
+      }));
     }
   };
 
+  // Valider le formulaire
   const validateForm = () => {
     const newErrors = {};
-    
-    // Validation CCT
-    if (!formData.cctId) {
-      newErrors.cctId = 'Le CCT est obligatoire';
+
+    if (!formData.numeroLigne || formData.numeroLigne < 1) {
+      newErrors.numeroLigne = 'Le numéro de ligne est obligatoire et doit être supérieur à 0';
     }
-    
-    // Validation N° de ligne
-    if (!formData.numeroLigne) {
-      newErrors.numeroLigne = 'Le numéro de ligne est obligatoire';
-    } else if (isNaN(formData.numeroLigne) || parseInt(formData.numeroLigne) <= 0) {
-      newErrors.numeroLigne = 'Le numéro de ligne doit être un nombre positif';
-    } else if (parseInt(formData.numeroLigne) > 9999) {
-      newErrors.numeroLigne = 'Le numéro de ligne ne peut pas dépasser 9999';
-    }
-    
-    // Validation Catégorie
+
     if (!formData.categorieId) {
       newErrors.categorieId = 'La catégorie est obligatoire';
     }
-    
-    // Validation Statut
+
+    if (!formData.cctId) {
+      newErrors.cctId = 'Le CCT est obligatoire';
+    }
+
     if (!formData.statutId) {
       newErrors.statutId = 'Le statut est obligatoire';
     }
-    
-    // Validation Date statut
+
     if (!formData.dateStatut) {
-      newErrors.dateStatut = 'La date statut est obligatoire';
-    } else {
-      const selectedDate = new Date(formData.dateStatut);
-      const today = new Date();
-      if (selectedDate > today) {
-        newErrors.dateStatut = 'La date statut ne peut pas être dans le futur';
-      }
+      newErrors.dateStatut = 'La date de statut est obligatoire';
+    }
+
+    // Validation de la cohérence décision/date décision
+    if (formData.decisionId && !formData.dateDecision) {
+      newErrors.dateDecision = 'La date de décision est obligatoire si une décision est sélectionnée';
+    }
+
+    if (!formData.decisionId && formData.dateDecision) {
+      newErrors.decisionId = 'Une décision doit être sélectionnée si une date de décision est spécifiée';
+    }
+
+    if (formData.anneeDemarrage && (formData.anneeDemarrage < 1900 || formData.anneeDemarrage > 2100)) {
+      newErrors.anneeDemarrage = 'L\'année de démarrage doit être entre 1900 et 2100';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async () => {
-    if (validateForm()) {
-      setIsSubmitting(true);
-      try {
-        console.log('🚨 === DÉBOGAGE FORMULAIRE ===');
-        console.log('🚨 formData avant traitement:', formData);
-        
-        // Vérifier que nous avons bien des IDs numériques
-        if (!formData.cctId || !formData.categorieId || !formData.statutId) {
-          throw new Error('Tous les champs de sélection doivent avoir des valeurs valides');
-        }
-        
-        // Préparer les données à envoyer
-        const submitData = {
-          numeroLigne: parseInt(formData.numeroLigne),
-          cctId: parseInt(formData.cctId),
-          categorieId: parseInt(formData.categorieId),
-          statutId: parseInt(formData.statutId),
-          dateStatut: formData.dateStatut
-        };
-        
-        console.log('🚨 submitData préparé:', submitData);
-        console.log('🚨 Types des données:', {
-          numeroLigne: typeof submitData.numeroLigne,
-          cctId: typeof submitData.cctId,
-          categorieId: typeof submitData.categorieId,
-          statutId: typeof submitData.statutId,
-          dateStatut: typeof submitData.dateStatut
-        });
-        
-        await onSubmit(submitData);
-        // Le modal se fermera automatiquement après la soumission réussie
-      } catch (error) {
-        console.error('🚨 Erreur lors de la soumission:', error);
-        toast.error(error.message || 'Erreur lors de la soumission du formulaire');
-        // Réactiver le bouton en cas d'erreur
-        setIsSubmitting(false);
-      }
+  // Gérer la soumission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Préparer les données pour l'envoi
+      const submitData = {
+        ...formData,
+        numeroLigne: parseInt(formData.numeroLigne),
+        categorieId: parseInt(formData.categorieId),
+        cctId: parseInt(formData.cctId),
+        statutId: parseInt(formData.statutId),
+        decisionId: formData.decisionId ? parseInt(formData.decisionId) : null,
+        anneeDemarrage: formData.anneeDemarrage ? parseInt(formData.anneeDemarrage) : null
+      };
+
+      await onSubmit(submitData);
+      onClose();
+    } catch (error) {
+      console.error('Erreur lors de la soumission:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Fermer le modal
   const handleClose = () => {
-    if (!isSubmitting) {
+    if (!loading) {
       onClose();
     }
-  };
-
-  const isFormValid = () => {
-    return formData.cctId && formData.numeroLigne && formData.categorieId && formData.statutId && formData.dateStatut;
   };
 
   return (
     <Dialog 
       open={open} 
-      onClose={handleClose}
-      maxWidth="md"
+      onClose={handleClose} 
+      aria-labelledby="form-dialog-title"
+      maxWidth="xl"
       fullWidth
-      disableEscapeKeyDown={isSubmitting}
+      PaperProps={{
+        sx: {
+          maxHeight: '90vh',
+          minHeight: '80vh'
+        }
+      }}
     >
       <DialogTitle sx={{ 
-        bgcolor: 'primary.main', 
+        bgcolor: '#1976d2', 
         color: 'white',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {editingLigne ? (
-            <>
-              <EditIcon />
-              <Typography variant="h6">Modifier Ligne</Typography>
-            </>
-          ) : (
-            <>
-              <AddIcon />
-              <Typography variant="h6">Ajouter Ligne</Typography>
-            </>
-          )}
+          {ligne ? <EditIcon /> : <AddIcon />}
+          <Typography variant="h6">
+            {ligne ? 'MODIFIER LIGNE' : '+ AJOUTER LIGNE'}
+          </Typography>
         </Box>
-        <IconButton 
-          onClick={handleClose} 
-          sx={{ color: 'white' }}
-          disabled={isSubmitting}
-        >
-          <CloseIcon />
-        </IconButton>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+            GESTION DES LIGNES
+          </Typography>
+          <IconButton onClick={handleClose} sx={{ color: 'white' }}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 3 }}>
-        {/* Message d'information */}
-        <Alert severity="info" sx={{ mb: 3 }}>
-          <Typography variant="body2" component="div">
-            <strong>Les champs marqués d'un * sont obligatoires.</strong>
-            <br />
-            Remplissez tous les champs requis pour créer ou modifier une ligne de contrôle technique.
-          </Typography>
-        </Alert>
+      <form onSubmit={handleSubmit}>
+        <DialogContent sx={{ p: 0 }}>
+          <Box sx={{ p: 3 }}>
+            <Grid container spacing={3}>
+              {/* Colonne gauche - Informations principales */}
+              <Grid item xs={12} md={6}>
+                <Paper sx={{ p: 3, height: 'fit-content' }}>
+                  <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mb: 3 }}>
+                    Informations principales
+                  </Typography>
+                  
+                  <Grid container spacing={2}>
+                    {/* CCT */}
+                    <Grid item xs={12}>
+                      <FormControl fullWidth error={!!errors.cctId}>
+                        <InputLabel>CCT*</InputLabel>
+                        <Select
+                          value={formData.cctId}
+                          onChange={(e) => handleChange('cctId', e.target.value)}
+                          label="CCT*"
+                          disabled={loading}
+                        >
+                          <MenuItem value="">
+                            <em>Sélectionnez un CCT</em>
+                          </MenuItem>
+                          {ccts?.map((cct) => (
+                            <MenuItem key={cct.id} value={cct.id}>
+                              {cct.nom}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {errors.cctId && (
+                          <FormHelperText error>{errors.cctId}</FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
 
-        <Grid container spacing={2}>
-          {/* Colonne 1 */}
-          <Grid item xs={12} md={6}>
-            {/* CCT - Utiliser Select simple au lieu de SearchableSelect */}
-            <FormControl fullWidth margin="dense" error={!!errors.cctId}>
-              <InputLabel>CCT *</InputLabel>
-              <Select
-                value={formData.cctId}
-                onChange={(e) => handleInputChange('cctId', e.target.value)}
-                label="CCT *"
-                required
-              >
-                <MenuItem value="">
-                  <em>Sélectionner un CCT</em>
-                </MenuItem>
-                {dropdowns.ccts?.map((cct) => (
-                  <MenuItem key={cct.id} value={cct.id}>
-                    {cct.nom}
-                  </MenuItem>
-                ))}
-              </Select>
-              {errors.cctId && (
-                <Typography variant="caption" color="error" sx={{ mt: 0.5, display: 'block' }}>
-                  {errors.cctId}
-                </Typography>
-              )}
-            </FormControl>
-            
-            {/* N° de ligne */}
-            <TextField
-              label="N° de ligne *"
-              value={formData.numeroLigne}
-              onChange={(e) => handleInputChange('numeroLigne', e.target.value)}
-              placeholder="Ex: 1, 2, 3..."
-              fullWidth
-              required
-              margin="dense"
-              type="number"
-              inputProps={{ 
-                min: 1, 
-                max: 9999,
-                step: 1
-              }}
-              error={!!errors.numeroLigne}
-              helperText={errors.numeroLigne || 'Numéro de la route/ligne (peut se répéter)'}
-            />
-            
-            {/* Catégorie - Utiliser Select simple */}
-            <FormControl fullWidth margin="dense" error={!!errors.categorieId}>
-              <InputLabel>Catégorie *</InputLabel>
-              <Select
-                value={formData.categorieId}
-                onChange={(e) => handleInputChange('categorieId', e.target.value)}
-                label="Catégorie *"
-                required
-              >
-                <MenuItem value="">
-                  <em>Sélectionner une catégorie</em>
-                </MenuItem>
-                {dropdowns.categories?.map((categorie) => (
-                  <MenuItem key={categorie.id} value={categorie.id}>
-                    {categorie.libelle}
-                  </MenuItem>
-                ))}
-              </Select>
-              {errors.categorieId && (
-                <Typography variant="caption" color="error" sx={{ mt: 0.5, display: 'block' }}>
-                  {errors.categorieId}
-                </Typography>
-              )}
-            </FormControl>
-          </Grid>
+                    {/* N° de ligne */}
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="N° de ligne*"
+                        type="number"
+                        value={formData.numeroLigne}
+                        onChange={(e) => handleChange('numeroLigne', e.target.value)}
+                        error={!!errors.numeroLigne}
+                        helperText={errors.numeroLigne}
+                        disabled={loading}
+                        inputProps={{ min: 1, max: 999 }}
+                        required
+                      />
+                    </Grid>
 
-          {/* Colonne 2 */}
-          <Grid item xs={12} md={6}>
-            {/* Statut - Utiliser Select simple */}
-            <FormControl fullWidth margin="dense" error={!!errors.statutId}>
-              <InputLabel>Statut *</InputLabel>
-              <Select
-                value={formData.statutId}
-                onChange={(e) => handleInputChange('statutId', e.target.value)}
-                label="Statut *"
-                required
-              >
-                <MenuItem value="">
-                  <em>Sélectionner un statut</em>
-                </MenuItem>
-                {dropdowns.statuts?.map((statut) => (
-                  <MenuItem key={statut.id} value={statut.id}>
-                    {statut.libelle}
-                  </MenuItem>
-                ))}
-              </Select>
-              {errors.statutId && (
-                <Typography variant="caption" color="error" sx={{ mt: 0.5, display: 'block' }}>
-                  {errors.statutId}
-                </Typography>
-              )}
-            </FormControl>
-            
-            {/* Date statut */}
-            <TextField
-              label="Date statut *"
-              type="date"
-              value={formData.dateStatut}
-              onChange={(e) => handleInputChange('dateStatut', e.target.value)}
-              fullWidth
-              required
-              margin="dense"
-              InputLabelProps={{
-                shrink: true,
-              }}
-              inputProps={{
-                max: new Date().toISOString().split('T')[0]
-              }}
-              error={!!errors.dateStatut}
-              helperText={errors.dateStatut || 'Date de mise à jour du statut'}
-            />
-          </Grid>
-        </Grid>
-      </DialogContent>
+                    {/* Catégorie */}
+                    <Grid item xs={12}>
+                      <FormControl fullWidth error={!!errors.categorieId}>
+                        <InputLabel>Catégorie*</InputLabel>
+                        <Select
+                          value={formData.categorieId}
+                          onChange={(e) => handleChange('categorieId', e.target.value)}
+                          label="Catégorie*"
+                          disabled={loading}
+                        >
+                          <MenuItem value="">
+                            <em>Sélectionnez une catégorie</em>
+                          </MenuItem>
+                          {categories?.map((categorie) => (
+                            <MenuItem key={categorie.id} value={categorie.id}>
+                              {categorie.libelle || categorie.nom}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {errors.categorieId && (
+                          <FormHelperText error>{errors.categorieId}</FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
 
-      <DialogActions>
-        <Button 
-          onClick={handleClose} 
-          color="secondary" 
-          disabled={isSubmitting}
-          startIcon={<CancelIcon />}
-        >
-          Annuler
-        </Button>
-        <Button 
-          onClick={handleSubmit} 
-          color="primary" 
-          variant="contained"
-          disabled={!isFormValid() || isSubmitting}
-          startIcon={<SaveIcon />}
-        >
-          {isSubmitting ? 'Enregistrement...' : (editingLigne ? 'Modifier' : 'Enregistrer')}
-        </Button>
-      </DialogActions>
+                    {/* Statut */}
+                    <Grid item xs={12}>
+                      <FormControl fullWidth error={!!errors.statutId}>
+                        <InputLabel>Statut*</InputLabel>
+                        <Select
+                          value={formData.statutId}
+                          onChange={(e) => handleChange('statutId', e.target.value)}
+                          label="Statut*"
+                          disabled={loading}
+                        >
+                          <MenuItem value="">
+                            <em>Sélectionnez un statut</em>
+                          </MenuItem>
+                          {statuts?.map((statut) => (
+                            <MenuItem key={statut.id} value={statut.id}>
+                              {statut.nom}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {errors.statutId && (
+                          <FormHelperText error>{errors.statutId}</FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
+
+                    {/* Date statut */}
+                    <Grid item xs={12}>
+                      <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>
+                        <DatePicker
+                          label="Date statut*"
+                          value={formData.dateStatut}
+                          onChange={(date) => handleChange('dateStatut', date)}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              fullWidth
+                              error={!!errors.dateStatut}
+                              helperText={errors.dateStatut}
+                              disabled={loading}
+                              required
+                            />
+                          )}
+                        />
+                      </LocalizationProvider>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </Grid>
+
+              {/* Colonne droite - Informations supplémentaires */}
+              <Grid item xs={12} md={6}>
+                <Paper sx={{ p: 3, height: 'fit-content' }}>
+                  <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mb: 3 }}>
+                    Informations supplémentaires
+                  </Typography>
+                  
+                  <Grid container spacing={2}>
+                    {/* Année de démarrage */}
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Année de démarrage"
+                        type="number"
+                        value={formData.anneeDemarrage}
+                        onChange={(e) => handleChange('anneeDemarrage', e.target.value)}
+                        error={!!errors.anneeDemarrage}
+                        helperText={errors.anneeDemarrage}
+                        disabled={loading}
+                        inputProps={{ min: 1900, max: 2100 }}
+                      />
+                    </Grid>
+
+                    {/* Décision */}
+                    <Grid item xs={12}>
+                      <FormControl fullWidth error={!!errors.decisionId}>
+                        <InputLabel>Décision</InputLabel>
+                        <Select
+                          value={formData.decisionId}
+                          onChange={(e) => handleChange('decisionId', e.target.value)}
+                          label="Décision"
+                          disabled={loading}
+                        >
+                          <MenuItem value="">
+                            <em>Aucune décision</em>
+                          </MenuItem>
+                          {decisions?.map((decision) => (
+                            <MenuItem key={decision.id} value={decision.id}>
+                              {decision.nom}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {errors.decisionId && (
+                          <FormHelperText error>{errors.decisionId}</FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
+
+                    {/* Date décision */}
+                    <Grid item xs={12}>
+                      <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>
+                        <DatePicker
+                          label="Date décision"
+                          value={formData.dateDecision}
+                          onChange={(date) => handleChange('dateDecision', date)}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              fullWidth
+                              error={!!errors.dateDecision}
+                              helperText={errors.dateDecision}
+                              disabled={loading}
+                            />
+                          )}
+                        />
+                      </LocalizationProvider>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </Grid>
+            </Grid>
+
+            {/* Section Résumé des Sélections */}
+            <Paper elevation={0} sx={{ p: 2, mt: 3, background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)', borderRadius: 2 }}>
+              <Box display="flex" alignItems="center" gap={1} mb={2}>
+                <CheckCircleIcon color="primary" />
+                <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold' }}>
+                  Résumé des Sélections
+                </Typography>
+              </Box>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={4}>
+                  <Chip 
+                    icon={<BusinessIcon />}
+                    label={`CCT: ${ccts?.find(c => c.id === formData.cctId)?.nom || 'Non sélectionné'}`} 
+                    color="primary" 
+                    variant="outlined"
+                    sx={{ 
+                      width: '100%', 
+                      justifyContent: 'flex-start',
+                      '& .MuiChip-label': { width: '100%' }
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Chip 
+                    icon={<CategoryIcon />}
+                    label={`Catégorie: ${categories?.find(c => c.id === formData.categorieId)?.libelle || categories?.find(c => c.id === formData.categorieId)?.nom || 'Non sélectionnée'}`} 
+                    color="secondary" 
+                    variant="outlined"
+                    sx={{ 
+                      width: '100%', 
+                      justifyContent: 'flex-start',
+                      '& .MuiChip-label': { width: '100%' }
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Chip 
+                    icon={<CheckCircleIcon />}
+                    label={`Statut: ${statuts?.find(s => s.id === formData.statutId)?.nom || 'Non sélectionné'}`} 
+                    color="info" 
+                    variant="outlined"
+                    sx={{ 
+                      width: '100%', 
+                      justifyContent: 'flex-start',
+                      '& .MuiChip-label': { width: '100%' }
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </Paper>
+          </Box>
+        </DialogContent>
+
+        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
+          <Button
+            onClick={handleClose}
+            disabled={loading}
+            variant="outlined"
+            sx={{ minWidth: 120 }}
+          >
+            Annuler
+          </Button>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={loading}
+            sx={{ 
+              minWidth: 120,
+              bgcolor: '#00bcd4',
+              '&:hover': {
+                bgcolor: '#0097a7'
+              }
+            }}
+          >
+            {loading ? 'Enregistrement...' : (ligne ? 'Modifier' : 'Enregistrer')}
+          </Button>
+        </DialogActions>
+      </form>
     </Dialog>
   );
-} 
+};
+
+export default LigneFormModal; 

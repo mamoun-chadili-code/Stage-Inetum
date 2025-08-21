@@ -76,7 +76,7 @@ namespace CT_CNEH_API.Models
         
         // Navigation properties
         public virtual CategorieCCT Categorie { get; set; } = null!;
-        public virtual StatutRC Statut { get; set; } = null!;
+        public virtual StatutCCT Statut { get; set; } = null!;
         public virtual Reseau Reseau { get; set; } = null!;
         public virtual Ville Ville { get; set; } = null!;
         public virtual CadreAutorisation CadreAutorisation { get; set; } = null!;
@@ -89,6 +89,6 @@ namespace CT_CNEH_API.Models
         public virtual ICollection<Ligne> Lignes { get; set; } = new List<Ligne>();
         public virtual ICollection<Formation> Formations { get; set; } = new List<Formation>();
         public virtual ICollection<Equipement> Equipements { get; set; } = new List<Equipement>();
-        public virtual ICollection<Descision> Decisions { get; set; } = new List<Descision>();
+
     }
 } 

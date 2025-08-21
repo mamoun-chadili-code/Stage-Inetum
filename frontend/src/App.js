@@ -14,6 +14,7 @@ import Formations from './components/Formations/Formations';
 import Lignes from './components/Lignes/Lignes';
 import Equipements from './components/Equipements/Equipements';
 import Decisions from './components/Decisions/Decisions';
+import ProtectedRoute from './components/Auth/ProtectedRoute';
 
 
 function App() {
@@ -45,15 +46,15 @@ function App() {
           </Button>
           <Routes>
             <Route path="/login" element={<Login onLogin={() => setIsAuthenticated(true)} />} />
-            <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
-            <Route path="/reseaux" element={isAuthenticated ? <Reseaux /> : <Navigate to="/login" />} />
-            <Route path="/cct" element={isAuthenticated ? <CCTs /> : <Navigate to="/login" />} />
-            <Route path="/agents" element={isAuthenticated ? <Agents /> : <Navigate to="/login" />} />
-            <Route path="/chefs-centre" element={isAuthenticated ? <ChefsCentre /> : <Navigate to="/login" />} />
-            <Route path="/formations" element={isAuthenticated ? <Formations /> : <Navigate to="/login" />} />
-            <Route path="/lignes" element={isAuthenticated ? <Lignes /> : <Navigate to="/login" />} />
-            <Route path="/equipements" element={isAuthenticated ? <Equipements /> : <Navigate to="/login" />} />
-            <Route path="/decisions" element={isAuthenticated ? <Decisions /> : <Navigate to="/login" />} />
+            <Route path="/dashboard" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Dashboard /></ProtectedRoute>} />
+            <Route path="/reseaux" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Reseaux /></ProtectedRoute>} />
+            <Route path="/cct" element={<ProtectedRoute isAuthenticated={isAuthenticated}><CCTs /></ProtectedRoute>} />
+            <Route path="/agents" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Agents /></ProtectedRoute>} />
+            <Route path="/chefs-centre" element={<ProtectedRoute isAuthenticated={isAuthenticated}><ChefsCentre /></ProtectedRoute>} />
+            <Route path="/formations" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Formations /></ProtectedRoute>} />
+            <Route path="/lignes" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Lignes /></ProtectedRoute>} />
+            <Route path="/equipements" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Equipements /></ProtectedRoute>} />
+            <Route path="/decisions" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Decisions /></ProtectedRoute>} />
             
             <Route path="*" element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} />} />
           </Routes>

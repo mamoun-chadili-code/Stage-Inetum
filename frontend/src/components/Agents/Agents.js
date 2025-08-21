@@ -71,6 +71,23 @@ export default function Agents() {
     pageCount: 0
   });
 
+  // Agents filtrés par recherche textuelle
+  const filteredAgents = React.useMemo(() => {
+    if (!searchTerm.trim()) return agents;
+    
+    const searchLower = searchTerm.toLowerCase();
+    return agents.filter(agent => 
+      agent.nom?.toLowerCase().includes(searchLower) ||
+      agent.prenom?.toLowerCase().includes(searchLower) ||
+      agent.cin?.toLowerCase().includes(searchLower) ||
+      agent.tel?.toLowerCase().includes(searchLower) ||
+      agent.mail?.toLowerCase().includes(searchLower) ||
+      agent.cnss?.toLowerCase().includes(searchLower) ||
+      agent.numeroCAP?.toLowerCase().includes(searchLower) ||
+      agent.statutAdministratif?.toLowerCase().includes(searchLower)
+    );
+  }, [agents, searchTerm]);
+
   // Charger les agents
   const loadAgents = async () => {
     try {
@@ -204,6 +221,7 @@ export default function Agents() {
   // Réinitialiser les filtres
   const clearFilters = () => {
     console.log('Réinitialisation des filtres');
+    setSearchTerm(''); // Vider la recherche textuelle
     setFilters({
       regionId: '',
       villeId: '',
@@ -219,6 +237,8 @@ export default function Agents() {
       loadAgents();
     }, 100);
   };
+
+
 
   // Gérer l'ajout d'un agent
   const handleAdd = () => {
@@ -301,16 +321,56 @@ export default function Agents() {
   }, [pagination.currentPage, pagination.pageSize]);
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3, pt: 3 }}>
       <Typography variant="h4" gutterBottom sx={{ mb: 3, color: '#1976d2', fontWeight: 'bold' }}>
         Gestion des Agents
       </Typography>
 
       {/* Section Recherche */}
       <Paper sx={{ p: 3, mb: 3, borderRadius: 2, boxShadow: 2 }}>
-        <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', fontWeight: 'bold', mb: 2 }}>
-          Recherche
-        </Typography>
+        
+        {/* Barre de recherche principale */}
+        <Box sx={{ mb: 3 }}>
+          <TextField
+            fullWidth
+            size="medium"
+            label="Rechercher un agent..."
+            placeholder="Nom, Prénom, CIN, Téléphone, Email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: <SearchIcon sx={{ color: 'text.secondary', mr: 1 }} />,
+              endAdornment: searchTerm && (
+                <IconButton
+                  size="small"
+                  onClick={() => setSearchTerm('')}
+                  sx={{ color: 'text.secondary' }}
+                >
+                  <ClearIcon />
+                </IconButton>
+              )
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                minHeight: '56px',
+                fontSize: '16px',
+                backgroundColor: '#ffffff',
+                '&:hover': {
+                  backgroundColor: '#fafafa'
+                },
+                '&.Mui-focused': {
+                  backgroundColor: '#ffffff'
+                }
+              },
+              '& .MuiInputLabel-root': {
+                fontSize: '16px',
+                color: '#1976d2',
+                fontWeight: 600
+              }
+            }}
+          />
+        </Box>
         
         {Object.keys(dropdowns).length === 0 && (
           <Box sx={{ display: 'flex', justifyContent: 'center', p: 2, mb: 2 }}>
@@ -323,116 +383,174 @@ export default function Agents() {
         
 
 
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 2, mb: 3 }}>
-          <SearchableSelect
-            label="Région"
-            value={filters.regionId}
-            onChange={(value) => handleFilterChange('regionId', value)}
-            options={dropdowns.regions || []}
-            placeholder="Rechercher une région..."
-            getOptionLabel={(option) => option.libelle}
-            getOptionValue={(option) => option.id}
-            disabled={!dropdowns.regions || dropdowns.regions.length === 0}
-          />
-          {!dropdowns.regions && (
-            <Typography variant="caption" color="text.secondary" sx={{ gridColumn: '1 / -1' }}>
-              Chargement des régions...
-            </Typography>
-          )}
+        {/* Filtres organisés en sections */}
+        <Box sx={{ mb: 3 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 2, mb: 3 }}>
+            <SearchableSelect
+              label="Région"
+              value={filters.regionId}
+              onChange={(value) => handleFilterChange('regionId', value)}
+              options={dropdowns.regions || []}
+              placeholder="Rechercher une région..."
+              getOptionLabel={(option) => option.libelle}
+              getOptionValue={(option) => option.id}
+              disabled={!dropdowns.regions || dropdowns.regions.length === 0}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  minHeight: '48px',
+                  fontSize: '14px'
+                }
+              }}
+            />
+            
+            <SearchableSelect
+              label="Ville"
+              value={filters.villeId}
+              onChange={(value) => handleFilterChange('villeId', value)}
+              options={dropdowns.villes || []}
+              placeholder="Rechercher une ville..."
+              getOptionLabel={(option) => option.nom}
+              getOptionValue={(option) => option.id}
+              disabled={!dropdowns.villes || dropdowns.villes.length === 0}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  minHeight: '48px',
+                  fontSize: '14px'
+                }
+              }}
+            />
 
-          <SearchableSelect
-            label="Ville"
-            value={filters.villeId}
-            onChange={(value) => handleFilterChange('villeId', value)}
-            options={dropdowns.villes || []}
-            placeholder="Rechercher une ville..."
-            getOptionLabel={(option) => option.nom}
-            getOptionValue={(option) => option.id}
-            disabled={!dropdowns.villes || dropdowns.villes.length === 0}
-          />
+            <SearchableSelect
+              label="Réseau de ralliement"
+              value={filters.reseauId}
+              onChange={(value) => handleFilterChange('reseauId', value)}
+              options={dropdowns.reseaux || []}
+              placeholder="Rechercher un réseau..."
+              getOptionLabel={(option) => option.nom}
+              getOptionValue={(option) => option.id}
+              disabled={!dropdowns.reseaux || dropdowns.reseaux.length === 0}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  minHeight: '48px',
+                  fontSize: '14px'
+                }
+              }}
+            />
 
-          <SearchableSelect
-            label="Réseau de ralliement"
-            value={filters.reseauId}
-            onChange={(value) => handleFilterChange('reseauId', value)}
-            options={dropdowns.reseaux || []}
-            placeholder="Rechercher un réseau..."
-            getOptionLabel={(option) => option.nom}
-            getOptionValue={(option) => option.id}
-            disabled={!dropdowns.reseaux || dropdowns.reseaux.length === 0}
-          />
+            <SearchableSelect
+              label="CCT"
+              value={filters.cctId}
+              onChange={(value) => handleFilterChange('cctId', value)}
+              options={dropdowns.ccts || []}
+              placeholder="Rechercher un CCT..."
+              getOptionLabel={(option) => option.nom}
+              getOptionValue={(option) => option.id}
+              disabled={!dropdowns.ccts || dropdowns.ccts.length === 0}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  minHeight: '48px',
+                  fontSize: '14px'
+                }
+              }}
+            />
+          </Box>
 
-          <SearchableSelect
-            label="CCT"
-            value={filters.cctId}
-            onChange={(value) => handleFilterChange('cctId', value)}
-            options={dropdowns.ccts || []}
-            placeholder="Rechercher un CCT..."
-            getOptionLabel={(option) => option.nom}
-            getOptionValue={(option) => option.id}
-            disabled={!dropdowns.ccts || dropdowns.ccts.length === 0}
-          />
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 2, mb: 3 }}>
+            <TextField
+              fullWidth
+              size="small"
+              label="Date CAP"
+              type="date"
+              value={filters.dateCAP}
+              onChange={(e) => handleFilterChange('dateCAP', e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  minHeight: '48px',
+                  fontSize: '14px'
+                }
+              }}
+            />
 
-          <TextField
-            fullWidth
-            size="small"
-            label="Date CAP"
-            type="date"
-            value={filters.dateCAP}
-            onChange={(e) => handleFilterChange('dateCAP', e.target.value)}
-            InputLabelProps={{ shrink: true }}
-          />
+            <TextField
+              fullWidth
+              size="small"
+              label="Date Expiration CAP"
+              type="date"
+              value={filters.dateExpirationCAP}
+              onChange={(e) => handleFilterChange('dateExpirationCAP', e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  minHeight: '48px',
+                  fontSize: '14px'
+                }
+              }}
+            />
 
-          <TextField
-            fullWidth
-            size="small"
-            label="Date Expiration CAP"
-            type="date"
-            value={filters.dateExpirationCAP}
-            onChange={(e) => handleFilterChange('dateExpirationCAP', e.target.value)}
-            InputLabelProps={{ shrink: true }}
-          />
+            <TextField
+              fullWidth
+              size="small"
+              label="Année autorisation"
+              type="number"
+              value={filters.anneeAutorisation}
+              onChange={(e) => handleFilterChange('anneeAutorisation', e.target.value)}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  minHeight: '48px',
+                  fontSize: '14px'
+                }
+              }}
+            />
+          </Box>
 
-          <TextField
-            fullWidth
-            size="small"
-            label="Année autorisation"
-            type="number"
-            value={filters.anneeAutorisation}
-            onChange={(e) => handleFilterChange('anneeAutorisation', e.target.value)}
-          />
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 2 }}>
+        {/* Boutons d'action */}
+        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
           <Button
             variant="contained"
-            startIcon={<SearchIcon />}
             onClick={applyFilters}
             sx={{ 
-              minWidth: 120, 
-              height: 40, 
+              minWidth: 140, 
+              height: 48, 
               borderRadius: 2,
               textTransform: 'none',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
+              fontSize: '16px',
+              px: 3,
+              boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
+              '&:hover': {
+                boxShadow: '0 6px 20px rgba(25, 118, 210, 0.4)',
+                transform: 'translateY(-1px)'
+              },
+              transition: 'all 0.2s ease-in-out'
             }}
           >
             Rechercher
           </Button>
           <Button
             variant="outlined"
-            startIcon={<ClearIcon />}
             onClick={clearFilters}
             sx={{ 
-              minWidth: 120, 
-              height: 40, 
+              minWidth: 140, 
+              height: 48, 
               borderRadius: 2,
               textTransform: 'none',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
+              fontSize: '16px',
+              px: 3,
+              borderWidth: 2,
+              '&:hover': {
+                borderWidth: 2,
+                backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                transform: 'translateY(-1px)'
+              },
+              transition: 'all 0.2s ease-in-out'
             }}
           >
-            Annuler
+            Effacer
           </Button>
-
         </Box>
       </Paper>
 
@@ -455,9 +573,9 @@ export default function Agents() {
                 fontWeight: 'bold',
                 px: 3
               }}
-            >
-              + Ajouter Agent
-            </Button>
+                          >
+                Ajouter Agent
+              </Button>
           </Box>
         </Box>
 
@@ -483,104 +601,126 @@ export default function Agents() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {agents.map((agent) => (
-                    <TableRow key={agent.id} sx={{ '&:hover': { backgroundColor: '#f8f9fa' } }}>
-                      <TableCell sx={{ fontWeight: 'medium' }}>{agent.nom || '-'}</TableCell>
-                      <TableCell sx={{ fontWeight: 'medium' }}>{agent.prenom || '-'}</TableCell>
-                      <TableCell>{agent.cct || '-'}</TableCell>
-                      <TableCell>
-                        {agent.statutAdministratif ? (
-                          <Chip 
-                            label={agent.statutAdministratif} 
-                            size="small"
-                            sx={{
-                              backgroundColor: (() => {
-                                const status = agent.statutAdministratif.toLowerCase();
-                                // Couleurs spécifiques pour les statuts CAP
-                                if (status.includes('cap valide')) return '#4caf50'; // Vert
-                                if (status.includes('cap en cours')) return '#2196f3'; // Bleu
-                                if (status.includes('cap en attente')) return '#ff9800'; // Orange
-                                if (status.includes('cap non valide')) return '#f44336'; // Rouge
-                                if (status.includes('cap expiré')) return '#9c27b0'; // Violet
-                                if (status.includes('cap renouvelé')) return '#00bcd4'; // Cyan
-                                if (status.includes('cap suspendu')) return '#ff5722'; // Rouge-orange
-                                if (status.includes('cap annulé')) return '#795548'; // Marron
-                                // Couleurs par défaut pour les autres statuts
-                                if (status.includes('activité') || status.includes('active')) return '#4caf50';
-                                if (status.includes('inactif')) return '#f44336';
-                                if (status.includes('suspendu')) return '#ff9800';
-                                if (status.includes('fermer') || status.includes('fermé')) return '#9e9e9e';
-                                return '#1976d2';
-                              })(),
-                              color: 'white',
-                              fontWeight: 'bold',
-                              '& .MuiChip-label': {
-                                color: 'white'
-                              }
-                            }}
-                          />
-                        ) : (
-                          '-'
-                        )}
-                      </TableCell>
-                      <TableCell>{agent.numeroCAP || '-'}</TableCell>
-                      <TableCell>{formatDate(agent.dateCAP)}</TableCell>
-                      <TableCell>{agent.anneeAutorisation || '-'}</TableCell>
-                      <TableCell>{formatDate(agent.dateAffectationCCT)}</TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                          <Tooltip title="Voir les détails">
-                            <IconButton
-                              color="primary"
-                              onClick={() => handleDetails(agent)}
-                              sx={{ 
-                                backgroundColor: '#e3f2fd',
-                                '&:hover': { backgroundColor: '#bbdefb' }
-                              }}
-                            >
-                              <InfoIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Voir l'historique">
-                            <IconButton
-                              color="info"
-                              onClick={() => handleDetails(agent)}
-                              sx={{ 
-                                backgroundColor: '#e1f5fe',
-                                '&:hover': { backgroundColor: '#b3e5fc' }
-                              }}
-                            >
-                              <HistoryIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Modifier">
-                            <IconButton
-                              color="secondary"
-                              onClick={() => handleEdit(agent)}
-                              sx={{ 
-                                backgroundColor: '#f3e5f5',
-                                '&:hover': { backgroundColor: '#e1bee7' }
-                              }}
-                            >
-                              <EditIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Supprimer">
-                            <IconButton
-                              color="error"
-                              onClick={() => handleDelete(agent)}
-                              sx={{ 
-                                backgroundColor: '#ffebee',
-                                '&:hover': { backgroundColor: '#ffcdd2' }
-                              }}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          </Tooltip>
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                                                        {filteredAgents.length > 0 ? (
+                     filteredAgents.map((agent) => (
+                       <TableRow key={agent.id} sx={{ '&:hover': { backgroundColor: '#f8f9fa' } }}>
+                         <TableCell sx={{ fontWeight: 'medium' }}>{agent.nom || '-'}</TableCell>
+                         <TableCell sx={{ fontWeight: 'medium' }}>{agent.prenom || '-'}</TableCell>
+                         <TableCell>{agent.cct || '-'}</TableCell>
+                         <TableCell>
+                           {agent.statutAdministratif ? (
+                             <Chip 
+                               label={agent.statutAdministratif} 
+                               size="small"
+                               sx={{
+                                 backgroundColor: (() => {
+                                   const status = agent.statutAdministratif.toLowerCase();
+                                   // Couleurs spécifiques pour les statuts CAP
+                                   if (status.includes('cap valide')) return '#4caf50'; // Vert
+                                   if (status.includes('cap en cours')) return '#2196f3'; // Bleu
+                                   if (status.includes('cap en attente')) return '#ff9800'; // Orange
+                                   if (status.includes('cap non valide')) return '#f44336'; // Rouge
+                                   if (status.includes('cap expiré')) return '#9c27b0'; // Violet
+                                   if (status.includes('cap renouvelé')) return '#00bcd4'; // Cyan
+                                   if (status.includes('cap suspendu')) return '#ff5722'; // Rouge-orange
+                                   if (status.includes('cap annulé')) return '#795548'; // Marron
+                                   // Couleurs spécifiques pour les statuts CAP
+                                   if (status.includes('activité') || status.includes('active')) return '#4caf50';
+                                   if (status.includes('inactif')) return '#f44336';
+                                   if (status.includes('suspendu')) return '#ff9800';
+                                   if (status.includes('fermer') || status.includes('fermé')) return '#9e9e9e';
+                                   return '#1976d2';
+                                 })(),
+                                 color: 'white',
+                                 fontWeight: 'bold',
+                                 '& .MuiChip-label': {
+                                   color: 'white'
+                                 }
+                               }}
+                             />
+                           ) : (
+                             '-'
+                           )}
+                         </TableCell>
+                         <TableCell>{agent.numeroCAP || '-'}</TableCell>
+                         <TableCell>{formatDate(agent.dateCAP)}</TableCell>
+                         <TableCell>{agent.anneeAutorisation || '-'}</TableCell>
+                         <TableCell>{formatDate(agent.dateAffectationCCT)}</TableCell>
+                         <TableCell>
+                           <Box sx={{ display: 'flex', gap: 1 }}>
+                             <Tooltip title="Voir les détails">
+                               <IconButton
+                                 color="primary"
+                                 onClick={() => handleDetails(agent)}
+                                 sx={{ 
+                                   backgroundColor: '#e3f2fd',
+                                   '&:hover': { backgroundColor: '#bbdefb' }
+                                 }}
+                               >
+                                 <InfoIcon />
+                               </IconButton>
+                             </Tooltip>
+                             <Tooltip title="Voir l'historique">
+                               <IconButton
+                                 color="info"
+                                 onClick={() => handleDetails(agent)}
+                                 sx={{ 
+                                   backgroundColor: '#e1f5fe',
+                                   '&:hover': { backgroundColor: '#b3e5fc' }
+                                 }}
+                               >
+                                 <HistoryIcon />
+                               </IconButton>
+                             </Tooltip>
+                             <Tooltip title="Modifier">
+                               <IconButton
+                                 color="secondary"
+                                 onClick={() => handleEdit(agent)}
+                                 sx={{ 
+                                   backgroundColor: '#f3e5f5',
+                                   '&:hover': { backgroundColor: '#e1bee7' }
+                                 }}
+                               >
+                                 <EditIcon />
+                               </IconButton>
+                             </Tooltip>
+                             <Tooltip title="Supprimer">
+                               <IconButton
+                                 color="error"
+                                 onClick={() => handleDelete(agent)}
+                                 sx={{ 
+                                   backgroundColor: '#ffebee',
+                                   '&:hover': { backgroundColor: '#ffcdd2' }
+                                 }}
+                               >
+                                 <DeleteIcon />
+                               </IconButton>
+                             </Tooltip>
+                           </Box>
+                         </TableCell>
+                       </TableRow>
+                     ))
+                   ) : (
+                     <TableRow>
+                       <TableCell colSpan={9} sx={{ textAlign: 'center', py: 4 }}>
+                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                           <Typography variant="h6" color="text.secondary">
+                             {searchTerm ? '🔍 Aucun agent trouvé pour cette recherche' : '📋 Aucun agent disponible'}
+                           </Typography>
+                           {searchTerm && (
+                             <Typography variant="body2" color="text.secondary">
+                               Essayez de modifier vos critères de recherche ou de vider la barre de recherche
+                             </Typography>
+                           )}
+                           {!searchTerm && agents.length === 0 && (
+                             <Typography variant="body2" color="text.secondary">
+                               Commencez par ajouter un nouvel agent
+                             </Typography>
+                           )}
+                         </Box>
+                       </TableCell>
+                     </TableRow>
+                   )}
                 </TableBody>
               </Table>
             </TableContainer>

@@ -13,19 +13,25 @@ import {
   MenuItem,
   FormControlLabel,
   Checkbox,
-  Autocomplete,
   Box,
   Alert,
   FormHelperText,
-  Chip,
-  Typography
+  Typography,
+  Divider,
+  Paper,
+  IconButton
 } from '@mui/material';
+import {
+  Business as BusinessIcon,
+  Close as CloseIcon,
+  Edit as EditIcon,
+  Add as AddIcon
+} from '@mui/icons-material';
 import SearchableSelect from '../common/SearchableSelect';
-import { Business as BusinessIcon, Search as SearchIcon, Add as AddIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 
 export default function CCTFormModal({ open, onClose, onSubmit, initialValues = {}, dropdowns = {} }) {
-  const [form, setForm] = React.useState({
+  const [formData, setFormData] = React.useState({
     nom: '', 
     agrement: '', 
     dateAgrement: '', 
@@ -56,89 +62,57 @@ export default function CCTFormModal({ open, onClose, onSubmit, initialValues = 
     thumbprintCertificat: ''
   });
 
-  // État pour la province
-  const [provinceText, setProvinceText] = React.useState('');
-  const [provinceSearchTerm, setProvinceSearchTerm] = React.useState('');
-  const [isProvinceFreeText, setIsProvinceFreeText] = React.useState(false);
-  
   // État pour les erreurs de validation
   const [errors, setErrors] = React.useState({});
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   React.useEffect(() => {
-    // Formater les dates pour les champs HTML de type "date"
-    const formattedInitialValues = {
-      ...initialValues,
-      dateAgrement: initialValues?.dateAgrement ? initialValues.dateAgrement.split('T')[0] : '',
-      dateStatut: initialValues?.dateStatut ? initialValues.dateStatut.split('T')[0] : '',
-      dateRalliement: initialValues?.dateRalliement ? initialValues.dateRalliement.split('T')[0] : ''
-    };
-    
-    // S'assurer qu'aucune valeur n'est null ou undefined et formater correctement
-    const sanitizedValues = Object.keys(formattedInitialValues).reduce((acc, key) => {
-      let value = formattedInitialValues[key];
+    if (open) {
+      // Formater les dates pour les champs HTML de type "date"
+      const formattedInitialValues = {
+        ...initialValues,
+        dateAgrement: initialValues?.dateAgrement ? initialValues.dateAgrement.split('T')[0] : '',
+        dateStatut: initialValues?.dateStatut ? initialValues.dateStatut.split('T')[0] : '',
+        dateRalliement: initialValues?.dateRalliement ? initialValues.dateRalliement.split('T')[0] : ''
+      };
       
-             // Gérer les valeurs numériques
-       if (key.includes('Id') && value && value !== '') {
-         value = parseInt(value);
-         if (isNaN(value)) value = 0;
-       } else if (key.includes('Id')) {
-         value = 0; // Valeur par défaut pour les IDs vides
-       }
-      
-      // Gérer les coordonnées
-      if ((key === 'latitude' || key === 'longitude') && value && value !== '') {
-        if (typeof value === 'string') {
-          value = parseFloat(value);
+      // S'assurer qu'aucune valeur n'est null ou undefined et formater correctement
+      const sanitizedValues = Object.keys(formattedInitialValues).reduce((acc, key) => {
+        let value = formattedInitialValues[key];
+        
+        // Gérer les valeurs numériques
+        if (key.includes('Id') && value && value !== '') {
+          value = parseInt(value);
+          if (isNaN(value)) value = '';
+        } else if (key.includes('Id')) {
+          value = ''; // Valeur par défaut pour les IDs vides
+        }
+        
+        // Gérer les coordonnées - garder en string pour le backend
+        if ((key === 'latitude' || key === 'longitude') && value && value !== '') {
+          // Convertir en string si c'est un number, sinon garder en string
+          value = value.toString();
+        }
+        
+        // Gérer les quotas
+        if ((key === 'quotaVL' || key === 'quotaPL') && value && value !== '') {
+          value = parseInt(value);
           if (isNaN(value)) value = '';
         }
-        // Si c'est déjà un nombre, le garder tel quel
-      }
+        
+        acc[key] = value ?? '';
+        return acc;
+      }, {});
       
-      // Gérer les quotas
-      if ((key === 'quotaVL' || key === 'quotaPL') && value && value !== '') {
-        value = parseInt(value);
-        if (isNaN(value)) value = '';
-      }
+      setFormData({ ...formData, ...sanitizedValues });
       
-      acc[key] = value ?? '';
-      return acc;
-    }, {});
-    
-    setForm({ ...form, ...sanitizedValues });
-    
-    // Initialiser le texte de la province
-    if (initialValues?.provinceId) {
-      const province = dropdowns.provinces?.find(p => p.id === initialValues?.provinceId);
-      if (province) {
-        setProvinceText(province.libelle || '');
-        setIsProvinceFreeText(false);
-      } else {
-        setProvinceText('');
-        setIsProvinceFreeText(true);
-      }
-    } else {
-      setProvinceText('');
-      setIsProvinceFreeText(false);
+      // Réinitialiser les erreurs
+      setErrors({});
     }
-    
-    // Réinitialiser les erreurs
-    setErrors({});
-    // eslint-disable-next-line
-  }, [initialValues, open, dropdowns.provinces]);
+  }, [initialValues, open]);
 
   const handleChange = (field, value) => {
-    // Gérer les coordonnées pour qu'elles restent des nombres si elles en sont
-    let processedValue = value;
-    
-    if ((field === 'latitude' || field === 'longitude') && value !== '') {
-      if (typeof value === 'string') {
-        const numValue = parseFloat(value);
-        processedValue = isNaN(numValue) ? value : numValue;
-      }
-    }
-    
-    setForm(f => ({ ...f, [field]: processedValue }));
+    setFormData(f => ({ ...f, [field]: value }));
     
     // Effacer l'erreur du champ modifié
     if (errors[field]) {
@@ -147,161 +121,32 @@ export default function CCTFormModal({ open, onClose, onSubmit, initialValues = 
   };
 
   const handleCheckbox = (e) => {
-    setForm(f => ({ ...f, isPersonneMorale: e.target.checked }));
+    setFormData(f => ({ ...f, isPersonneMorale: e.target.checked }));
   };
-
-  // Fonction de filtrage intelligente pour les provinces
-  const filterProvinces = (options, inputValue) => {
-    if (!inputValue) return options;
-    
-    const searchTerm = inputValue.toLowerCase().trim();
-    
-    // Si la recherche est trop courte, retourner toutes les options
-    if (searchTerm.length < 2) return options;
-    
-    return options.filter(option => {
-      // Recherche exacte par nom de province (priorité haute)
-      if (option.libelle?.toLowerCase() === searchTerm) return true;
-      
-      // Recherche par nom de province (priorité moyenne)
-      if (option.libelle?.toLowerCase().includes(searchTerm)) return true;
-      
-      // Recherche par code de province (priorité moyenne)
-      if (option.code?.toLowerCase().includes(searchTerm)) return true;
-      
-      // Recherche par correspondance au début du nom (priorité haute)
-      if (option.libelle?.toLowerCase().startsWith(searchTerm)) return true;
-      
-      // Recherche par mots-clés (séparation par espaces)
-      const words = searchTerm.split(' ').filter(word => word.length > 1);
-      if (words.length > 0) {
-        return words.every(word => 
-          option.libelle?.toLowerCase().includes(word) || 
-          option.code?.toLowerCase().includes(word)
-        );
-      }
-      
-      return false;
-    }).sort((a, b) => {
-      // Tri intelligent : correspondance exacte en premier, puis début de mot, puis inclusion
-      const aLibelle = a.libelle?.toLowerCase() || '';
-      const bLibelle = b.libelle?.toLowerCase() || '';
-      
-      if (aLibelle === searchTerm && bLibelle !== searchTerm) return -1;
-      if (bLibelle === searchTerm && aLibelle !== searchTerm) return 1;
-      
-      if (aLibelle.startsWith(searchTerm) && !bLibelle.startsWith(searchTerm)) return -1;
-      if (bLibelle.startsWith(searchTerm) && !aLibelle.startsWith(searchTerm)) return 1;
-      
-      return aLibelle.localeCompare(bLibelle);
-    });
-  };
-
-  // Gérer le changement de la province (sélection ou saisie libre)
-  const handleProvinceChange = (event, newValue) => {
-    if (newValue && typeof newValue === 'object' && newValue.id) {
-      // Une option existante a été sélectionnée
-      setProvinceText(newValue.libelle || '');
-      handleChange('provinceId', newValue.id);
-      setIsProvinceFreeText(false);
-      setProvinceSearchTerm('');
-    } else if (typeof newValue === 'string' && newValue.trim()) {
-      // Saisie libre
-      setProvinceText(newValue.trim());
-      handleChange('provinceId', '');
-      setIsProvinceFreeText(true);
-      setProvinceSearchTerm('');
-    } else {
-      // Valeur vide
-      setProvinceText('');
-      handleChange('provinceId', '');
-      setIsProvinceFreeText(false);
-      setProvinceSearchTerm('');
-    }
-    
-    // Effacer l'erreur de la province
-    if (errors.provinceId) {
-      setErrors(prev => ({ ...prev, provinceId: '' }));
-    }
-  };
-
-  // Gérer la saisie libre de la province
-  const handleProvinceInputChange = (event, newInputValue) => {
-    setProvinceSearchTerm(newInputValue);
-    
-    // Si l'utilisateur tape quelque chose qui ne correspond à aucune option
-    if (newInputValue && !dropdowns.provinces?.some(p => 
-      p.libelle?.toLowerCase().includes(newInputValue.toLowerCase()) ||
-      p.code?.toLowerCase().includes(newInputValue.toLowerCase())
-    )) {
-      setIsProvinceFreeText(true);
-      setProvinceText(newInputValue);
-      handleChange('provinceId', '');
-    }
-  };
-
-
 
   // Validation du formulaire
   const validateForm = () => {
     const newErrors = {};
     
-    // Validation des champs obligatoires (gérer les types string et number)
-    if (!form.nom || (typeof form.nom === 'string' && !form.nom.trim())) {
-      newErrors.nom = 'Le nom est obligatoire';
-    }
-    if (!form.agrement || (typeof form.agrement === 'string' && !form.agrement.trim())) {
-      newErrors.agrement = "L'agrément est obligatoire";
-    }
-    if (!form.dateAgrement) {
-      newErrors.dateAgrement = 'La date d\'agrément est obligatoire';
-    }
-    if (!form.categorieId) {
-      newErrors.categorieId = 'La catégorie est obligatoire';
-    }
-    if (!form.statutId) {
-      newErrors.statutId = 'Le statut est obligatoire';
-    }
-    if (!form.dateStatut) {
-      newErrors.dateStatut = 'La date de statut est obligatoire';
-    }
-    if (!form.reseauId) {
-      newErrors.reseauId = 'Le réseau est obligatoire';
-    }
-    if (!form.dateRalliement) {
-      newErrors.dateRalliement = 'La date de ralliement est obligatoire';
-    }
-    if (!form.regionId || form.regionId === '') {
-      newErrors.regionId = 'La région est obligatoire';
-    }
-    if (!form.provinceId && (!provinceText || (typeof provinceText === 'string' && !provinceText.trim()))) {
-      newErrors.provinceId = 'La province est obligatoire';
-    }
-    if (!form.villeId || form.villeId === '') {
-      newErrors.villeId = 'La ville est obligatoire';
-    }
-    if (!form.adresseCCT || (typeof form.adresseCCT === 'string' && !form.adresseCCT.trim())) {
-      newErrors.adresseCCT = 'L\'adresse est obligatoire';
-    }
-    
-    // Validation des coordonnées
-    if (!form.latitude || form.latitude === '') {
-      newErrors.latitude = 'La latitude est obligatoire';
-    } else {
-      const lat = typeof form.latitude === 'string' ? parseFloat(form.latitude) : form.latitude;
-      if (isNaN(lat) || lat < -90 || lat > 90) {
-        newErrors.latitude = 'La latitude doit être un nombre entre -90 et 90';
-      }
-    }
-    
-    if (!form.longitude || form.longitude === '') {
-      newErrors.longitude = 'La longitude est obligatoire';
-    } else {
-      const lng = typeof form.longitude === 'string' ? parseFloat(form.longitude) : form.longitude;
-      if (isNaN(lng) || lng < -180 || lng > 180) {
-        newErrors.longitude = 'La longitude doit être un nombre entre -180 et 180';
-      }
-    }
+    // Champs obligatoires selon le cahier des charges
+    if (!formData.nom?.trim()) newErrors.nom = 'Le nom du CCT est obligatoire';
+    if (!formData.agrement?.trim()) newErrors.agrement = 'L\'agrément est obligatoire';
+    if (!formData.dateAgrement) newErrors.dateAgrement = 'La date d\'agrément est obligatoire';
+    if (!formData.categorieId) newErrors.categorieId = 'La catégorie est obligatoire';
+    if (!formData.statutId) newErrors.statutId = 'Le statut est obligatoire';
+    if (!formData.dateStatut) newErrors.dateStatut = 'La date de statut est obligatoire';
+    if (!formData.reseauId) newErrors.reseauId = 'Le réseau est obligatoire';
+    if (!formData.dateRalliement) newErrors.dateRalliement = 'La date de ralliement est obligatoire';
+    if (!formData.regionId) newErrors.region = 'La région est obligatoire';
+    if (!formData.provinceId) newErrors.province = 'La province est obligatoire';
+    if (!formData.villeId) newErrors.ville = 'La ville est obligatoire';
+    if (!formData.adresseCCT?.trim()) newErrors.adresseCCT = 'L\'adresse est obligatoire';
+    if (!formData.latitude?.toString().trim()) newErrors.latitude = 'La latitude est obligatoire';
+    if (!formData.longitude?.toString().trim()) newErrors.longitude = 'La longitude est obligatoire';
+    if (!formData.tel?.trim()) newErrors.tel = 'Le téléphone est obligatoire';
+    if (!formData.cadreAutorisationId) newErrors.cadreAutorisation = 'Le cadre d\'autorisation est obligatoire';
+    if (!formData.typeId) newErrors.type = 'Le type est obligatoire';
+    if (!formData.quotaVL?.toString().trim()) newErrors.quotaVL = 'Le quota VL est obligatoire';
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -317,475 +162,524 @@ export default function CCTFormModal({ open, onClose, onSubmit, initialValues = 
     setIsSubmitting(true);
     
     try {
-      // Préparer les données finales
-      const finalFormData = { ...form };
+      // Log pour debug - vérifier le type des coordonnées
+      console.log('=== DEBUG COORDONNÉES ===');
+      console.log('Latitude type:', typeof formData.latitude, 'Valeur:', formData.latitude);
+      console.log('Longitude type:', typeof formData.longitude, 'Valeur:', formData.longitude);
+      console.log('=== FIN DEBUG ===');
       
-      // Si c'est une saisie libre de province, utiliser le texte saisi
-      if (isProvinceFreeText && provinceText && (typeof provinceText === 'string' ? provinceText.trim() : provinceText.toString())) {
-        finalFormData.provinceText = typeof provinceText === 'string' ? provinceText.trim() : provinceText.toString();
-        finalFormData.provinceId = null; // Pas d'ID pour une saisie libre
-      }
-      
-      // Fonction utilitaire pour convertir en nombre de manière sécurisée
-      const safeParseInt = (value) => {
-        if (!value || value === '') return 0;
-        const parsed = parseInt(value);
-        return isNaN(parsed) ? 0 : parsed;
-      };
-      
-      const safeParseFloat = (value) => {
-        if (!value || value === '') return undefined;
-        const parsed = typeof value === 'string' ? parseFloat(value) : value;
-        return isNaN(parsed) ? undefined : parsed;
-      };
-      
-      // Convertir les IDs en nombres avec gestion des valeurs vides
-      finalFormData.categorieId = safeParseInt(finalFormData.categorieId) || 0;
-      finalFormData.statutId = safeParseInt(finalFormData.statutId) || 0;
-      finalFormData.reseauId = safeParseInt(finalFormData.reseauId) || 0;
-      finalFormData.regionId = safeParseInt(finalFormData.regionId) || 0;
-      finalFormData.provinceId = safeParseInt(finalFormData.provinceId) || 0;
-      finalFormData.villeId = safeParseInt(finalFormData.villeId) || 0;
-      finalFormData.cadreAutorisationId = safeParseInt(finalFormData.cadreAutorisationId) || 0;
-      finalFormData.typeId = safeParseInt(finalFormData.typeId) || 0;
-      
-      // Convertir les quotas en nombres
-      finalFormData.quotaVL = safeParseInt(finalFormData.quotaVL);
-      finalFormData.quotaPL = safeParseInt(finalFormData.quotaPL);
-      
-      // Convertir les coordonnées en chaînes (le backend attend des chaînes)
-      finalFormData.latitude = finalFormData.latitude ? finalFormData.latitude.toString() : '';
-      finalFormData.longitude = finalFormData.longitude ? finalFormData.longitude.toString() : '';
-      
-      // S'assurer que tous les champs obligatoires ont des valeurs valides
-      const requiredFields = ['nom', 'agrement', 'dateAgrement', 'categorieId', 'statutId', 'dateStatut', 'reseauId', 'dateRalliement', 'regionId', 'provinceId', 'villeId', 'adresseCCT', 'latitude', 'longitude', 'cadreAutorisationId', 'typeId'];
-      
-      // Forcer les valeurs par défaut pour les champs obligatoires
-      requiredFields.forEach(field => {
-        if (finalFormData[field] === '' || finalFormData[field] === null || finalFormData[field] === undefined) {
-          if (field === 'latitude' || field === 'longitude') {
-            finalFormData[field] = '0';
-          } else if (field.includes('Id')) {
-            finalFormData[field] = 0;
-          } else {
-            finalFormData[field] = '';
-          }
-        }
-      });
-      
-      // Nettoyer les champs optionnels vides
-      Object.keys(finalFormData).forEach(key => {
-        if (!requiredFields.includes(key) && (finalFormData[key] === '' || finalFormData[key] === null || finalFormData[key] === undefined)) {
-          delete finalFormData[key];
-        }
-      });
-      
-      console.log('=== DÉBOGAGE CCT ===');
-      console.log('Données finales à envoyer:', finalFormData);
-      console.log('Structure des données:', JSON.stringify(finalFormData, null, 2));
-      console.log('Champs obligatoires vérifiés:', requiredFields);
-      console.log('Champs présents:', Object.keys(finalFormData));
-      console.log('Types des valeurs:');
-      Object.keys(finalFormData).forEach(key => {
-        console.log(`  ${key}: ${typeof finalFormData[key]} = ${finalFormData[key]}`);
-      });
-      console.log('Vérification des champs critiques:');
-      console.log(`  regionId: ${finalFormData.regionId} (type: ${typeof finalFormData.regionId})`);
-      console.log(`  villeId: ${finalFormData.villeId} (type: ${typeof finalFormData.villeId})`);
-      console.log(`  provinceId: ${finalFormData.provinceId} (type: ${typeof finalFormData.provinceId})`);
-      console.log('=== FIN DÉBOGAGE ===');
-      await onSubmit(finalFormData);
+      await onSubmit(formData);
+      onClose();
     } catch (error) {
       console.error('Erreur lors de la soumission:', error);
-      toast.error('Erreur lors de l\'enregistrement');
+      toast.error('Erreur lors de la sauvegarde du CCT');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const isEditMode = !!initialValues?.id;
+  const title = isEditMode ? 'MODIFIER CCT' : '+ AJOUTER CCT';
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      maxWidth="xl" 
+      fullWidth
+      PaperProps={{
+        sx: {
+          maxHeight: '90vh',
+          minHeight: '80vh'
+        }
+      }}
+    >
       <DialogTitle sx={{ 
-        bgcolor: 'primary.main', 
+        bgcolor: '#1976d2', 
         color: 'white',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <BusinessIcon />
-          <Typography variant="h6">{form.id ? 'Modifier CCT' : 'Ajouter CCT'}</Typography>
+          {isEditMode ? <EditIcon /> : <AddIcon />}
+          <Typography variant="h6">{title}</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+            GESTION DES CCTS
+          </Typography>
+          <IconButton onClick={onClose} sx={{ color: 'white' }}>
+            <CloseIcon />
+          </IconButton>
         </Box>
       </DialogTitle>
       
-      <DialogContent sx={{ p: 3 }}>
-        <form onSubmit={handleSubmit}>
-          {/* Message d'information */}
-          <Alert severity="info" sx={{ mb: 3 }}>
-            <Typography variant="body2" component="div">
-              <strong>Les champs marqués d'un * sont obligatoires.</strong>
-              <br />
-              <strong>Champ Province :</strong> Recherche intelligente par nom ou code, correspondance partielle, et saisie libre pour nouvelles valeurs.
+      <DialogContent sx={{ p: 0 }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ p: 3 }}>
+          {/* Section Informations principales */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mb: 3, pb: 2, borderBottom: '2px solid #e0e0e0' }}>
+              Informations principales
             </Typography>
-          </Alert>
-
-          <Grid container spacing={2}>
-            {/* Colonne 1 */}
-            <Grid xs={12} md={6}>
-              <TextField 
-                label="CCT*" 
-                value={form.nom} 
-                onChange={e => handleChange('nom', e.target.value)} 
-                fullWidth 
-                required 
-                margin="dense"
+            
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 3 }}>
+              <TextField
+                fullWidth
+                label="CCT *"
+                value={formData.nom}
+                onChange={(e) => handleChange('nom', e.target.value)}
                 error={!!errors.nom}
                 helperText={errors.nom}
+                required
               />
-              <TextField 
-                label="Agrément*" 
-                value={form.agrement} 
-                onChange={e => handleChange('agrement', e.target.value)} 
-                fullWidth 
-                required 
-                margin="dense"
+              
+              <TextField
+                fullWidth
+                label="Agrément *"
+                value={formData.agrement}
+                onChange={(e) => handleChange('agrement', e.target.value)}
                 error={!!errors.agrement}
                 helperText={errors.agrement}
+                required
               />
-              <TextField 
-                label="Date agrément*" 
-                type="date" 
-                value={form.dateAgrement} 
-                onChange={e => handleChange('dateAgrement', e.target.value)} 
-                fullWidth 
-                required 
-                margin="dense" 
-                InputLabelProps={{ shrink: true }}
+              
+              <TextField
+                fullWidth
+                label="Date agrément *"
+                type="date"
+                value={formData.dateAgrement}
+                onChange={(e) => handleChange('dateAgrement', e.target.value)}
                 error={!!errors.dateAgrement}
                 helperText={errors.dateAgrement}
-              />
-              <SearchableSelect
-                label="Catégorie*"
-                value={form.categorieId}
-                onChange={(value) => handleChange('categorieId', value)}
-                options={dropdowns.categories || []}
                 required
-                placeholder="Rechercher une catégorie..."
+                InputLabelProps={{ shrink: true }}
+              />
+              
+              <TextField
+                fullWidth
+                label="Date ralliement *"
+                type="date"
+                value={formData.dateRalliement}
+                onChange={(e) => handleChange('dateRalliement', e.target.value)}
+                error={!!errors.dateRalliement}
+                helperText={errors.dateRalliement}
+                required
+                InputLabelProps={{ shrink: true }}
+              />
+              
+              <SearchableSelect
+                label="Catégorie *"
+                value={formData.categorieId}
+                onChange={(value) => handleChange('categorieId', value)}
+                options={[{ id: '', libelle: 'Sélectionnez un élément' }, ...(dropdowns.categories || [])]}
+                placeholder="Sélectionnez un élément"
                 getOptionLabel={(option) => option.libelle}
+                required
                 error={!!errors.categorieId}
                 helperText={errors.categorieId}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    minHeight: '56px',
+                    backgroundColor: 'white',
+                    border: '1px solid #e0e0e0',
+                    borderRadius: '8px',
+                    '&:hover': {
+                      border: '1px solid #bdbdbd'
+                    },
+                    '&.Mui-focused': {
+                      border: '2px solid #1976d2'
+                    }
+                  }
+                }}
               />
+              
               <SearchableSelect
-                label="Statut*"
-                value={form.statutId}
+                label="Statut *"
+                value={formData.statutId}
                 onChange={(value) => handleChange('statutId', value)}
-                options={dropdowns.statuts || []}
-                required
-                placeholder="Rechercher un statut..."
+                options={[{ id: '', libelle: 'Sélectionnez un élément' }, ...(dropdowns.statuts || [])]}
+                placeholder="Sélectionnez un élément"
                 getOptionLabel={(option) => option.libelle}
+                required
                 error={!!errors.statutId}
                 helperText={errors.statutId}
                 isStatusField={true}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    minHeight: '56px',
+                    backgroundColor: 'white',
+                    border: '1px solid #e0e0e0',
+                    borderRadius: '8px',
+                    '&:hover': {
+                      border: '1px solid #bdbdbd'
+                    },
+                    '&.Mui-focused': {
+                      border: '2px solid #1976d2'
+                    }
+                  }
+                }}
               />
-              <TextField 
-                label="Date statut*" 
-                type="date" 
-                value={form.dateStatut} 
-                onChange={e => handleChange('dateStatut', e.target.value)} 
-                fullWidth 
-                required 
-                margin="dense" 
-                InputLabelProps={{ shrink: true }}
-                error={!!errors.dateStatut}
-                helperText={errors.dateStatut}
-              />
+              
               <SearchableSelect
-                label="Réseau*"
-                value={form.reseauId}
+                label="Réseau *"
+                value={formData.reseauId}
                 onChange={(value) => handleChange('reseauId', value)}
-                options={dropdowns.reseaux || []}
-                required
-                placeholder="Rechercher un réseau..."
+                options={[{ id: '', nom: 'Sélectionnez un élément' }, ...(dropdowns.reseaux || [])]}
+                placeholder="Sélectionnez un élément"
                 getOptionLabel={(option) => option.nom}
+                required
                 error={!!errors.reseauId}
                 helperText={errors.reseauId}
-              />
-              <TextField 
-                label="Date ralliement*" 
-                type="date" 
-                value={form.dateRalliement} 
-                onChange={e => handleChange('dateRalliement', e.target.value)} 
-                fullWidth 
-                required 
-                margin="dense" 
-                InputLabelProps={{ shrink: true }}
-                error={!!errors.dateRalliement}
-                helperText={errors.dateRalliement}
-              />
-              <SearchableSelect
-                label="Région*"
-                value={form.regionId}
-                onChange={(value) => handleChange('regionId', value)}
-                options={dropdowns.regions || []}
-                required
-                placeholder="Rechercher une région..."
-                getOptionLabel={(option) => option.libelle}
-                error={!!errors.regionId}
-                helperText={errors.regionId}
-              />
-              
-              {/* Champ Province avec recherche intelligente et saisie libre */}
-              <Box sx={{ position: 'relative' }}>
-                <Autocomplete
-                  freeSolo
-                  options={filterProvinces(dropdowns.provinces || [], provinceSearchTerm)}
-                  getOptionLabel={(option) => {
-                    if (typeof option === 'string') return option;
-                    return option.libelle || '';
-                  }}
-                  inputValue={provinceSearchTerm}
-                  value={isProvinceFreeText ? provinceText : (dropdowns.provinces?.find(p => p.id === form.provinceId) || '')}
-                  onInputChange={handleProvinceInputChange}
-                  onChange={handleProvinceChange}
-                  filterOptions={(options, { inputValue }) => filterProvinces(options, inputValue)}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Province*"
-                      required
-                      margin="dense"
-                      placeholder="Rechercher une province ou saisir librement..."
-                      helperText={
-                        errors.provinceId || 
-                        (isProvinceFreeText ? 
-                          "Saisie libre activée - vous pouvez taper n'importe quelle valeur" : 
-                          "Tapez pour rechercher ou sélectionner une province existante")
-                      }
-                      error={!!errors.provinceId}
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
-                            <SearchIcon sx={{ color: 'action.active', fontSize: 20 }} />
-                            {isProvinceFreeText && (
-                              <Chip 
-                                label="Saisie libre" 
-                                size="small" 
-                                color="warning" 
-                                variant="outlined"
-                                icon={<AddIcon />}
-                                sx={{ ml: 1, fontSize: '0.7rem' }}
-                              />
-                            )}
-                          </Box>
-                        )
-                      }}
-                    />
-                  )}
-                  renderOption={(props, option) => {
-                    const { key, ...otherProps } = props;
-                    return (
-                      <Box component="li" key={key} {...otherProps} sx={{ py: 1 }}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                          <Box sx={{ 
-                            fontWeight: 'bold', 
-                            color: 'primary.main',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 1
-                          }}>
-                            {option.libelle}
-                            {option.code && (
-                              <Chip 
-                                label={option.code} 
-                                size="small" 
-                                color="primary" 
-                                variant="outlined"
-                                sx={{ fontSize: '0.6rem', height: 20 }}
-                              />
-                            )}
-                          </Box>
-                          {option.code && (
-                            <Box sx={{ 
-                              fontSize: '0.75rem', 
-                              color: 'text.secondary',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 0.5
-                            }}>
-                              Code: {option.code}
-                            </Box>
-                          )}
-                        </Box>
-                      </Box>
-                    );
-                  }}
-                  isOptionEqualToValue={(option, value) => {
-                    if (typeof value === 'string') return option.libelle === value;
-                    return option.id === value.id;
-                  }}
-                  noOptionsText={
-                    provinceSearchTerm ? 
-                    `Aucune province trouvée pour "${provinceSearchTerm}". Vous pouvez saisir librement cette valeur.` : 
-                    "Aucune province disponible"
-                  }
-                  loading={false}
-                  sx={{
-                    '& .MuiAutocomplete-inputRoot': {
-                      paddingLeft: isProvinceFreeText ? 8 : 8
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    minHeight: '56px',
+                    backgroundColor: 'white',
+                    border: '1px solid #e0e0e0',
+                    borderRadius: '8px',
+                    '&:hover': {
+                      border: '1px solid #bdbdbd'
+                    },
+                    '&.Mui-focused': {
+                      border: '2px solid #1976d2'
                     }
-                  }}
-                />
-                
-                {/* Indicateurs visuels et statistiques */}
-                <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  {/* Statistiques de recherche */}
-                  {provinceSearchTerm && (
-                    <Box sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: 1,
-                      fontSize: '0.75rem',
-                      color: 'text.secondary'
-                    }}>
-                      <SearchIcon sx={{ fontSize: 16 }} />
-                      <span>
-                        {filterProvinces(dropdowns.provinces || [], provinceSearchTerm).length} 
-                        province(s) trouvée(s) pour "{provinceSearchTerm}"
-                      </span>
-                    </Box>
-                  )}
-                  
-                  {/* Indicateur pour la saisie libre */}
-                  {isProvinceFreeText && provinceText && (
-                    <Box sx={{ 
-                      p: 1, 
-                      bgcolor: 'warning.light', 
-                      borderRadius: 1,
-                      border: '1px solid',
-                      borderColor: 'warning.main',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1
-                    }}>
-                      <AddIcon sx={{ color: 'warning.main', fontSize: 16 }} />
-                      <Typography variant="caption" color="warning.dark">
-                        <strong>Saisie libre activée :</strong> "{provinceText}" sera enregistré comme nouvelle province
-                      </Typography>
-                    </Box>
-                  )}
-                  
-                  {/* Indicateur pour la sélection existante */}
-                  {!isProvinceFreeText && form.provinceId && (
-                    <Box sx={{ 
-                      p: 1, 
-                      bgcolor: 'success.light', 
-                      borderRadius: 1,
-                      border: '1px solid',
-                      borderColor: 'success.main',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1
-                    }}>
-                      <SearchIcon sx={{ color: 'success.main', fontSize: 16 }} />
-                      <Typography variant="caption" color="success.dark">
-                        <strong>Province sélectionnée :</strong> {provinceText}
-                      </Typography>
-                    </Box>
-                  )}
-                </Box>
-              </Box>
+                  }
+                }}
+              />
               
               <SearchableSelect
-                label="Ville*"
-                value={form.villeId}
-                onChange={(value) => handleChange('villeId', value)}
-                options={dropdowns.villes || []}
+                label="Région *"
+                value={formData.regionId}
+                onChange={(value) => handleChange('regionId', value)}
+                options={[{ id: '', libelle: 'Sélectionnez un élément' }, ...(dropdowns.regions || [])]}
+                placeholder="Sélectionnez un élément"
+                getOptionLabel={(option) => option.libelle}
                 required
-                placeholder="Rechercher une ville..."
-                getOptionLabel={(option) => option.nom}
-                error={!!errors.villeId}
-                helperText={errors.villeId}
+                error={!!errors.region}
+                helperText={errors.region}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    minHeight: '56px',
+                    backgroundColor: 'white',
+                    border: '1px solid #e0e0e0',
+                    borderRadius: '8px',
+                    '&:hover': {
+                      border: '1px solid #bdbdbd'
+                    },
+                    '&.Mui-focused': {
+                      border: '2px solid #1976d2'
+                    }
+                  }
+                }}
               />
-              <TextField 
-                label="Adresse*" 
-                value={form.adresseCCT} 
-                onChange={e => handleChange('adresseCCT', e.target.value)} 
-                fullWidth 
-                required 
-                margin="dense"
+              
+              <SearchableSelect
+                label="Province *"
+                value={formData.provinceId}
+                onChange={(value) => handleChange('provinceId', value)}
+                options={[{ id: '', libelle: 'Sélectionnez un élément' }, ...(dropdowns.provinces || [])]}
+                placeholder="Sélectionnez un élément"
+                getOptionLabel={(option) => option.libelle}
+                required
+                error={!!errors.province}
+                helperText={errors.province}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    minHeight: '56px',
+                    backgroundColor: 'white',
+                    border: '1px solid #e0e0e0',
+                    borderRadius: '8px',
+                    '&:hover': {
+                      border: '1px solid #bdbdbd'
+                    },
+                    '&.Mui-focused': {
+                      border: '2px solid #1976d2'
+                    }
+                  }
+                }}
+              />
+              
+              <SearchableSelect
+                label="Ville *"
+                value={formData.villeId}
+                onChange={(value) => handleChange('villeId', value)}
+                options={[{ id: '', nom: 'Sélectionnez un élément' }, ...(dropdowns.villes || [])]}
+                placeholder="Sélectionnez un élément"
+                getOptionLabel={(option) => option.nom}
+                required
+                error={!!errors.ville}
+                helperText={errors.ville}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    minHeight: '56px',
+                    backgroundColor: 'white',
+                    border: '1px solid #e0e0e0',
+                    borderRadius: '8px',
+                    '&:hover': {
+                      border: '1px solid #bdbdbd'
+                    },
+                    '&.Mui-focused': {
+                      border: '2px solid #1976d2'
+                    }
+                  }
+                }}
+              />
+              
+              <TextField
+                fullWidth
+                label="Adresse *"
+                value={formData.adresseCCT}
+                onChange={(e) => handleChange('adresseCCT', e.target.value)}
                 error={!!errors.adresseCCT}
                 helperText={errors.adresseCCT}
+                required
+                multiline
+                rows={2}
               />
-              <TextField 
-                label="Latitude*" 
-                value={form.latitude} 
-                onChange={e => handleChange('latitude', e.target.value)} 
-                fullWidth 
-                required 
-                margin="dense"
+              
+              <TextField
+                fullWidth
+                label="Latitude *"
+                value={formData.latitude}
+                onChange={(e) => handleChange('latitude', e.target.value)}
                 error={!!errors.latitude}
                 helperText={errors.latitude}
+                required
+                type="number"
+                step="any"
               />
-              <TextField 
-                label="Longitude*" 
-                value={form.longitude} 
-                onChange={e => handleChange('longitude', e.target.value)} 
-                fullWidth 
-                required 
-                margin="dense"
+              
+              <TextField
+                fullWidth
+                label="Longitude *"
+                value={formData.longitude}
+                onChange={(e) => handleChange('longitude', e.target.value)}
                 error={!!errors.longitude}
                 helperText={errors.longitude}
-              />
-            </Grid>
-            {/* Colonne 2 */}
-            <Grid xs={12} md={6}>
-              <TextField label="Adresse siège" value={form.adresseSiege} onChange={e => handleChange('adresseSiege', e.target.value)} fullWidth margin="dense" />
-              <TextField label="Adresse domiciliation" value={form.adresseDomiciliation} onChange={e => handleChange('adresseDomiciliation', e.target.value)} fullWidth margin="dense" />
-              <TextField label="Tel" value={form.tel} onChange={e => handleChange('tel', e.target.value)} fullWidth margin="dense" />
-              <TextField label="Fax" value={form.fax} onChange={e => handleChange('fax', e.target.value)} fullWidth margin="dense" />
-              <TextField label="Mail" value={form.mail} onChange={e => handleChange('mail', e.target.value)} fullWidth margin="dense" />
-              <TextField label="ICE" value={form.ice} onChange={e => handleChange('ice', e.target.value)} fullWidth margin="dense" />
-              <TextField label="Id. Fiscal" value={form.idFiscal} onChange={e => handleChange('idFiscal', e.target.value)} fullWidth margin="dense" />
-              <SearchableSelect
-                label="Cadre d'autorisation*"
-                value={form.cadreAutorisationId}
-                onChange={(value) => handleChange('cadreAutorisationId', value)}
-                options={dropdowns.cadresAutorisation || []}
                 required
-                placeholder="Rechercher un cadre d'autorisation..."
-                getOptionLabel={(option) => option.libelle}
-                error={!!errors.cadreAutorisationId}
-                helperText={errors.cadreAutorisationId}
+                type="number"
+                step="any"
               />
-              <TextField label="Engagements spécifiques" value={form.engagementSpecifique} onChange={e => handleChange('engagementSpecifique', e.target.value)} fullWidth margin="dense" />
-              <FormControlLabel control={<Checkbox checked={form.isPersonneMorale} onChange={handleCheckbox} />} label="Personne morale" sx={{ mt: 1 }} />
+            </Box>
+          </Box>
+
+          {/* Section Informations complémentaires */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mb: 3, pb: 2, borderBottom: '2px solid #e0e0e0' }}>
+              Informations complémentaires
+            </Typography>
+            
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 3 }}>
+              <TextField
+                fullWidth
+                label="Adresse siège"
+                value={formData.adresseSiege}
+                onChange={(e) => handleChange('adresseSiege', e.target.value)}
+              />
+              
+              <TextField
+                fullWidth
+                label="Adresse domiciliation"
+                value={formData.adresseDomiciliation}
+                onChange={(e) => handleChange('adresseDomiciliation', e.target.value)}
+              />
+              
+              <TextField
+                fullWidth
+                label="Téléphone *"
+                value={formData.tel}
+                onChange={(e) => handleChange('tel', e.target.value)}
+                error={!!errors.tel}
+                helperText={errors.tel}
+                required
+              />
+              
+              <TextField
+                fullWidth
+                label="Fax"
+                value={formData.fax}
+                onChange={(e) => handleChange('fax', e.target.value)}
+              />
+              
+              <TextField
+                fullWidth
+                label="Email"
+                value={formData.mail}
+                onChange={(e) => handleChange('mail', e.target.value)}
+                type="email"
+              />
+              
+              <TextField
+                fullWidth
+                label="ICE"
+                value={formData.ice}
+                onChange={(e) => handleChange('ice', e.target.value)}
+              />
+              
+              <TextField
+                fullWidth
+                label="Id. Fiscal"
+                value={formData.idFiscal}
+                onChange={(e) => handleChange('idFiscal', e.target.value)}
+              />
+              
+              <TextField
+                fullWidth
+                label="Engagements spécifiques"
+                value={formData.engagementSpecifique}
+                onChange={(e) => handleChange('engagementSpecifique', e.target.value)}
+                multiline
+                rows={2}
+              />
+              
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.isPersonneMorale}
+                    onChange={handleCheckbox}
+                    color="primary"
+                  />
+                }
+                label="Personne morale *"
+              />
+              
+              <TextField
+                fullWidth
+                label="Quota VL *"
+                value={formData.quotaVL}
+                onChange={(e) => handleChange('quotaVL', e.target.value)}
+                error={!!errors.quotaVL}
+                helperText={errors.quotaVL}
+                required
+                type="number"
+                min="0"
+              />
+              
+              <TextField
+                fullWidth
+                label="Quota PL"
+                value={formData.quotaPL}
+                onChange={(e) => handleChange('quotaPL', e.target.value)}
+                type="number"
+                min="0"
+              />
+            </Box>
+          </Box>
+
+          {/* Section Classification et autorisation */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mb: 3, pb: 2, borderBottom: '2px solid #e0e0e0' }}>
+              Classification et autorisation
+            </Typography>
+            
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 3 }}>
               <SearchableSelect
-                label="Type*"
-                value={form.typeId}
+                label="Type *"
+                value={formData.typeId}
                 onChange={(value) => handleChange('typeId', value)}
-                options={dropdowns.types || []}
-                required
-                placeholder="Rechercher un type..."
+                options={[{ id: '', libelle: 'Sélectionnez un élément' }, ...(dropdowns.types || [])]}
+                placeholder="Sélectionnez un élément"
                 getOptionLabel={(option) => option.libelle}
-                error={!!errors.typeId}
-                helperText={errors.typeId}
+                required
+                error={!!errors.type}
+                helperText={errors.type}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    minHeight: '56px',
+                    backgroundColor: 'white',
+                    border: '1px solid #e0e0e0',
+                    borderRadius: '8px',
+                    '&:hover': {
+                      border: '1px solid #bdbdbd'
+                    },
+                    '&.Mui-focused': {
+                      border: '2px solid #1976d2'
+                    }
+                  }
+                }}
               />
-              <TextField label="Quota VL" value={form.quotaVL} onChange={e => handleChange('quotaVL', e.target.value)} fullWidth margin="dense" />
-              <TextField label="Quota PL" value={form.quotaPL} onChange={e => handleChange('quotaPL', e.target.value)} fullWidth margin="dense" />
-            </Grid>
-          </Grid>
-        </form>
+              
+              <SearchableSelect
+                label="Cadre d'autorisation *"
+                value={formData.cadreAutorisationId}
+                onChange={(value) => handleChange('cadreAutorisationId', value)}
+                options={[{ id: '', libelle: 'Sélectionnez un élément' }, ...(dropdowns.cadresAutorisation || [])]}
+                placeholder="Sélectionnez un élément"
+                getOptionLabel={(option) => option.libelle}
+                required
+                error={!!errors.cadreAutorisation}
+                helperText={errors.cadreAutorisation}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    minHeight: '56px',
+                    backgroundColor: 'white',
+                    border: '1px solid #e0e0e0',
+                    borderRadius: '8px',
+                    '&:hover': {
+                      border: '1px solid #bdbdbd'
+                    },
+                    '&.Mui-focused': {
+                      border: '2px solid #1976d2'
+                    }
+                  }
+                }}
+              />
+              
+              <TextField
+                fullWidth
+                label="Date statut *"
+                type="date"
+                value={formData.dateStatut}
+                onChange={(e) => handleChange('dateStatut', e.target.value)}
+                error={!!errors.dateStatut}
+                helperText={errors.dateStatut}
+                required
+                InputLabelProps={{ shrink: true }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    backgroundColor: 'white',
+                    border: '1px solid #e0e0e0',
+                    borderRadius: '8px',
+                    '&:hover': {
+                      border: '1px solid #bdbdbd'
+                    },
+                    '&.Mui-focused': {
+                      border: '2px solid #1976d2'
+                    }
+                  }
+                }}
+              />
+              
+              <TextField
+                fullWidth
+                label="Thumbprint Certificat"
+                value={formData.thumbprintCertificat}
+                onChange={(e) => handleChange('thumbprintCertificat', e.target.value)}
+              />
+            </Box>
+          </Box>
+        </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="secondary" disabled={isSubmitting}>
+      
+      <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
+        <Button
+          onClick={onClose}
+          variant="outlined"
+          sx={{ minWidth: 120 }}
+        >
           Annuler
         </Button>
-        <Button 
-          onClick={handleSubmit} 
-          color="primary" 
+        <Button
+          onClick={handleSubmit}
           variant="contained"
           disabled={isSubmitting}
+          sx={{ 
+            minWidth: 120,
+            bgcolor: '#00bcd4',
+            '&:hover': {
+              bgcolor: '#0097a7'
+            }
+          }}
         >
           {isSubmitting ? 'Enregistrement...' : 'Enregistrer'}
         </Button>

@@ -51,5 +51,5 @@ PRINT '✓ LexiqueFormationId supprimé définitivement';
 PRINT '';
 PRINT '🎯 Prochaines étapes :';
 PRINT '1. Redémarrez l''API backend';
-PRINT '2. Testez : https://localhost:54875/api/Formations/5';
+PRINT '2. Testez : http://localhost:7000/api/Formations/5';
 PRINT '3. Testez l''application : http://localhost:3000/formations'; 

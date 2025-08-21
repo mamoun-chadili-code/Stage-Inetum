@@ -1,0 +1,33 @@
+### Test simple de l'API CT_CNEH
+
+### 1. Test de base - Swagger
+GET https://localhost:7001/swagger
+Content-Type: application/json
+
+### 2. Test de l'endpoint des décisions (sans authentification)
+GET https://localhost:7001/api/Decisions?Page=1&PageSize=5
+Content-Type: application/json
+
+### 3. Test de l'endpoint des CCTs
+GET https://localhost:7001/api/CCTs?Page=1&PageSize=5
+Content-Type: application/json
+
+### 4. Test de l'endpoint des agents
+GET https://localhost:7001/api/Agents?Page=1&PageSize=5
+Content-Type: application/json
+
+### 5. Test de l'endpoint des formations
+GET https://localhost:7001/api/Formations?Page=1&PageSize=5
+Content-Type: application/json
+
+### 6. Test de l'endpoint des équipements
+GET https://localhost:7001/api/Equipements?Page=1&PageSize=5
+Content-Type: application/json
+
+### 7. Test de l'endpoint des lignes
+GET https://localhost:7001/api/Lignes?Page=1&PageSize=5
+Content-Type: application/json
+
+### 8. Test de l'endpoint des réseaux
+GET https://localhost:7001/api/Reseaux?Page=1&PageSize=5
+Content-Type: application/json

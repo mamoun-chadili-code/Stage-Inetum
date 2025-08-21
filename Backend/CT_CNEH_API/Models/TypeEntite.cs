@@ -13,6 +13,6 @@ namespace CT_CNEH_API.Models
         public string? Libelle { get; set; }
         
         // Navigation properties
-        public virtual ICollection<Descision> Decisions { get; set; } = new List<Descision>();
+
     }
 } 
