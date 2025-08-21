@@ -76,73 +76,77 @@ export default function FormationDetailsModal({ open, onClose, formation, onEdit
       <DialogContent>
         <Card sx={{ mb: 2 }}>
           <CardContent>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom color="primary">
-                  Informations générales
-                </Typography>
-              </Grid>
+            <Typography variant="h6" gutterBottom color="primary">
+              Informations générales
+            </Typography>
+            
+            {/* Intitulé - Pleine largeur */}
+            <TextField
+              label="Intitulé"
+              value={formation.intitule || '-'}
+              fullWidth
+              margin="dense"
+              InputProps={{ readOnly: true }}
+              sx={{ mb: 2 }}
+            />
+            
+            {/* Nom agent et CCT - Côte à côte */}
+            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+              <TextField
+                label="Nom agent"
+                value={formation.agent || '-'}
+                fullWidth
+                margin="dense"
+                InputProps={{ readOnly: true }}
+              />
               
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label="Intitulé"
-                  value={formation.intitule || '-'}
-                  fullWidth
-                  margin="dense"
-                  InputProps={{ readOnly: true }}
-                />
-              </Grid>
+              <TextField
+                label="CCT"
+                value={formation.cct || '-'}
+                fullWidth
+                margin="dense"
+                InputProps={{ readOnly: true }}
+              />
+            </Box>
+            
+            {/* Chef de centre - Pleine largeur */}
+            <TextField
+              label="Chef de centre"
+              value={formation.chefCentre || '-'}
+              fullWidth
+              margin="dense"
+              InputProps={{ readOnly: true }}
+              sx={{ mb: 2 }}
+            />
+            
+            {/* Type de Formation - Pleine largeur */}
+            <TextField
+              label="Type de Formation"
+              value={formation.typeFormation || '-'}
+              fullWidth
+              margin="dense"
+              InputProps={{ readOnly: true }}
+              sx={{ mb: 2 }}
+            />
+            
+            {/* Début et Fin - Côte à côte */}
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Début"
+                value={formatDate(formation.dateDebut)}
+                fullWidth
+                margin="dense"
+                InputProps={{ readOnly: true }}
+              />
               
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label="Nom agent"
-                  value={formation.agent || '-'}
-                  fullWidth
-                  margin="dense"
-                  InputProps={{ readOnly: true }}
-                />
-              </Grid>
-              
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label="CCT"
-                  value={formation.cct || '-'}
-                  fullWidth
-                  margin="dense"
-                  InputProps={{ readOnly: true }}
-                />
-              </Grid>
-              
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label="Type de Formation"
-                  value={formation.typeFormation || '-'}
-                  fullWidth
-                  margin="dense"
-                  InputProps={{ readOnly: true }}
-                />
-              </Grid>
-              
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label="Début"
-                  value={formatDate(formation.dateDebut)}
-                  fullWidth
-                  margin="dense"
-                  InputProps={{ readOnly: true }}
-                />
-              </Grid>
-              
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label="Fin"
-                  value={formatDate(formation.dateFin)}
-                  fullWidth
-                  margin="dense"
-                  InputProps={{ readOnly: true }}
-                />
-              </Grid>
-            </Grid>
+              <TextField
+                label="Fin"
+                value={formatDate(formation.dateFin)}
+                fullWidth
+                margin="dense"
+                InputProps={{ readOnly: true }}
+              />
+            </Box>
           </CardContent>
         </Card>
 

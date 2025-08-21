@@ -199,7 +199,7 @@ namespace CT_CNEH_API.Controllers
 
                 try
                 {
-                    chefCentreName = formation.ChefCentre?.Nom ?? "";
+                    chefCentreName = formation.ChefCentre != null ? $"{formation.ChefCentre.Nom} {formation.ChefCentre.Prenom}" : "";
                 }
                 catch
                 {
