@@ -25,11 +25,38 @@ import {
 
 export default function FormationDetailsModal({ open, onClose, formation, onEdit }) {
   if (!formation) return null;
+  
+  // Logs de débogage pour diagnostiquer le problème
+  console.log('FormationDetailsModal - Formation reçue:', formation);
+  console.log('FormationDetailsModal - valideParFormateur:', formation.valideParFormateur);
+  console.log('FormationDetailsModal - valideCHEH:', formation.valideCHEH);
+  console.log('FormationDetailsModal - dateValidation:', formation.dateValidation);
+  console.log('FormationDetailsModal - Type de dateValidation:', typeof formation.dateValidation);
 
   const formatDate = (dateString) => {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('fr-FR');
+    console.log('FormationDetailsModal - formatDate - Entrée:', dateString, 'Type:', typeof dateString);
+    
+    if (!dateString) {
+      console.log('FormationDetailsModal - formatDate - Date vide, retourne "-"');
+      return '-';
+    }
+    
+    try {
+      const date = new Date(dateString);
+      console.log('FormationDetailsModal - formatDate - Date créée:', date);
+      
+      if (isNaN(date.getTime())) {
+        console.log('FormationDetailsModal - formatDate - Date invalide, retourne "-"');
+        return '-';
+      }
+      
+      const result = date.toLocaleDateString('fr-FR');
+      console.log('FormationDetailsModal - formatDate - Résultat formaté:', result);
+      return result;
+    } catch (error) {
+      console.error('FormationDetailsModal - formatDate - Erreur:', error);
+      return '-';
+    }
   };
 
   const formatDateTime = (dateString) => {
@@ -178,20 +205,27 @@ export default function FormationDetailsModal({ open, onClose, formation, onEdit
                 />
               </Grid>
               
+              {formation.valideParFormateur && formation.valideCHEH && (
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    label="Validé le"
+                    value={formation.dateValidation ? formatDate(formation.dateValidation) : 'Date non renseignée'}
+                    fullWidth
+                    margin="dense"
+                    InputProps={{ readOnly: true }}
+                    sx={{
+                      '& .MuiInputBase-input': {
+                        color: formation.dateValidation ? 'inherit' : '#f44336'
+                      }
+                    }}
+                  />
+                </Grid>
+              )}
+              
               <Grid item xs={12} md={6}>
                 <TextField
                   label="2ème Animateur"
                   value={formation.deuxiemeAnimateur || '-'}
-                  fullWidth
-                  margin="dense"
-                  InputProps={{ readOnly: true }}
-                />
-              </Grid>
-              
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label="Validé le"
-                  value={formatDate(formation.valideLe)}
                   fullWidth
                   margin="dense"
                   InputProps={{ readOnly: true }}

@@ -31,7 +31,7 @@ namespace CT_CNEH_API.Controllers
             [FromQuery] int? typeFormationId = null,
             [FromQuery] DateTime? dateDebut = null,
             [FromQuery] DateTime? dateFin = null,
-            [FromQuery] bool? valide = null)
+            [FromQuery] bool? valideParFormateur = null)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace CT_CNEH_API.Controllers
                     .Include(f => f.CCT)
                     .Include(f => f.Agent)
                     .Include(f => f.ChefCentre)
-                    .Include(f => f.TypeFormation)
+                    .Include(f => f.TypesFormation)
                     .AsQueryable();
 
                 // Appliquer les filtres
@@ -87,9 +87,21 @@ namespace CT_CNEH_API.Controllers
                     query = query.Where(f => f.DateFin <= dateFin.Value);
                 }
 
-                if (valide.HasValue)
+                if (valideParFormateur.HasValue && valideParFormateur.Value)
                 {
-                    query = query.Where(f => f.ValideParFormateur == valide.Value);
+                    // Si valideParFormateur = true, rechercher UNIQUEMENT les formations validées par ET formateur ET CHEH
+                    Console.WriteLine($"=== FILTRE VALIDATION ACTIVÉ ===");
+                    Console.WriteLine($"valideParFormateur: {valideParFormateur.Value}");
+                    Console.WriteLine($"Recherche des formations avec: ValideParFormateur = true AND ValideCHEH = true");
+                    query = query.Where(f => f.ValideParFormateur == true && f.ValideCHEH == true);
+                    Console.WriteLine($"Filtre appliqué: {query.ToString()}");
+                }
+                else
+                {
+                    // Si valideParFormateur = false ou null, AUCUN filtre de validation n'est appliqué
+                    Console.WriteLine($"=== AUCUN FILTRE VALIDATION ===");
+                    Console.WriteLine($"valideParFormateur: {valideParFormateur?.ToString() ?? "null"}");
+                    Console.WriteLine($"Aucun filtre de validation appliqué - toutes les formations seront retournées");
                 }
 
                 // Compter le total avant pagination
@@ -107,7 +119,7 @@ namespace CT_CNEH_API.Controllers
                         CCT = f.CCT != null ? f.CCT.Nom : "",
                         Agent = f.Agent != null ? $"{f.Agent.Nom} {f.Agent.Prenom}" : "",
                         ChefCentre = f.ChefCentre != null ? f.ChefCentre.Nom : "",
-                        TypeFormation = f.TypeFormation != null ? f.TypeFormation.Libelle : "",
+                        TypeFormation = f.TypesFormation != null ? f.TypesFormation.Libelle : "",
                         f.Matiere,
                         f.DateDebut,
                         f.DateFin,
@@ -153,7 +165,7 @@ namespace CT_CNEH_API.Controllers
                     .Include(f => f.CCT)
                     .Include(f => f.Agent)
                     .Include(f => f.ChefCentre)
-                    .Include(f => f.TypeFormation)
+                    .Include(f => f.TypesFormation)
                     .FirstOrDefaultAsync(f => f.Id == id);
 
                 if (formation == null)
@@ -196,7 +208,7 @@ namespace CT_CNEH_API.Controllers
 
                 try
                 {
-                    typeFormationName = formation.TypeFormation?.Libelle ?? "";
+                    typeFormationName = formation.TypesFormation?.Libelle ?? "";
                 }
                 catch
                 {
@@ -237,6 +249,26 @@ namespace CT_CNEH_API.Controllers
         {
             try
             {
+                // Log des données reçues pour débogage
+                Console.WriteLine($"=== DONNÉES REÇUES ===");
+                Console.WriteLine($"TypeFormationId: {formation.TypeFormationId}");
+                Console.WriteLine($"CCTId: {formation.CCTId}");
+                Console.WriteLine($"AgentId: {formation.AgentId}");
+                Console.WriteLine($"ChefCentreId: {formation.ChefCentreId}");
+                Console.WriteLine($"Intitule: {formation.Intitule}");
+                Console.WriteLine($"Matiere: {formation.Matiere}");
+                Console.WriteLine($"DateDebut: {formation.DateDebut}");
+                Console.WriteLine($"DateFin: {formation.DateFin}");
+                Console.WriteLine($"ValideParFormateur: {formation.ValideParFormateur}");
+                Console.WriteLine($"ValideCHEH: {formation.ValideCHEH}");
+                Console.WriteLine($"=======================");
+
+                // Ignorer la validation des propriétés de navigation
+                ModelState.Remove("TypesFormation");
+                ModelState.Remove("Agent");
+                ModelState.Remove("ChefCentre");
+                ModelState.Remove("CCT");
+                
                 if (!ModelState.IsValid)
                 {
                     var errors = ModelState
@@ -245,6 +277,15 @@ namespace CT_CNEH_API.Controllers
                             kvp => kvp.Key,
                             kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
                         );
+                    
+                    // Log des erreurs de validation
+                    Console.WriteLine($"=== ERREURS DE VALIDATION ===");
+                    foreach (var error in errors)
+                    {
+                        Console.WriteLine($"{error.Key}: {string.Join(", ", error.Value)}");
+                    }
+                    Console.WriteLine($"=============================");
+                    
                     return BadRequest(new { message = "Erreurs de validation", errors });
                 }
 
@@ -304,6 +345,12 @@ namespace CT_CNEH_API.Controllers
                     return BadRequest(new { message = "L'ID dans l'URL ne correspond pas à l'ID dans le corps de la requête" });
                 }
 
+                // Ignorer la validation des propriétés de navigation
+                ModelState.Remove("TypesFormation");
+                ModelState.Remove("Agent");
+                ModelState.Remove("ChefCentre");
+                ModelState.Remove("CCT");
+                
                 if (!ModelState.IsValid)
                 {
                     var errors = ModelState

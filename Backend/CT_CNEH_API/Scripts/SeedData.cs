@@ -273,11 +273,11 @@ namespace CT_CNEH_API.Scripts
             await context.SaveChangesAsync();
 
             // Créer des types de formation
-            var typesFormation = new List<TypeFormation>
+            var typesFormation = new List<TypesFormation>
             {
-                new TypeFormation { Libelle = "Formation initiale" },
-                new TypeFormation { Libelle = "Formation continue" },
-                new TypeFormation { Libelle = "Formation spécialisée" }
+                new TypesFormation { Libelle = "Formation initiale" },
+                new TypesFormation { Libelle = "Formation continue" },
+                new TypesFormation { Libelle = "Formation spécialisée" }
             };
 
             context.TypesFormation.AddRange(typesFormation);

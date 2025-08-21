@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CT_CNEH_API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d3d223bc372bb4ba42b52c8bc6729cf06ac6e7bf")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8fe9f90e50027128af6064bce3fa8851447e9151")]
 [assembly: System.Reflection.AssemblyProductAttribute("CT_CNEH_API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CT_CNEH_API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

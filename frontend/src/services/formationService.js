@@ -70,10 +70,18 @@ const formationService = {
         premierAnimateur: data.premierAnimateur || '',
         deuxiemeAnimateur: data.deuxiemeAnimateur || '',
         valideCHEH: data.valideCHEH || false,
-        valideLe: data.valideLe ? formatDate(data.valideLe) : null
+        dateValidation: data.dateValidation ? formatDate(data.dateValidation) : null
       };
 
       console.log('Payload envoyé:', payload);
+      console.log('Payload JSON:', JSON.stringify(payload, null, 2));
+      console.log('Types des données:');
+      console.log('- typeFormationId:', typeof payload.typeFormationId, payload.typeFormationId);
+      console.log('- cctId:', typeof payload.cctId, payload.cctId);
+      console.log('- intitule:', typeof payload.intitule, payload.intitule);
+      console.log('- valideParFormateur:', typeof payload.valideParFormateur, payload.valideParFormateur);
+      console.log('- valideCHEH:', typeof payload.valideCHEH, payload.valideCHEH);
+      
       const response = await api.post('/Formations', payload);
       console.log('Réponse de création:', response);
       return response;
@@ -104,7 +112,7 @@ const formationService = {
         premierAnimateur: data.premierAnimateur || '',
         deuxiemeAnimateur: data.deuxiemeAnimateur || '',
         valideCHEH: data.valideCHEH || false,
-        valideLe: data.valideLe ? formatDate(data.valideLe) : null
+        dateValidation: data.dateValidation ? formatDate(data.dateValidation) : null
       };
 
       console.log('Payload envoyé:', payload);
@@ -135,7 +143,8 @@ const formationService = {
 const formatDate = (date) => {
   if (!date) return null;
   const d = new Date(date);
-  return d.toISOString().split('T')[0];
+  // Retourner la date au format ISO complet pour le backend
+  return d.toISOString();
 };
 
 export default formationService; 

@@ -57,7 +57,7 @@ export default function Formations() {
     totalCount: 0,
     pageCount: 0,
     currentPage: 1,
-    pageSize: 10
+    pageSize: 5
   });
 
   // États des modals
@@ -99,11 +99,27 @@ export default function Formations() {
     loadFormations();
   }, [pagination.currentPage, pagination.pageSize]);
 
+  // Surveiller les changements de filtres pour le débogage
+  useEffect(() => {
+    console.log('useEffect - Filtres ont changé:', JSON.stringify(filters, null, 2));
+  }, [filters]);
+
   // Charger les formations
   const loadFormations = async () => {
     try {
       setLoading(true);
+      console.log('=== loadFormations - DÉBUT ===');
+      console.log('loadFormations - Filtres envoyés au backend:', JSON.stringify(filters, null, 2));
+      console.log('loadFormations - valideParFormateur spécifiquement:', filters.valideParFormateur);
+      console.log('loadFormations - Page:', pagination.currentPage, 'PageSize:', pagination.pageSize);
+      
       const response = await formationService.getFormations(filters, pagination.currentPage, pagination.pageSize);
+      
+      console.log('loadFormations - Réponse reçue:', response);
+      console.log('loadFormations - Nombre de formations reçues:', response.data.length);
+      console.log('loadFormations - Total count:', response.pagination.totalCount);
+      console.log('=== loadFormations - FIN ===');
+      
       setFormations(response.data);
       setPagination(prev => ({
         ...prev,
@@ -156,7 +172,33 @@ export default function Formations() {
 
   // Gérer les changements de filtres
   const handleFilterChange = (field, value) => {
-    setFilters(prev => ({ ...prev, [field]: value }));
+    console.log('=== handleFilterChange - DÉBUT ===');
+    console.log('handleFilterChange - Champ:', field, 'Valeur:', value);
+    console.log('handleFilterChange - Filtres avant changement:', JSON.stringify(filters, null, 2));
+    
+    setFilters(prev => {
+      const newFilters = { ...prev, [field]: value };
+      console.log('handleFilterChange - Nouveaux filtres après setState:', newFilters);
+      return newFilters;
+    });
+    
+    // Si c'est le filtre "Validé (Formateur + CHEH)", recharger immédiatement
+    if (field === 'valideParFormateur') {
+      console.log('handleFilterChange - Filtre validation changé, rechargement immédiat');
+      console.log('handleFilterChange - Valeur du filtre:', value);
+      console.log('handleFilterChange - Type de la valeur:', typeof value);
+      
+      // Remettre la pagination à la première page
+      setPagination(prev => ({ ...prev, currentPage: 1 }));
+      
+      // Recharger immédiatement les formations
+      setTimeout(() => {
+        console.log('handleFilterChange - Exécution du rechargement après timeout');
+        loadFormations();
+      }, 100); // Petit délai pour laisser le state se mettre à jour
+    }
+    
+    console.log('=== handleFilterChange - FIN ===');
   };
 
   // Appliquer les filtres
@@ -167,7 +209,10 @@ export default function Formations() {
 
   // Réinitialiser les filtres
   const clearFilters = () => {
-    setFilters({
+    console.log('clearFilters - Réinitialisation des filtres');
+    
+    // Réinitialiser tous les filtres
+    const resetFilters = {
       reseauId: '',
       cctId: '',
       chefCentreId: '',
@@ -176,10 +221,50 @@ export default function Formations() {
       dateDebut: '',
       dateFin: '',
       valideParFormateur: false
-    });
+    };
+    
+    console.log('clearFilters - Nouveaux filtres:', resetFilters);
+    
+    // Réinitialiser le terme de recherche
     setSearchTerm('');
+    
+    // Remettre la pagination à la première page
     setPagination(prev => ({ ...prev, currentPage: 1 }));
-    loadFormations();
+    
+    // Réinitialiser tous les filtres ET recharger immédiatement
+    setFilters(resetFilters);
+    
+    // Recharger toutes les formations sans filtres - utiliser les filtres reset directement
+    const loadFormationsWithoutFilters = async () => {
+      try {
+        setLoading(true);
+        console.log('clearFilters - Rechargement avec filtres reset:', JSON.stringify(resetFilters, null, 2));
+        
+        const response = await formationService.getFormations(resetFilters, 1, pagination.pageSize);
+        
+        console.log('clearFilters - Réponse reçue:', response);
+        console.log('clearFilters - Nombre de formations reçues:', response.data.length);
+        
+        setFormations(response.data);
+        setPagination(prev => ({
+          ...prev,
+          totalCount: response.pagination.totalCount,
+          pageCount: response.pagination.pageCount,
+          currentPage: 1,
+          pageSize: response.pagination.pageSize
+        }));
+      } catch (error) {
+        toast.error('Erreur lors du rechargement des formations');
+        console.error('Erreur clearFilters:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    // Exécuter immédiatement
+    loadFormationsWithoutFilters();
+    
+    console.log('clearFilters - Filtres réinitialisés, toutes les formations rechargées');
   };
 
   // Ouvrir modal d'ajout
@@ -192,6 +277,9 @@ export default function Formations() {
   const handleEdit = async (formation) => {
     try {
       const response = await formationService.getFormation(formation.id);
+      console.log('Formations.js - handleEdit - Données reçues du backend:', response.data);
+      console.log('Formations.js - handleEdit - valideLe reçu:', response.data.valideLe);
+      console.log('Formations.js - handleEdit - Type de valideLe:', typeof response.data.valideLe);
       setEditingFormation(response.data);
       setOpenModal(true);
     } catch (error) {
@@ -201,16 +289,9 @@ export default function Formations() {
   };
 
   // Ouvrir modal de détails
-  const handleDetails = async (formation) => {
-    try {
-      setSelectedFormation(formation);
-      const response = await formationService.getFormation(formation.id);
-      setSelectedFormation(response.data);
-      setOpenDetailsModal(true);
-    } catch (error) {
-      console.error('Erreur lors de la récupération des détails:', error);
-      toast.error('Erreur lors de la récupération des détails');
-    }
+  const handleDetails = (formation) => {
+    setSelectedFormation(formation);
+    setOpenDetailsModal(true);
   };
 
   // Supprimer une formation
@@ -221,19 +302,26 @@ export default function Formations() {
         toast.success('Formation supprimée avec succès');
         loadFormations();
       } catch (error) {
+        console.error('Erreur lors de la suppression:', error);
         toast.error('Erreur lors de la suppression de la formation');
-        console.error('Erreur handleDelete:', error);
       }
     }
   };
 
-  // Filtrer les formations par terme de recherche
-  const filteredFormations = formations.filter(formation =>
-    formation.intitule?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    formation.agent?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    formation.cct?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    formation.matiere?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filtrer les formations selon le terme de recherche
+  const filteredFormations = formations.filter(formation => {
+    if (!searchTerm) return true;
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      (formation.intitule && formation.intitule.toLowerCase().includes(searchLower)) ||
+      (formation.matiere && formation.matiere.toLowerCase().includes(searchLower)) ||
+      (formation.premierAnimateur && formation.premierAnimateur.toLowerCase().includes(searchLower)) ||
+      (formation.deuxiemeAnimateur && formation.deuxiemeAnimateur.toLowerCase().includes(searchLower)) ||
+      (formation.typeFormation && formation.typeFormation.toLowerCase().includes(searchLower)) ||
+      (formation.cct && formation.cct.toLowerCase().includes(searchLower)) ||
+      (formation.agent && formation.agent.toLowerCase().includes(searchLower))
+    );
+  });
 
   return (
     <Box sx={{ p: 3 }}>
@@ -241,184 +329,178 @@ export default function Formations() {
         Gestion des Formations
       </Typography>
 
-      {/* Section Recherche */}
-      <Paper sx={{ p: 3, mb: 3, bgcolor: 'grey.50' }}>
-        <Box sx={{ 
-          bgcolor: 'white', 
-          borderRadius: 2, 
-          p: 2, 
-          mb: 2,
-          border: '1px solid #e0e0e0'
+      {/* Section Filtres */}
+      <Paper sx={{ 
+        p: 3, 
+        mb: 3, 
+        backgroundColor: '#f8f9fa',
+        borderRadius: 2,
+        border: '1px solid #e0e0e0'
+      }}>
+        <Typography variant="h6" sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: 1,
+          color: 'primary.main',
+          fontWeight: 600,
+          mb: 2
         }}>
-          <Typography variant="h6" sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 1,
-            color: 'primary.main',
-            fontWeight: 600,
-            mb: 2
-          }}>
-            <SearchIcon />
-            RECHERCHE
-          </Typography>
-            <Box sx={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: 1,
-              mb: 2
-            }}>
+          <SearchIcon />
+          RECHERCHE
+        </Typography>
+        
+        <Box sx={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: 1,
+          mb: 2
+        }}>
+          <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}>
+            <InputLabel>Réseau</InputLabel>
+            <Select
+              value={filters.reseauId}
+              onChange={(e) => handleFilterChange('reseauId', e.target.value)}
+              label="Réseau"
+            >
+              <MenuItem value="">Sélectionnez</MenuItem>
+              {Array.isArray(dropdowns.reseaux) && dropdowns.reseaux.map(reseau => (
+                <MenuItem key={reseau.id} value={reseau.id}>
+                  {reseau.nom}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        
+          <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}>
+            <InputLabel>CCT</InputLabel>
+            <Select
+              value={filters.cctId}
+              onChange={(e) => handleFilterChange('cctId', e.target.value)}
+              label="CCT"
+            >
+              <MenuItem value="">Sélectionnez</MenuItem>
+              {Array.isArray(dropdowns.ccts) && dropdowns.ccts.map(cct => (
+                <MenuItem key={cct.id} value={cct.id}>
+                  {cct.nom}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        
+          <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}>
+            <InputLabel>Chef centre</InputLabel>
+            <Select
+              value={filters.chefCentreId}
+              onChange={(e) => handleFilterChange('chefCentreId', e.target.value)}
+              label="Chef centre"
+            >
+              <MenuItem value="">Sélectionnez</MenuItem>
+              {Array.isArray(dropdowns.chefsCentre) && dropdowns.chefsCentre.map(chef => (
+                <MenuItem key={chef.id} value={chef.id}>
+                  {chef.nom} {chef.prenom}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        
+          <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}>
+            <InputLabel>Agent</InputLabel>
+            <Select
+              value={filters.agentId}
+              onChange={(e) => handleFilterChange('agentId', e.target.value)}
+              label="Agent"
+            >
+              <MenuItem value="">Sélectionnez</MenuItem>
+              {Array.isArray(dropdowns.agents) && dropdowns.agents.map(agent => (
+                <MenuItem key={agent.id} value={agent.id}>
+                  {agent.nom} {agent.prenom}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-              
-                <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}>
-                  <InputLabel>Réseau</InputLabel>
-                  <Select
-                    value={filters.reseauId}
-                    onChange={(e) => handleFilterChange('reseauId', e.target.value)}
-                    label="Réseau"
-                  >
-                    <MenuItem value="">Sélectionnez</MenuItem>
-                    {Array.isArray(dropdowns.reseaux) && dropdowns.reseaux.map(reseau => (
-                      <MenuItem key={reseau.id} value={reseau.id}>
-                        {reseau.nom}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              
-                <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}>
-                  <InputLabel>CCT</InputLabel>
-                  <Select
-                    value={filters.cctId}
-                    onChange={(e) => handleFilterChange('cctId', e.target.value)}
-                    label="CCT"
-                  >
-                    <MenuItem value="">Sélectionnez</MenuItem>
-                    {Array.isArray(dropdowns.ccts) && dropdowns.ccts.map(cct => (
-                      <MenuItem key={cct.id} value={cct.id}>
-                        {cct.nom}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              
-                <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}>
-                  <InputLabel>Chef centre</InputLabel>
-                  <Select
-                    value={filters.chefCentreId}
-                    onChange={(e) => handleFilterChange('chefCentreId', e.target.value)}
-                    label="Chef centre"
-                  >
-                    <MenuItem value="">Sélectionnez</MenuItem>
-                    {Array.isArray(dropdowns.chefsCentre) && dropdowns.chefsCentre.map(chef => (
-                      <MenuItem key={chef.id} value={chef.id}>
-                        {chef.nom} {chef.prenom}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              
-                              <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}>
-                  <InputLabel>Agent</InputLabel>
-                  <Select
-                    value={filters.agentId}
-                    onChange={(e) => handleFilterChange('agentId', e.target.value)}
-                    label="Agent"
-                  >
-                    <MenuItem value="">Sélectionnez</MenuItem>
-                    {Array.isArray(dropdowns.agents) && dropdowns.agents.map(agent => (
-                      <MenuItem key={agent.id} value={agent.id}>
-                        {agent.nom} {agent.prenom}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-
-              
-                <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}>
-                  <InputLabel>Type formation</InputLabel>
-                  <Select
-                    value={filters.typeFormationId}
-                    onChange={(e) => handleFilterChange('typeFormationId', e.target.value)}
-                    label="Type formation"
-                  >
-                    <MenuItem value="">Sélectionnez un élément</MenuItem>
-                    {Array.isArray(dropdowns.typesFormation) && dropdowns.typesFormation.map(type => (
-                      <MenuItem key={type.id} value={type.id}>
-                        {type.libelle}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                
-                              <TextField
-                fullWidth
-                size="small"
-                label="Période"
-                type="date"
-                value={filters.dateDebut}
-                onChange={(e) => handleFilterChange('dateDebut', e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}
+          <FormControl fullWidth size="small" sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}>
+            <InputLabel>Type formation</InputLabel>
+            <Select
+              value={filters.typeFormationId}
+              onChange={(e) => handleFilterChange('typeFormationId', e.target.value)}
+              label="Type formation"
+            >
+              <MenuItem value="">Sélectionnez un élément</MenuItem>
+              {Array.isArray(dropdowns.typesFormation) && dropdowns.typesFormation.map(type => (
+                <MenuItem key={type.id} value={type.id}>
+                  {type.libelle}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          
+          <TextField
+            fullWidth
+            size="small"
+            label="Période"
+            type="date"
+            value={filters.dateDebut}
+            onChange={(e) => handleFilterChange('dateDebut', e.target.value)}
+            InputLabelProps={{ shrink: true }}
+            sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}
+          />
+          
+          <TextField
+            fullWidth
+            size="small"
+            label="Période (fin)"
+            type="date"
+            value={filters.dateFin}
+            onChange={(e) => handleFilterChange('dateFin', e.target.value)}
+            InputLabelProps={{ shrink: true }}
+            sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}
+          />
+        </Box>
+        
+        <Box sx={{ 
+          display: 'flex', 
+          gap: 2, 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          pt: 1,
+          borderTop: '1px solid #e0e0e0',
+          mt: 1
+        }}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={filters.valideParFormateur}
+                onChange={(e) => handleFilterChange('valideParFormateur', e.target.checked)}
               />
-              
-                <TextField
-                  fullWidth
-                  size="small"
-                  label="Période (fin)"
-                  type="date"
-                  value={filters.dateFin}
-                  onChange={(e) => handleFilterChange('dateFin', e.target.value)}
-                  InputLabelProps={{ shrink: true }}
-                  sx={{ bgcolor: 'white', borderRadius: 1, minHeight: '48px' }}
-                />
-              
-              <Box sx={{ 
-                gridColumn: '1 / -1', 
-                display: 'flex', 
-                gap: 2, 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                pt: 1,
-                borderTop: '1px solid #e0e0e0',
-                mt: 1
-              }}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={filters.valideParFormateur}
-                      onChange={(e) => handleFilterChange('valideParFormateur', e.target.checked)}
-                    />
-                  }
-                  label="Validé"
-                  sx={{ 
-                    minHeight: '48px',
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}
-                />
-                
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                <Button
-                  variant="contained"
-                  onClick={applyFilters}
-                  startIcon={<FilterIcon />}
-                  sx={{ minWidth: 120, height: 48, borderRadius: 2 }}
-                >
-                  Rechercher
-                </Button>
-                <Button
-                  variant="outlined"
-                  onClick={clearFilters}
-                  startIcon={<ClearIcon />}
-                  sx={{ minWidth: 120, height: 48, borderRadius: 2 }}
-                >
-                  Annuler
-                </Button>
-                </Box>
-              </Box>
-                                      </Box>
-            </Box>
+            }
+            label="Validé (Formateur + CHEH)"
+            sx={{ 
+              minHeight: '48px',
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          />
+          
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button
+              variant="contained"
+              onClick={applyFilters}
+              startIcon={<FilterIcon />}
+              sx={{ minWidth: 120, height: 48, borderRadius: 2 }}
+            >
+              Rechercher
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={clearFilters}
+              startIcon={<ClearIcon />}
+              sx={{ minWidth: 120, height: 48, borderRadius: 2 }}
+            >
+              Annuler
+            </Button>
+          </Box>
+        </Box>
       </Paper>
 
       {/* Section Formations */}
@@ -461,7 +543,7 @@ export default function Formations() {
               onClick={handleAdd}
               startIcon={<AddIcon />}
             >
-              + Ajouter Formation
+              Ajouter Formation
             </Button>
           </Box>
         </Box>
@@ -511,30 +593,35 @@ export default function Formations() {
                         />
                       </TableCell>
                       <TableCell>
-                        <Tooltip title="Voir les détails">
-                          <IconButton
-                            color="primary"
-                            onClick={() => handleDetails(formation)}
-                          >
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Modifier">
-                          <IconButton
-                            color="secondary"
-                            onClick={() => handleEdit(formation)}
-                          >
-                            <EditIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Supprimer">
-                          <IconButton
-                            color="error"
-                            onClick={() => handleDelete(formation)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </Tooltip>
+                        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', alignItems: 'center' }}>
+                          <Tooltip title="Voir les détails">
+                            <IconButton
+                              color="primary"
+                              onClick={() => handleDetails(formation)}
+                              size="small"
+                            >
+                              <InfoIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Modifier">
+                            <IconButton
+                              color="secondary"
+                              onClick={() => handleEdit(formation)}
+                              size="small"
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Supprimer">
+                            <IconButton
+                              color="error"
+                              onClick={() => handleDelete(formation)}
+                              size="small"
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   ))

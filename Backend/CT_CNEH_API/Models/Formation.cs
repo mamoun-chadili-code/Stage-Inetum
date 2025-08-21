@@ -47,7 +47,7 @@ namespace CT_CNEH_API.Models
         
         // Navigation properties
         [ForeignKey("TypeFormationId")]
-        public virtual TypeFormation TypeFormation { get; set; } = null!;
+        public virtual TypesFormation? TypesFormation { get; set; }
         
         [ForeignKey("AgentId")]
         public virtual Agent? Agent { get; set; }

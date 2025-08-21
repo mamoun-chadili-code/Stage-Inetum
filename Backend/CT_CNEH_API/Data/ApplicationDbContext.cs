@@ -33,7 +33,7 @@ namespace CT_CNEH_API.Data
         public DbSet<Ligne> Lignes { get; set; } = null!;
         public DbSet<CibleFormation> CibleFormations { get; set; } = null!;
         public DbSet<Formation> Formations { get; set; } = null!;
-        public DbSet<TypeFormation> TypesFormation { get; set; } = null!;
+        public DbSet<TypesFormation> TypesFormation { get; set; } = null!;
         public DbSet<TypeEquipement> TypeEquipements { get; set; } = null!;
         public DbSet<StatutEquipement> StatutsEquipement { get; set; } = null!;
         public DbSet<Equipement> Equipements { get; set; } = null!;
@@ -117,7 +117,7 @@ namespace CT_CNEH_API.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Formation>()
-                .HasOne(f => f.TypeFormation)
+                .HasOne(f => f.TypesFormation)
                 .WithMany(tf => tf.Formations)
                 .HasForeignKey(f => f.TypeFormationId)
                 .OnDelete(DeleteBehavior.Restrict);

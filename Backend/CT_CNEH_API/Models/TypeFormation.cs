@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CT_CNEH_API.Models
 {
-    public class TypeFormation
+    [Table("TypesFormation")]
+    public class TypesFormation
     {
         public int Id { get; set; }
         
