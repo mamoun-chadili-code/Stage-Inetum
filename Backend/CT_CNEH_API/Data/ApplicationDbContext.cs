@@ -79,23 +79,7 @@ namespace CT_CNEH_API.Data
                 .HasForeignKey(cc => cc.CCTId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Ligne>()
-                .HasOne<CCT>()
-                .WithMany()
-                .HasForeignKey(l => l.CCTId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Ligne>()
-                .HasOne<CategorieLigne>()
-                .WithMany()
-                .HasForeignKey(l => l.CategorieId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Ligne>()
-                .HasOne<StatutLigne>()
-                .WithMany()
-                .HasForeignKey(l => l.StatutId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // Aucune configuration pour Ligne - laisser EF détecter automatiquement
 
             // Configuration des nouveaux modèles refactorisés
             modelBuilder.Entity<Equipement>()

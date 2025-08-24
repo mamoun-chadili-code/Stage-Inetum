@@ -75,7 +75,7 @@ namespace CT_CNEH_API.Controllers
                     reseaux = await _context.Reseaux.CountAsync(),
                     ccts = await _context.CCTs.CountAsync(),
                     agents = await _context.Agents.CountAsync(),
-                    lignes = await _context.Lignes.CountAsync(),
+                                         lignes = await _context.Lignes.CountAsync(),
                     equipements = await _context.Equipements.CountAsync(),
                     formations = await _context.Formations.CountAsync(),
                     decisions = await _context.Decisions.CountAsync(),

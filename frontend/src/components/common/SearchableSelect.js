@@ -23,7 +23,8 @@ export default function SearchableSelect({
   disabled = false,
   isStatusField = false,
   showDescriptions = false,
-  isCategorieField = false
+  isCategorieField = false,
+  isStatutLigneField = false
 }) {
   // S'assurer que la valeur n'est jamais undefined, mais permettre 0 comme valeur valide
   const controlledValue = value !== undefined && value !== null ? value : '';
@@ -83,6 +84,24 @@ export default function SearchableSelect({
     return '#9c27b0'; // Violet par défaut
   };
 
+  // Fonction pour obtenir la couleur des statuts de lignes
+  const getStatutLigneColor = (statutText) => {
+    const text = (statutText || '').toLowerCase();
+    
+    if (text.includes('activité') || text.includes('active')) {
+      return '#4caf50'; // Vert pour actif
+    } else if (text.includes('suspendue') || text.includes('suspendu')) {
+      return '#ff9800'; // Orange pour suspendu
+    } else if (text.includes('maintenance')) {
+      return '#2196f3'; // Bleu pour maintenance
+    } else if (text.includes('fermée') || text.includes('fermé') || text.includes('definitivement')) {
+      return '#f44336'; // Rouge pour fermé
+    } else if (text.includes('ouverture') || text.includes('cours')) {
+      return '#ffeb3b'; // Jaune pour en cours d'ouverture
+    }
+    return '#9e9e9e'; // Gris par défaut
+  };
+
   const handleChange = (event, newValue) => {
     // Gérer explicitement le cas où aucune option n'est sélectionnée
     if (!newValue) {
@@ -134,8 +153,9 @@ export default function SearchableSelect({
           const statusText = getOptionLabel(option);
           const statusColor = isStatusField ? getStatusColor(statusText) : null;
           const categorieColor = isCategorieField ? getCategorieColor(statusText) : null;
-          const displayColor = statusColor || categorieColor;
-          const hasDescription = option.description && (isStatusField || showDescriptions || isCategorieField);
+          const statutLigneColor = isStatutLigneField ? getStatutLigneColor(statusText) : null;
+          const displayColor = statusColor || categorieColor || statutLigneColor;
+          const hasDescription = option.description && (isStatusField || showDescriptions || isCategorieField || isStatutLigneField);
 
           return (
             <Box component="li" {...props} key={`${getOptionValue(option)}-${statusText}`}>
@@ -201,7 +221,8 @@ export default function SearchableSelect({
             const statusText = getOptionLabel(option);
             const statusColor = isStatusField ? getStatusColor(statusText) : null;
             const categorieColor = isCategorieField ? getCategorieColor(statusText) : null;
-            const displayColor = statusColor || categorieColor;
+            const statutLigneColor = isStatutLigneField ? getStatutLigneColor(statusText) : null;
+            const displayColor = statusColor || categorieColor || statutLigneColor;
             
             return (
               <Chip

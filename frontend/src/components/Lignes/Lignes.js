@@ -62,7 +62,7 @@ const Lignes = () => {
 
   // États de pagination
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5); // Changé de 10 à 5
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
@@ -120,19 +120,13 @@ const Lignes = () => {
     initializeData();
   }, []);
 
-  // Charger les données de recherche
-  useEffect(() => {
-    if (searchParams.regionId) {
-      loadVillesByRegion(searchParams.regionId);
-    }
-    if (searchParams.villeId) {
-      loadCCTsByVille(searchParams.villeId);
-    }
-  }, [searchParams.regionId, searchParams.villeId]);
+  // ✅ SUPPRIMÉ : loadVillesByRegion et loadCCTsByVille - Plus de dépendance
 
-  // Charger les lignes
-  const loadLignes = async () => {
+  // Charger les lignes avec des paramètres spécifiques
+  const loadLignesWithParams = async (specificPage, specificPageSize) => {
     try {
+      console.log('🔄 Chargement des lignes avec paramètres spécifiques:', { specificPage, specificPageSize, searchParams });
+      
       // Nettoyer les paramètres de recherche
       const cleanSearchParams = {};
       Object.keys(searchParams).forEach(key => {
@@ -143,16 +137,24 @@ const Lignes = () => {
 
       const searchData = {
         ...cleanSearchParams,
-        page: Math.max(1, page),
-        pageSize: Math.max(1, Math.min(100, pageSize)),
+        page: Math.max(1, specificPage),
+        pageSize: Math.max(1, Math.min(100, specificPageSize)),
         searchTerm: searchTerm?.trim() || undefined
       };
 
       console.log('Données de recherche envoyées:', searchData);
       const result = await ligneService.searchLignes(searchData);
+      console.log('📊 Résultat de la recherche:', result);
       setLignes(result.lignes || []);
       setTotalCount(result.totalCount || 0);
       setTotalPages(result.totalPages || 0);
+      console.log('📋 Pagination mise à jour:', { 
+        lignes: result.lignes?.length || 0, 
+        totalCount: result.totalCount || 0, 
+        totalPages: result.totalPages || 0,
+        page: specificPage,
+        pageSize: specificPageSize
+      });
     } catch (error) {
       console.error('Erreur lors du chargement des lignes:', error);
       if (error.response?.status === 400) {
@@ -165,6 +167,11 @@ const Lignes = () => {
       setTotalCount(0);
       setTotalPages(0);
     }
+  };
+
+  // Charger les lignes (fonction originale pour compatibilité)
+  const loadLignes = async () => {
+    await loadLignesWithParams(page, pageSize);
   };
 
   // Charger les régions
@@ -197,13 +204,13 @@ const Lignes = () => {
     }
   };
 
-  // Charger les statuts
+  // Charger les statuts des lignes
   const loadStatuts = async () => {
     try {
-      const statutsData = await dropdownsService.getStatuts();
+      const statutsData = await dropdownsService.getStatutLignes();
       setStatuts(statutsData);
     } catch (error) {
-      console.error('Erreur lors du chargement des statuts:', error);
+      console.error('Erreur lors du chargement des statuts de lignes:', error);
     }
   };
 
@@ -357,7 +364,10 @@ const Lignes = () => {
 
   // Gérer le changement de page
   const handlePageChange = (event, newPage) => {
+    console.log('🔄 Changement de page:', { oldPage: page, newPage });
     setPage(newPage);
+    // Recharger les données avec la nouvelle page
+    loadLignesWithParams(newPage, pageSize);
   };
 
   // Fonction pour obtenir la couleur basée sur la catégorie
@@ -376,6 +386,24 @@ const Lignes = () => {
     return '#9c27b0'; // Violet par défaut
   };
 
+  // Fonction pour obtenir la couleur basée sur le statut de ligne
+  const getStatutLigneColor = (statutText) => {
+    const text = (statutText || '').toLowerCase();
+    
+    if (text.includes('activité') || text.includes('active')) {
+      return '#4caf50'; // Vert pour actif
+    } else if (text.includes('suspendue') || text.includes('suspendu')) {
+      return '#ff9800'; // Orange pour suspendu
+    } else if (text.includes('maintenance')) {
+      return '#2196f3'; // Bleu pour maintenance
+    } else if (text.includes('fermée') || text.includes('fermé') || text.includes('definitivement')) {
+      return '#f44336'; // Rouge pour fermé
+    } else if (text.includes('ouverture') || text.includes('cours')) {
+      return '#ffeb3b'; // Jaune pour en cours d'ouverture
+    }
+    return '#9e9e9e'; // Gris par défaut
+  };
+
   // Récupérer la catégorie actuelle depuis les données CategorieLignes
   const getLigneCategorie = (ligne) => {
     if (!ligne.categorieId || !categories.length) {
@@ -388,8 +416,12 @@ const Lignes = () => {
 
   // Gérer le changement de taille de page
   const handlePageSizeChange = (event) => {
-    setPageSize(parseInt(event.target.value));
+    const newPageSize = parseInt(event.target.value);
+    console.log('📏 Changement de taille de page:', { oldSize: pageSize, newSize: newPageSize });
+    setPageSize(newPageSize);
     setPage(1);
+    // Recharger les données avec la nouvelle taille de page
+    loadLignesWithParams(1, newPageSize);
   };
 
   // Filtrer les lignes par terme de recherche
@@ -399,6 +431,23 @@ const Lignes = () => {
     ligne.cctNom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     ligne.statutNom?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Fonction de test de pagination
+  const testPagination = () => {
+    console.log('🧪 TEST PAGINATION:', {
+      page,
+      pageSize,
+      totalCount,
+      totalPages,
+      lignesCount: lignes.length,
+      filteredCount: filteredLignes.length
+    });
+  };
+
+  // Appeler le test au chargement
+  useEffect(() => {
+    testPagination();
+  }, [page, pageSize, totalCount, totalPages, lignes.length]);
 
   if (loading) {
     return (
@@ -635,11 +684,24 @@ const Lignes = () => {
                     </TableCell>
                   <TableCell>{ligne.cctNom || 'N/A'}</TableCell>
                   <TableCell>
-                    <Chip 
-                      label={ligne.statutNom || 'N/A'} 
-                      color="secondary" 
-                      size="small" 
-                    />
+                    <Box display="flex" alignItems="center" gap={1}>
+                      {/* Point coloré pour le statut */}
+                      <Box
+                        sx={{
+                          width: 10,
+                          height: 10,
+                          borderRadius: '50%',
+                          backgroundColor: getStatutLigneColor(ligne.statutNom),
+                          flexShrink: 0,
+                          border: '1px solid rgba(0,0,0,0.1)',
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                        }}
+                      />
+                      {/* Texte du statut */}
+                      <Typography variant="body2">
+                        {ligne.statutNom || 'N/A'}
+                      </Typography>
+                    </Box>
                   </TableCell>
                   <TableCell>
                     {new Date(ligne.dateStatut).toLocaleDateString('fr-FR')}
@@ -677,11 +739,7 @@ const Lignes = () => {
         </TableContainer>
 
         {/* Pagination */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
-          <Typography>
-            Affichage de l'élément {(page - 1) * pageSize + 1} à {Math.min(page * pageSize, totalCount)} sur {totalCount} éléments
-          </Typography>
-          
+        <Box display="flex" justifyContent="center" alignItems="center" mt={2}>
           <Pagination
             count={totalPages}
             page={page}

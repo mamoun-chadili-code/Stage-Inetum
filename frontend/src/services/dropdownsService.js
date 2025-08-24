@@ -299,6 +299,20 @@ export const dropdownsService = {
     }
   },
 
+  // Récupérer les statuts des lignes
+  async getStatutLignes() {
+    try {
+      console.log('Tentative de récupération des statuts de lignes depuis l\'API...');
+      const response = await api.get('/StatutLignes');
+      console.log('✅ Statuts de lignes récupérés depuis l\'API:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ ERREUR: API StatutLignes non disponible.');
+      console.error('Veuillez vérifier que l\'API backend est démarrée et que la table StatutLignes contient des données.');
+      throw new Error('API StatutLignes non disponible - Aucune donnée de fallback');
+    }
+  },
+
          // Fonction pour charger les vraies catégories depuis la base de données
        async loadCategoriesFromDB() {
          try {

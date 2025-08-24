@@ -129,11 +129,16 @@ const LigneDetailsModal = ({ open, onClose, ligne, categories = [], onEdit }) =>
                               boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
                             }}
                           />
-                          <Chip 
-                            label={currentCategorie.libelle} 
-                            color="secondary" 
-                            size="small"
-                          />
+                          {/* Texte simple au lieu du Chip */}
+                          <Typography
+                            variant="body1"
+                            sx={{
+                              fontWeight: 500,
+                              color: 'text.primary'
+                            }}
+                          >
+                            {currentCategorie.libelle}
+                          </Typography>
                         </Box>
                         {/* Description de la catégorie */}
                         {currentCategorie.description && (
@@ -187,15 +192,6 @@ const LigneDetailsModal = ({ open, onClose, ligne, categories = [], onEdit }) =>
                       {formatDate(ligne.dateStatut)}
                     </Typography>
                   </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Année de démarrage:
-                    </Typography>
-                    <Typography variant="body1">
-                      {ligne.anneeDemarrage || 'N/A'}
-                    </Typography>
-                  </Grid>
                 </Grid>
               </CardContent>
             </Card>
@@ -228,76 +224,12 @@ const LigneDetailsModal = ({ open, onClose, ligne, categories = [], onEdit }) =>
                       {formatDateTime(ligne.dateDecision)}
                     </Typography>
                   </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Année de démarrage:
-                    </Typography>
-                    <Typography variant="body1">
-                      {ligne.anneeDemarrage || 'N/A'}
-                    </Typography>
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      ID de la ligne:
-                    </Typography>
-                    <Typography variant="body1" fontFamily="monospace">
-                      #{ligne.id}
-                    </Typography>
-                  </Grid>
                 </Grid>
               </CardContent>
             </Card>
           </Grid>
 
-          {/* Informations techniques */}
-          <Grid item xs={12}>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="h6" gutterBottom color="primary">
-                  Informations Techniques
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      ID Catégorie:
-                    </Typography>
-                    <Typography variant="body1" fontFamily="monospace">
-                      {ligne.categorieId}
-                    </Typography>
-                  </Grid>
 
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      ID CCT:
-                    </Typography>
-                    <Typography variant="body1" fontFamily="monospace">
-                      {ligne.cctId}
-                    </Typography>
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      ID Statut:
-                    </Typography>
-                    <Typography variant="body1" fontFamily="monospace">
-                      {ligne.statutId}
-                    </Typography>
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      ID Décision:
-                    </Typography>
-                    <Typography variant="body1" fontFamily="monospace">
-                      {ligne.decisionId || 'N/A'}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
         </Grid>
       </DialogContent>
 

@@ -35,6 +35,7 @@ import {
   Schedule as ScheduleIcon,
   Event as EventIcon
 } from '@mui/icons-material';
+import SearchableSelect from '../common/SearchableSelect';
 
 const LigneFormModal = ({ 
   open, 
@@ -333,29 +334,27 @@ const LigneFormModal = ({
                 </FormControl>
 
                 {/* Statut */}
-                <FormControl fullWidth error={!!errors.statutId}>
-                  <InputLabel>
-                    Statut <span style={{ color: 'red' }}>*</span>
-                  </InputLabel>
-                  <Select
-                    value={formData.statutId}
-                    onChange={(e) => handleChange('statutId', e.target.value)}
-                    label="Statut *"
-                    disabled={loading}
-                  >
-                    <MenuItem value="">
-                      <em>Sélectionnez un statut</em>
-                    </MenuItem>
-                    {statuts?.map((statut) => (
-                      <MenuItem key={statut.id} value={statut.id}>
-                        {statut.nom}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {errors.statutId && (
-                    <FormHelperText error>{errors.statutId}</FormHelperText>
-                  )}
-                </FormControl>
+                <SearchableSelect
+                  label="Statut *"
+                  value={formData.statutId}
+                  onChange={(value) => handleChange('statutId', value)}
+                  options={statuts || []}
+                  placeholder="Rechercher un statut..."
+                  getOptionLabel={(option) => option.libelle}
+                  getOptionValue={(option) => option.id}
+                  isStatutLigneField={true}
+                  required
+                  disabled={loading}
+                  sx={{ 
+                    '& .MuiOutlinedInput-root': { 
+                      borderRadius: 2,
+                      minHeight: '56px'
+                    }
+                  }}
+                />
+                {errors.statutId && (
+                  <FormHelperText error sx={{ ml: 2, mt: 0.5 }}>{errors.statutId}</FormHelperText>
+                )}
 
                 {/* Date statut */}
                 <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>

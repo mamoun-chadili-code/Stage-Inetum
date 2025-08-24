@@ -228,7 +228,10 @@ namespace CT_CNEH_API.Services
                 DecisionId = dto.DecisionId,
                 DateDecision = dto.DateDecision,
                 AnneeDemarrage = dto.AnneeDemarrage,
-                DateCreation = DateTime.UtcNow
+                DateCreation = DateTime.UtcNow,
+                // Valeurs de compatibilité fixes
+                CategorieCCTId = 1,
+                StatutLigneId = 1
             };
 
             _context.Lignes.Add(ligne);
@@ -252,6 +255,9 @@ namespace CT_CNEH_API.Services
             ligne.DateDecision = dto.DateDecision;
             ligne.AnneeDemarrage = dto.AnneeDemarrage;
             ligne.DateModification = DateTime.UtcNow;
+            // Valeurs de compatibilité fixes
+            ligne.CategorieCCTId = 1;
+            ligne.StatutLigneId = 1;
 
             await _context.SaveChangesAsync();
             return true;
