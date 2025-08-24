@@ -83,3 +83,6 @@ Write-Host "4. Testez l'upload de logos et autres fonctionnalites" -ForegroundCo
 
 Write-Host "`nVotre projet est maintenant pret a etre utilise !" -ForegroundColor Green
 
+
+
+

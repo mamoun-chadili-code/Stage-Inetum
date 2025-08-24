@@ -18,21 +18,42 @@ namespace CT_CNEH_API.Controllers
 
         // GET: api/CategorieLignes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CategorieLigne>>> GetCategories()
+        public async Task<ActionResult<IEnumerable<CategorieLigne>>> GetCategorieLignes()
         {
-            return await _context.CategorieLignes.ToListAsync();
+            try
+            {
+                var categories = await _context.CategorieLignes
+                    .Where(c => c.EstActif)
+                    .OrderBy(c => c.Libelle)
+                    .ToListAsync();
+                    
+                return Ok(categories);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
+            }
         }
 
         // GET: api/CategorieLignes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CategorieLigne>> GetCategory(int id)
+        public async Task<ActionResult<CategorieLigne>> GetCategorieLigne(int id)
         {
-            var category = await _context.CategorieLignes.FindAsync(id);
-
-            if (category == null)
-                return NotFound();
-
-            return category;
+            try
+            {
+                var categorie = await _context.CategorieLignes.FindAsync(id);
+                
+                if (categorie == null)
+                {
+                    return NotFound($"Catégorie avec l'ID {id} non trouvée");
+                }
+                
+                return categorie;
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
+            }
         }
     }
 }

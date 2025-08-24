@@ -59,3 +59,6 @@ ORDER BY Type, Id;
 PRINT '✅ Mise à jour terminée !';
 GO
 
+
+
+

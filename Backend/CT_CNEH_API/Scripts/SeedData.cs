@@ -632,11 +632,11 @@ namespace CT_CNEH_API.Scripts
             // Créer des lignes de test
             var lignes = new List<Ligne>
             {
-                new Ligne { NumeroLigne = 1, CategorieId = 1, CCTId = 1, StatutId = 1, DateStatut = DateTime.Now, AnneeDemarrage = 2023 },
-                new Ligne { NumeroLigne = 2, CategorieId = 2, CCTId = 2, StatutId = 1, DateStatut = DateTime.Now, AnneeDemarrage = 2023 },
-                new Ligne { NumeroLigne = 3, CategorieId = 1, CCTId = 3, StatutId = 2, DateStatut = DateTime.Now, AnneeDemarrage = 2024 },
-                new Ligne { NumeroLigne = 4, CategorieId = 3, CCTId = 4, StatutId = 1, DateStatut = DateTime.Now, AnneeDemarrage = 2023 },
-                new Ligne { NumeroLigne = 5, CategorieId = 2, CCTId = 5, StatutId = 1, DateStatut = DateTime.Now, AnneeDemarrage = 2023 }
+                new Ligne { NumeroLigne = 1, CategorieId = 1, CCTId = 1, StatutId = 1, DateStatut = DateTime.Now, AnneeDemarrage = "2023" },
+                new Ligne { NumeroLigne = 2, CategorieId = 2, CCTId = 2, StatutId = 1, DateStatut = DateTime.Now, AnneeDemarrage = "2023" },
+                new Ligne { NumeroLigne = 3, CategorieId = 1, CCTId = 3, StatutId = 2, DateStatut = DateTime.Now, AnneeDemarrage = "2024" },
+                new Ligne { NumeroLigne = 4, CategorieId = 3, CCTId = 4, StatutId = 1, DateStatut = DateTime.Now, AnneeDemarrage = "2023" },
+                new Ligne { NumeroLigne = 5, CategorieId = 2, CCTId = 5, StatutId = 1, DateStatut = DateTime.Now, AnneeDemarrage = "2024" }
             };
             context.Lignes.AddRange(lignes);
             await context.SaveChangesAsync();

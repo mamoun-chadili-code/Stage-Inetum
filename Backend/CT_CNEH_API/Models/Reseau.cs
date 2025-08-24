@@ -17,7 +17,7 @@ namespace CT_CNEH_API.Models
         
         // FK et navigation pour Statut
         public int StatutId { get; set; }
-        public virtual StatutCCT? Statut { get; set; }
+        public virtual Statut? Statut { get; set; }
 
         [Required]
         public DateTime DateStatut { get; set; }

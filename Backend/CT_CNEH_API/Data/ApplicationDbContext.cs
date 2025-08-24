@@ -80,24 +80,24 @@ namespace CT_CNEH_API.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Ligne>()
-                .HasOne(l => l.CCT)
-                .WithMany(c => c.Lignes)
+                .HasOne<CCT>()
+                .WithMany()
                 .HasForeignKey(l => l.CCTId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Ligne>()
-                .HasOne(l => l.Categorie)
-                .WithMany(c => c.Lignes)
+                .HasOne<CategorieLigne>()
+                .WithMany()
                 .HasForeignKey(l => l.CategorieId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Ligne>()
-                .HasOne(l => l.Statut)
-                .WithMany(sl => sl.Lignes)
+                .HasOne<StatutLigne>()
+                .WithMany()
                 .HasForeignKey(l => l.StatutId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Configuration des nouveaux modèles refactorés
+            // Configuration des nouveaux modèles refactorisés
             modelBuilder.Entity<Equipement>()
                 .HasOne(e => e.Ligne)
                 .WithMany()

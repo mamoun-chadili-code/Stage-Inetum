@@ -14,6 +14,8 @@ namespace CT_CNEH_API.Models
         [StringLength(10)]
         public string Code { get; set; } = string.Empty;
         
+
+        
         public DateTime DateCreation { get; set; } = DateTime.Now;
         
         public DateTime DateModification { get; set; } = DateTime.Now;

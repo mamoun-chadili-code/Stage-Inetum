@@ -416,9 +416,12 @@ const cctService = {
       console.log('=== REQUÊTE PUT ===');
       console.log('URL:', `/CCTs/${id}`);
       console.log('Headers:', { 'Content-Type': 'application/json' });
-      console.log('Données à envoyer:', JSON.stringify(cleanedData, null, 2));
       
-      const response = await api.put(`/CCTs/${id}`, cleanedData);
+      // Inclure l'ID dans le corps de la requête pour la cohérence avec le backend
+      const dataWithId = { ...cleanedData, id: id };
+      console.log('Données à envoyer (avec ID):', JSON.stringify(dataWithId, null, 2));
+      
+      const response = await api.put(`/CCTs/${id}`, dataWithId);
       
       console.log('CCT mis à jour avec succès');
       return response;

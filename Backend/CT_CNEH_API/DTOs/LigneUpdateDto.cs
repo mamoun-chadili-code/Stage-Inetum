@@ -27,7 +27,7 @@ namespace CT_CNEH_API.DTOs
         
         public DateTime? DateDecision { get; set; }
         
-        [Range(1900, 2100, ErrorMessage = "L'année de démarrage doit être entre 1900 et 2100")]
-        public int? AnneeDemarrage { get; set; }
+        [StringLength(10, ErrorMessage = "L'année de démarrage ne peut pas dépasser 10 caractères")]
+        public string? AnneeDemarrage { get; set; }
     }
 }

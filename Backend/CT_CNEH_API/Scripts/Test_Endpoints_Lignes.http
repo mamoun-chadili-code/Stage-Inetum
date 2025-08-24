@@ -1,0 +1,113 @@
+### Test des endpoints Lignes et CategorieLignes
+### Utiliser avec l'extension REST Client dans VS Code ou import dans Postman
+
+@baseUrl = https://localhost:7001/api
+@contentType = application/json
+
+### 1. TEST ENDPOINT CATEGORIELIGNES
+
+# Récupérer toutes les catégories
+GET {{baseUrl}}/CategorieLignes
+Content-Type: {{contentType}}
+
+###
+
+# Récupérer une catégorie spécifique
+GET {{baseUrl}}/CategorieLignes/1
+Content-Type: {{contentType}}
+
+###
+
+### 2. TEST ENDPOINT LIGNES
+
+# Récupérer toutes les lignes
+GET {{baseUrl}}/Lignes
+Content-Type: {{contentType}}
+
+###
+
+# Récupérer une ligne spécifique (remplacer 6 par un ID existant)
+GET {{baseUrl}}/Lignes/6
+Content-Type: {{contentType}}
+
+###
+
+# Rechercher des lignes
+POST {{baseUrl}}/Lignes/search
+Content-Type: {{contentType}}
+
+{
+  "page": 1,
+  "pageSize": 10,
+  "searchTerm": "",
+  "categorieId": null,
+  "cctId": null,
+  "statutId": null,
+  "regionId": null,
+  "villeId": null,
+  "reseauId": null,
+  "anneeDemarrage": ""
+}
+
+###
+
+# Créer une nouvelle ligne
+POST {{baseUrl}}/Lignes
+Content-Type: {{contentType}}
+
+{
+  "numeroLigne": 1,
+  "categorieId": 1,
+  "cctId": 1,
+  "statutId": 1,
+  "dateStatut": "2024-01-15T00:00:00",
+  "anneeDemarrage": "2024"
+}
+
+###
+
+# Mettre à jour une ligne existante (remplacer 6 par un ID existant)
+PUT {{baseUrl}}/Lignes/6
+Content-Type: {{contentType}}
+
+{
+  "id": 6,
+  "numeroLigne": 1,
+  "categorieId": 1,
+  "cctId": 1,
+  "statutId": 1,
+  "dateStatut": "2024-01-15T00:00:00",
+  "anneeDemarrage": "2024"
+}
+
+###
+
+# Supprimer une ligne (remplacer 6 par un ID existant)
+DELETE {{baseUrl}}/Lignes/6
+Content-Type: {{contentType}}
+
+###
+
+### 3. TEST DE SANTÉ DE L'API
+
+# Vérifier que l'API fonctionne
+GET {{baseUrl}}/Health
+Content-Type: {{contentType}}
+
+###
+
+### 4. INSTRUCTIONS DE TEST
+
+# 1. Démarrer le backend : dotnet run
+# 2. Vérifier que l'API est accessible sur https://localhost:7001
+# 3. Exécuter les tests dans l'ordre
+# 4. Vérifier que l'erreur 404 est résolue
+# 5. Tester le frontend pour confirmer le bon fonctionnement
+
+# Résultats attendus :
+# ✅ GET /CategorieLignes : Retourne 4 catégories avec descriptions
+# ✅ GET /Lignes/6 : Retourne la ligne ou 404 si elle n'existe pas
+# ✅ PUT /Lignes/6 : Fonctionne sans erreur 404
+# ✅ Points colorés visibles dans le frontend
+
+

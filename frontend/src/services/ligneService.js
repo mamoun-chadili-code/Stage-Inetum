@@ -70,7 +70,9 @@ const ligneService = {
   // Mettre à jour une ligne
   async updateLigne(id, ligneData) {
     try {
-      const response = await api.put(`/Lignes/${id}`, ligneData);
+      // Inclure l'ID dans le corps de la requête pour la cohérence avec le backend
+      const dataWithId = { ...ligneData, id: id };
+      const response = await api.put(`/Lignes/${id}`, dataWithId);
       return response.data;
     } catch (error) {
       console.error(`Erreur lors de la mise à jour de la ligne ${id}:`, error);

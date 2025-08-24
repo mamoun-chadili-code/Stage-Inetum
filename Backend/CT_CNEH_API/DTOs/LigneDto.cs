@@ -25,7 +25,7 @@ namespace CT_CNEH_API.DTOs
         
         public DateTime? DateDecision { get; set; }
         
-        public int? AnneeDemarrage { get; set; }
+        public string? AnneeDemarrage { get; set; }
         
         // Propriétés de navigation pour l'affichage
         public string? CategorieNom { get; set; }

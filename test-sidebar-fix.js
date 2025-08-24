@@ -47,3 +47,6 @@ console.log('2. Vérifiez que l\'avertissement "button attribute" a disparu');
 console.log('3. Testez la navigation dans la sidebar');
 console.log('4. Testez le bouton de déconnexion');
 
+
+
+

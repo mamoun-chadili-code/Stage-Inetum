@@ -157,3 +157,6 @@ console.log('3. Vérifiez que les dropdowns de statut s\'affichent correctement'
 console.log('4. Testez la recherche par statut');
 console.log('5. Testez l\'ajout/modification d\'un réseau avec statut');
 
+
+
+

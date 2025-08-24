@@ -19,7 +19,7 @@ import {
   Close as CloseIcon
 } from '@mui/icons-material';
 
-const LigneDetailsModal = ({ open, onClose, ligne, onEdit }) => {
+const LigneDetailsModal = ({ open, onClose, ligne, categories = [], onEdit }) => {
   if (!ligne) return null;
 
   const formatDate = (dateString) => {
@@ -31,6 +31,35 @@ const LigneDetailsModal = ({ open, onClose, ligne, onEdit }) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleString('fr-FR');
   };
+
+  // Fonction pour obtenir la couleur basée sur la catégorie
+  const getCategorieColor = (categorieText) => {
+    const text = (categorieText || '').toLowerCase();
+    
+    if (text.includes('véhicules légers') || text.includes('vl')) {
+      return '#84D189'; // Vert personnalisé pour véhicules légers
+    } else if (text.includes('poids lourds') || text.includes('pl')) {
+      return '#ED6345'; // Rouge personnalisé pour poids lourds
+    } else if (text.includes('motocycles') || text.includes('moto')) {
+      return '#90C6DE'; // Bleu personnalisé pour motocycles
+    } else if (text.includes('toute catégorie') || text.includes('polyvalente')) {
+      return '#ED934E'; // Orange personnalisé pour toute catégorie
+    }
+    return '#9c27b0'; // Violet par défaut
+  };
+
+  // Récupérer la catégorie actuelle depuis les données CategorieLignes
+  const getCurrentCategorie = () => {
+    if (!ligne.categorieId || !categories.length) {
+      return { libelle: ligne.categorieNom || 'N/A', description: null };
+    }
+    
+    const categorie = categories.find(cat => cat.id === ligne.categorieId);
+    return categorie || { libelle: ligne.categorieNom || 'N/A', description: null };
+  };
+
+  const currentCategorie = getCurrentCategorie();
+  const categorieColor = getCategorieColor(currentCategorie.libelle);
 
   return (
     <Dialog 
@@ -82,15 +111,45 @@ const LigneDetailsModal = ({ open, onClose, ligne, onEdit }) => {
                   </Grid>
                   
                   <Grid item xs={12} sm={6}>
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <Typography variant="subtitle2" color="text.secondary">
+                    <Box display="flex" alignItems="flex-start" gap={1}>
+                      <Typography variant="subtitle2" color="text.secondary" sx={{ mt: 0.5 }}>
                         Catégorie:
                       </Typography>
-                      <Chip 
-                        label={ligne.categorieNom || 'N/A'} 
-                        color="secondary" 
-                        size="small"
-                      />
+                      <Box display="flex" flexDirection="column" alignItems="flex-start" gap={0.5}>
+                        <Box display="flex" alignItems="center" gap={1}>
+                          {/* Point coloré */}
+                          <Box
+                            sx={{
+                              width: 12,
+                              height: 12,
+                              borderRadius: '50%',
+                              backgroundColor: categorieColor,
+                              flexShrink: 0,
+                              border: '1px solid rgba(0,0,0,0.1)',
+                              boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                            }}
+                          />
+                          <Chip 
+                            label={currentCategorie.libelle} 
+                            color="secondary" 
+                            size="small"
+                          />
+                        </Box>
+                        {/* Description de la catégorie */}
+                        {currentCategorie.description && (
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: 'text.secondary',
+                              fontSize: '0.75rem',
+                              fontStyle: 'italic',
+                              ml: 2
+                            }}
+                          >
+                            {currentCategorie.description}
+                          </Typography>
+                        )}
+                      </Box>
                     </Box>
                   </Grid>
 

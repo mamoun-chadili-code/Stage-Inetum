@@ -363,9 +363,6 @@ namespace CT_CNEH_API.Controllers
         public async Task<ActionResult<IEnumerable<Ligne>>> GetCCTLignes(int id)
         {
             var lignes = await _context.Lignes
-                .Include(l => l.Categorie)
-                .Include(l => l.Statut)
-                .Include(l => l.Decision)
                 .Where(l => l.CCTId == id)
                 .ToListAsync();
 

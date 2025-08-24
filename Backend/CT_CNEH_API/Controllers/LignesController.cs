@@ -67,11 +67,11 @@ namespace CT_CNEH_API.Controllers
                 
                 return Ok(new
                 {
-                    Lignes = lignes,
-                    TotalCount = totalCount,
-                    Page = searchDto.Page,
-                    PageSize = searchDto.PageSize,
-                    TotalPages = (int)Math.Ceiling((double)totalCount / searchDto.PageSize)
+                    lignes = lignes,
+                    totalCount = totalCount,
+                    page = searchDto.Page,
+                    pageSize = searchDto.PageSize,
+                    totalPages = (int)Math.Ceiling((double)totalCount / searchDto.PageSize)
                 });
             }
             catch (Exception ex)

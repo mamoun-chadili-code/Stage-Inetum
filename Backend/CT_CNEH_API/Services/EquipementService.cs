@@ -82,7 +82,10 @@ namespace CT_CNEH_API.Services
                 
                 // Informations de la ligne
                 LigneNom = e.Ligne?.NumeroLigne.ToString(),
-                LigneCode = e.Ligne?.Categorie?.Nom,
+                LigneCode = _context.CategorieLignes
+                    .Where(c => c.Id == e.Ligne.CategorieId)
+                    .Select(c => c.Libelle)
+                    .FirstOrDefault() ?? "N/A",
                 
                 // Informations du type d'équipement
                 TypeEquipementLibelle = e.TypeEquipement?.Libelle,
@@ -126,7 +129,10 @@ namespace CT_CNEH_API.Services
                 
                 // Informations de la ligne
                 LigneNom = equipement.Ligne?.NumeroLigne.ToString(),
-                LigneCode = equipement.Ligne?.Categorie?.Nom,
+                LigneCode = _context.CategorieLignes
+                    .Where(c => c.Id == equipement.Ligne.CategorieId)
+                    .Select(c => c.Libelle)
+                    .FirstOrDefault() ?? "N/A",
                 
                 // Informations du type d'équipement
                 TypeEquipementLibelle = equipement.TypeEquipement?.Libelle,

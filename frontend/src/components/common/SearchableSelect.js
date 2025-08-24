@@ -22,10 +22,11 @@ export default function SearchableSelect({
   getOptionValue = (option) => option.id || option.value || option,
   disabled = false,
   isStatusField = false,
-  showDescriptions = false
+  showDescriptions = false,
+  isCategorieField = false
 }) {
-  // S'assurer que la valeur n'est jamais undefined
-  const controlledValue = value || '';
+  // S'assurer que la valeur n'est jamais undefined, mais permettre 0 comme valeur valide
+  const controlledValue = value !== undefined && value !== null ? value : '';
 
   // Fonction pour obtenir la couleur du statut
   const getStatusColor = (statusText) => {
@@ -66,6 +67,22 @@ export default function SearchableSelect({
     return null;
   };
 
+  // Fonction pour obtenir la couleur des catégories
+  const getCategorieColor = (categorieText) => {
+    const text = (categorieText || '').toLowerCase();
+    
+    if (text.includes('véhicules légers') || text.includes('vl')) {
+      return '#84D189'; // Vert personnalisé pour véhicules légers
+    } else if (text.includes('poids lourds') || text.includes('pl')) {
+      return '#ED6345'; // Rouge personnalisé pour poids lourds
+    } else if (text.includes('motocycles') || text.includes('moto')) {
+      return '#90C6DE'; // Bleu personnalisé pour motocycles
+    } else if (text.includes('toute catégorie') || text.includes('polyvalente')) {
+      return '#ED934E'; // Orange personnalisé pour toute catégorie
+    }
+    return '#9c27b0'; // Violet par défaut
+  };
+
   const handleChange = (event, newValue) => {
     // Gérer explicitement le cas où aucune option n'est sélectionnée
     if (!newValue) {
@@ -99,7 +116,8 @@ export default function SearchableSelect({
           if (option.id === '' && value === '') {
             return true;
           }
-          return getOptionValue(option) === getOptionValue(value);
+          // value est la valeur actuelle, pas une option
+          return getOptionValue(option) === value;
         }}
         disabled={disabled}
         placeholder={placeholder}
@@ -115,7 +133,9 @@ export default function SearchableSelect({
         renderOption={(props, option) => {
           const statusText = getOptionLabel(option);
           const statusColor = isStatusField ? getStatusColor(statusText) : null;
-          const hasDescription = option.description && (isStatusField || showDescriptions);
+          const categorieColor = isCategorieField ? getCategorieColor(statusText) : null;
+          const displayColor = statusColor || categorieColor;
+          const hasDescription = option.description && (isStatusField || showDescriptions || isCategorieField);
 
           return (
             <Box component="li" {...props} key={`${getOptionValue(option)}-${statusText}`}>
@@ -134,15 +154,17 @@ export default function SearchableSelect({
                   gap: 1,
                   width: '100%'
                 }}>
-                  {statusColor && (
+                  {displayColor && (
                     <Box
                       sx={{
                         width: 12,
                         height: 12,
                         borderRadius: '50%',
-                        backgroundColor: statusColor,
+                        backgroundColor: displayColor,
                         flexShrink: 0,
-                        mt: 0.5
+                        mt: 0.5,
+                        border: '1px solid rgba(0,0,0,0.1)',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
                       }}
                     />
                   )}
@@ -161,7 +183,7 @@ export default function SearchableSelect({
                   <Box sx={{ 
                     fontSize: '0.8rem', 
                     color: 'text.secondary',
-                    ml: 3,
+                    ml: displayColor ? 3 : 0,
                     fontStyle: 'italic',
                     lineHeight: 1.3,
                     wordBreak: 'break-word',
@@ -178,19 +200,21 @@ export default function SearchableSelect({
           value.map((option, index) => {
             const statusText = getOptionLabel(option);
             const statusColor = isStatusField ? getStatusColor(statusText) : null;
+            const categorieColor = isCategorieField ? getCategorieColor(statusText) : null;
+            const displayColor = statusColor || categorieColor;
             
             return (
               <Chip
                 {...getTagProps({ index })}
                 key={getOptionValue(option)}
                 label={statusText}
-                icon={statusColor ? (
+                icon={displayColor ? (
                   <Box
                     sx={{
                       width: 12,
                       height: 12,
                       borderRadius: '50%',
-                      backgroundColor: statusColor,
+                      backgroundColor: displayColor,
                       flexShrink: 0
                     }}
                   />

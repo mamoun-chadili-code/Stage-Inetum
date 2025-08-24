@@ -22,7 +22,10 @@ namespace CT_CNEH_API.Controllers
         {
             try
             {
-                var categories = await _context.CategorieCCTs.ToListAsync();
+                var categories = await _context.CategorieCCTs
+                    .Select(c => new { c.Id, c.Libelle, c.Code })
+                    .OrderBy(c => c.Libelle)
+                    .ToListAsync();
                 return Ok(categories);
             }
             catch (Exception ex)

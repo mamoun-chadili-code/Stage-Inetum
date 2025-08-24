@@ -38,11 +38,11 @@ export default function ChefCentreFormModal({ open, onClose, onSubmit, initialVa
 
   useEffect(() => {
     if (initialValues && initialValues.id) {
-      setForm({
+      const newForm = {
         nom: initialValues.nom || '',
         prenom: initialValues.prenom || '',
         cin: initialValues.cin || '',
-        CCTId: initialValues.CCTId?.toString() || initialValues.cctId?.toString() || '',
+        CCTId: initialValues.CCTId || initialValues.cctId || '',
         dateAffectationCCT: initialValues.dateAffectationCCT ? initialValues.dateAffectationCCT.split('T')[0] : '',
         referenceApprobationCNEH: initialValues.referenceApprobationCNEH || '',
         anneeAutorisation: initialValues.anneeAutorisation?.toString() || '',
@@ -52,8 +52,9 @@ export default function ChefCentreFormModal({ open, onClose, onSubmit, initialVa
         cnss: initialValues.cnss || '',
         sexe: initialValues.sexe || false,
         dateNaissance: initialValues.dateNaissance ? initialValues.dateNaissance.split('T')[0] : '',
-        niveauFormationInitialId: initialValues.niveauFormationInitialId?.toString() || ''
-      });
+        niveauFormationInitialId: initialValues.niveauFormationInitialId || ''
+      };
+      setForm(newForm);
     } else {
       setForm({
         nom: '',
@@ -111,7 +112,7 @@ export default function ChefCentreFormModal({ open, onClose, onSubmit, initialVa
               borderBottom: '2px solid #e3f2fd',
               fontWeight: 'bold'
             }}>
-              👤 Informations Personnelles
+              Informations Personnelles
             </Typography>
             
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
@@ -196,7 +197,7 @@ export default function ChefCentreFormModal({ open, onClose, onSubmit, initialVa
               borderBottom: '2px solid #e3f2fd',
               fontWeight: 'bold'
             }}>
-              🏢 Affectation et Autorisation
+              Affectation et Autorisation
             </Typography>
             
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
@@ -272,7 +273,7 @@ export default function ChefCentreFormModal({ open, onClose, onSubmit, initialVa
               borderBottom: '2px solid #e3f2fd',
               fontWeight: 'bold'
             }}>
-              📞 Contact et Formation
+              Contact et Formation
             </Typography>
             
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>

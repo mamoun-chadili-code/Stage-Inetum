@@ -194,7 +194,7 @@ const DecisionFormModal = ({ open, decision, editMode, dropdowns, onClose, onSav
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {editMode ? 'MODIFIER DÉCISION' : '+ AJOUTER DÉCISION'}
+          {editMode ? 'MODIFIER DÉCISION' : 'AJOUTER DÉCISION'}
         </Box>
         <Typography
           variant="body2"

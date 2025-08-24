@@ -435,7 +435,7 @@ const Decisions = () => {
               onClick={handleAddDecision}
               sx={{ bgcolor: '#1976d2' }}
             >
-              + Ajouter Décision
+              Ajouter Décision
             </Button>
           </Box>
         </Box>

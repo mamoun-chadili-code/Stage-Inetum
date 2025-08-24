@@ -46,7 +46,9 @@ export const decisionService = {
   // Mettre à jour une décision existante
   async updateDecision(id, decisionData) {
     try {
-      const response = await api.put(`/Decisions/${id}`, decisionData);
+      // Inclure l'ID dans le corps de la requête pour la cohérence avec le backend
+      const dataWithId = { ...decisionData, id: id };
+      const response = await api.put(`/Decisions/${id}`, dataWithId);
       return response.data;
     } catch (error) {
       console.error('Erreur lors de la mise à jour de la décision:', error);

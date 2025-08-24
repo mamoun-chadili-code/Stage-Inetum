@@ -15,10 +15,12 @@ namespace CT_CNEH_API.Models
         
         public bool IsActive { get; set; } = true;
         
-        // Navigation properties
-        public virtual ICollection<Ligne> Lignes { get; set; } = new List<Ligne>();
+        // Navigation properties - SUPPRIMÉE pour éviter les conflits de mapping
+        // public virtual ICollection<Ligne> Lignes { get; set; } = new List<Ligne>();
     }
 }
+
+
 
 
 

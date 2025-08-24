@@ -86,8 +86,7 @@ export default function CCTs() {
     regionId: null,
     villeId: null,
     reseauId: null,
-    anneeDemarrage: '',
-    statutId: null
+    anneeDemarrage: ''
   });
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -202,7 +201,7 @@ export default function CCTs() {
         dropdownsService.getReseaux(),
         dropdownsService.getCategoriesCCT(),
         dropdownsService.getStatutsCCT(),
-        dropdownsService.getTypesCTT(),
+        dropdownsService.getTypesCCT(),
         dropdownsService.getCadresAutorisation()
       ]);
 
@@ -246,8 +245,7 @@ export default function CCTs() {
       regionId: null,
       villeId: null,
       reseauId: null,
-      anneeDemarrage: '',
-      statutId: null
+      anneeDemarrage: ''
     });
     setSearchTerm('');
     setPagination(prev => ({ ...prev, currentPage: 1 }));
@@ -256,21 +254,12 @@ export default function CCTs() {
 
   // Ouvrir modal d'ajout
   const handleAdd = () => {
-    if (!dropdowns.categories || !dropdowns.statuts || !dropdowns.types) {
-      toast.error('Veuillez attendre le chargement des données');
-      return;
-    }
     setEditingCCT(null);
     setOpenModal(true);
   };
 
   // Ouvrir modal de modification
   const handleEdit = async (cct) => {
-    if (!dropdowns.categories || !dropdowns.statuts || !dropdowns.types) {
-      toast.error('Veuillez attendre le chargement des données');
-      return;
-    }
-    
     try {
       // Utiliser directement les données du CCT avec les IDs déjà présents
       // Les IDs sont maintenant inclus dans le DTO retourné par GetCCTs
@@ -631,72 +620,43 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
                 placeholder="Ex: 2019"
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <FormControl fullWidth size="small">
-                <InputLabel>Statut</InputLabel>
-                <Select
-                  value={filters.statutId || ''}
-                  onChange={(e) => handleFilterChange('statutId', e.target.value)}
-                  label="Statut"
-                >
-                  <MenuItem value="">
-                    <em>Tous les statuts</em>
-                  </MenuItem>
-                  {dropdowns.statuts.map(statut => (
-                    <MenuItem key={statut.id} value={statut.id}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Box 
-                          sx={{ 
-                            width: 12, 
-                            height: 12, 
-                            borderRadius: '50%',
-                            ...getStatutStyle(statut.libelle)
-                          }} 
-                        />
-                        {statut.libelle}
-                      </Box>
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Button
-                variant="contained"
-                startIcon={<SearchIcon />}
-                onClick={applyFilters}
-                fullWidth
-                sx={{ 
-                  minHeight: '40px',
-                  bgcolor: '#1976d2',
-                  '&:hover': {
-                    bgcolor: '#1565c0'
-                  }
-                }}
-              >
-                Rechercher
-              </Button>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-              <Button
-                variant="outlined"
-                startIcon={<ClearIcon />}
-                onClick={clearFilters}
-                fullWidth
-                sx={{ 
-                  minHeight: '40px',
-                  borderColor: '#1976d2',
-                  color: '#1976d2',
-                  '&:hover': {
-                    borderColor: '#1565c0',
-                    bgcolor: 'rgba(25, 118, 210, 0.04)'
-                  }
-                }}
-              >
-                Annuler
-              </Button>
-            </Grid>
           </Grid>
+
+          {/* Boutons de recherche */}
+          <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'center' }}>
+            <Button
+              variant="contained"
+              startIcon={<SearchIcon />}
+              onClick={applyFilters}
+              sx={{ 
+                minHeight: '40px',
+                minWidth: '150px',
+                bgcolor: '#1976d2',
+                '&:hover': {
+                  bgcolor: '#1565c0'
+                }
+              }}
+            >
+              Rechercher
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<ClearIcon />}
+              onClick={clearFilters}
+              sx={{ 
+                minHeight: '40px',
+                minWidth: '150px',
+                borderColor: '#1976d2',
+                color: '#1976d2',
+                '&:hover': {
+                  borderColor: '#1565c0',
+                  bgcolor: 'rgba(25, 118, 210, 0.04)'
+                }
+              }}
+            >
+              Annuler
+            </Button>
+          </Box>
         </Paper>
 
         {/* Section CCTs */}
@@ -747,7 +707,7 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
               disabled={loadingDropdowns}
               sx={{ bgcolor: '#1976d2' }}
             >
-              + Ajouter CCT
+              Ajouter CCT
             </Button>
           </Box>
 

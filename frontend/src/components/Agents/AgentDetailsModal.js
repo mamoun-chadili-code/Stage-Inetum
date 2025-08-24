@@ -18,15 +18,24 @@ import {
   TableRow,
   Paper,
   Chip,
-  IconButton
+  IconButton,
+  Avatar,
+  Grid,
+  Tooltip
 } from '@mui/material';
-import Grid from '@mui/material/Grid';
 import {
   Close as CloseIcon,
   Edit as EditIcon,
   Person as PersonIcon,
   Work as WorkIcon,
-  History as HistoryIcon
+  History as HistoryIcon,
+  LocationOn as LocationIcon,
+  Phone as PhoneIcon,
+  Email as EmailIcon,
+  Badge as BadgeIcon,
+  Assignment as AssignmentIcon,
+  CalendarToday as CalendarIcon,
+  Business as BusinessIcon
 } from '@mui/icons-material';
 
 export default function AgentDetailsModal({ open, onClose, agent, details, onEdit, dropdowns }) {
@@ -38,22 +47,32 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
     return date.toLocaleDateString('fr-FR');
   };
 
-  // Fonction pour obtenir le statut CAP avec sa couleur
-  const getStatusColor = (statusText) => {
-    if (!statusText) return 'default';
+  // Fonction améliorée pour obtenir la couleur du statut administratif
+  const getStatutAdministratifColor = (statutId) => {
+    if (!statutId || !dropdowns.statutsAdministratifs) return { bg: '#1976d2', text: 'white' };
     
-    const statusColors = {
-      'CAP VALIDE': '#4caf50',
-      'CAP EN COURS': '#2196f3',
-      'CAP EN ATTENTE': '#ff9800',
-      'CAP NON VALIDE': '#f44336',
-      'CAP EXPIRÉ': '#9c27b0',
-      'CAP RENOUVELÉ': '#00bcd4',
-      'CAP SUSPENDU': '#ff5722',
-      'CAP ANNULÉ': '#795548'
-    };
+    const status = dropdowns.statutsAdministratifs.find(s => s.id === statutId);
+    if (!status) return { bg: '#1976d2', text: 'white' };
     
-    return statusColors[statusText] || 'default';
+    const statusText = status.libelle.toLowerCase();
+    
+    // Couleurs spécifiques pour les statuts CAP (exactement comme dans le tableau)
+    if (statusText.includes('cap valide')) return { bg: '#4caf50', text: 'white' }; // Vert
+    if (statusText.includes('cap en cours')) return { bg: '#2196f3', text: 'white' }; // Bleu
+    if (statusText.includes('cap en attente')) return { bg: '#ff9800', text: 'white' }; // Orange
+    if (statusText.includes('cap non valide')) return { bg: '#f44336', text: 'white' }; // Rouge
+    if (statusText.includes('cap expiré')) return { bg: '#9c27b0', text: 'white' }; // Violet
+    if (statusText.includes('cap renouvelé')) return { bg: '#00bcd4', text: 'white' }; // Cyan
+    if (statusText.includes('cap suspendu')) return { bg: '#ff5722', text: 'white' }; // Rouge-orange
+    if (statusText.includes('cap annulé')) return { bg: '#795548', text: 'white' }; // Marron
+    
+    // Couleurs pour les statuts administratifs (exactement comme dans le tableau)
+    if (statusText.includes('activité') || statusText.includes('active')) return { bg: '#4caf50', text: 'white' }; // Vert
+    if (statusText.includes('inactif')) return { bg: '#f44336', text: 'white' }; // Rouge
+    if (statusText.includes('suspendu')) return { bg: '#ff9800', text: 'white' }; // Orange
+    if (statusText.includes('fermer') || statusText.includes('fermé')) return { bg: '#9e9e9e', text: 'white' }; // Gris
+    
+    return { bg: '#1976d2', text: 'white' }; // Bleu par défaut
   };
 
   // Fonction pour obtenir le libellé du statut administratif
@@ -69,177 +88,404 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
     return status ? status.libelle : details.statutAdministratif || '-';
   };
 
+
+
+  // Fonction pour obtenir la couleur de la catégorie CAP
+  const getCategorieCAPColor = (categorieId) => {
+    if (!categorieId || !dropdowns.categories) return '#757575';
+    
+    const categorie = dropdowns.categories.find(c => c.id === categorieId);
+    if (!categorie) return '#757575';
+    
+    const categorieColors = {
+      'Véhicules toute catégorie': { bg: '#3f51b5', text: 'white' },
+      'Véhicules légers': { bg: '#4caf50', text: 'white' },
+      'Poids lourds': { bg: '#ff9800', text: 'white' },
+      'Motocycles': { bg: '#9c27b0', text: 'white' },
+      'Véhicules agricoles': { bg: '#795548', text: 'white' },
+      'Véhicules spéciaux': { bg: '#607d8b', text: 'white' }
+    };
+    
+    return categorieColors[categorie.libelle] || { bg: '#757575', text: 'white' };
+  };
+
+  // Fonction pour obtenir le libellé de la catégorie CAP
+  const getCategorieCAPLabel = () => {
+    if (!details.categorieCAPId || !dropdowns.categories) {
+      return details.categorieCAP || '-';
+    }
+    
+    const categorie = dropdowns.categories.find(
+      c => c.id === details.categorieCAPId
+    );
+    
+    return categorie ? categorie.libelle : details.categorieCAP || '-';
+  };
+
   if (!details) {
     return null;
   }
 
+  const statutColor = getStatutAdministratifColor(details.statutAdministratifId);
+  const categorieColor = getCategorieCAPColor(details.categorieCAPId);
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
-      <DialogTitle>
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      maxWidth="xl" 
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: 3,
+          boxShadow: 8,
+          minWidth: '1200px',
+          width: '95vw',
+          maxWidth: '1600px'
+        }
+      }}
+    >
+      <DialogTitle sx={{ 
+        backgroundColor: '#1976d2', 
+        color: 'white',
+        borderRadius: '12px 12px 0 0'
+      }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6">
-            Détails de l'Agent
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 48, height: 48 }}>
+              <PersonIcon sx={{ fontSize: 28 }} />
+            </Avatar>
+            <Box>
+              <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                {details.prenom} {details.nom}
+              </Typography>
+              <Typography variant="subtitle1" sx={{ opacity: 0.9 }}>
+                Agent - {details.numeroCAP}
+              </Typography>
+            </Box>
+          </Box>
           <Box>
-            <Button onClick={onEdit} variant="contained" startIcon={<EditIcon />} sx={{ mr: 1 }}>
-              Saisir
+            <Button 
+              onClick={onEdit} 
+              variant="contained" 
+              startIcon={<EditIcon />} 
+              sx={{ 
+                mr: 1, 
+                bgcolor: 'rgba(255,255,255,0.2)',
+                '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' }
+              }}
+            >
+              Modifier
             </Button>
-            <Button onClick={onClose} startIcon={<CloseIcon />}>
-              Fermer
-            </Button>
+            <IconButton onClick={onClose} sx={{ color: 'white' }}>
+              <CloseIcon />
+            </IconButton>
           </Box>
         </Box>
       </DialogTitle>
 
-      <DialogContent>
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <PersonIcon />
-            {details.prenom} {details.nom}
-          </Typography>
+      <DialogContent sx={{ p: 4 }}>
+        {/* Statut principal avec couleur */}
+        <Box sx={{ mb: 4, textAlign: 'center' }}>
+          <Chip 
+            label={getStatutAdministratifLabel()} 
+            sx={{ 
+              backgroundColor: statutColor.bg,
+              color: statutColor.text,
+              fontWeight: 'bold',
+              fontSize: '1.1rem',
+              padding: '12px 24px',
+              '& .MuiChip-label': { px: 2 }
+            }}
+            size="large"
+          />
         </Box>
 
-        {/* Onglets */}
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        {/* Onglets améliorés */}
+        <Box sx={{ 
+          borderBottom: 2, 
+          borderColor: '#e0e0e0', 
+          mb: 4,
+          display: 'flex',
+          justifyContent: 'center'
+        }}>
           <Button
             variant={activeTab === 0 ? "contained" : "text"}
             onClick={() => setActiveTab(0)}
             startIcon={<PersonIcon />}
-            sx={{ mr: 2 }}
+            sx={{ 
+              mr: 3, 
+              px: 4, 
+              py: 1.5,
+              borderRadius: 2,
+              fontWeight: 'bold'
+            }}
           >
-            Informations
+            Informations Générales
           </Button>
           <Button
             variant={activeTab === 1 ? "contained" : "text"}
             onClick={() => setActiveTab(1)}
             startIcon={<HistoryIcon />}
+            sx={{ 
+              px: 4, 
+              py: 1.5,
+              borderRadius: 2,
+              fontWeight: 'bold'
+            }}
           >
-            Historique {details.historique && details.historique.length > 0 && (
+            Historique
+            {details.historique && details.historique.length > 0 && (
               <Chip 
                 label={details.historique.length} 
                 size="small" 
-                sx={{ ml: 1, backgroundColor: '#1976d2', color: 'white' }}
+                sx={{ 
+                  ml: 1, 
+                  backgroundColor: '#1976d2', 
+                  color: 'white',
+                  fontWeight: 'bold'
+                }}
               />
             )}
           </Button>
         </Box>
 
         {activeTab === 0 && (
-          <Grid container spacing={3}>
-            {/* Informations personnelles */}
+          <Grid container spacing={4}>
+            {/* Section 1: Informations d'identification */}
             <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <PersonIcon />
-                    Informations personnelles
+              <Card sx={{ height: '100%', borderRadius: 3, boxShadow: 3 }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Typography variant="h6" gutterBottom sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 1, 
+                    color: '#1976d2',
+                    fontWeight: 'bold',
+                    mb: 3
+                  }}>
+                    <BadgeIcon />
+                    Informations d'identification
                   </Typography>
-                  <Divider sx={{ mb: 2 }} />
-
-                  <Grid container spacing={2}>
+                  
+                  <Grid container spacing={3}>
                     <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">Nom agent</Typography>
-                      <Typography variant="body1">{details.nom}</Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <PersonIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">Nom</Typography>
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>{details.nom}</Typography>
                     </Grid>
                     <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">Prénom agent</Typography>
-                      <Typography variant="body1">{details.prenom}</Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <PersonIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">Prénom</Typography>
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>{details.prenom}</Typography>
                     </Grid>
                     <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">CIN</Typography>
-                      <Typography variant="body1">{details.cin}</Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <BadgeIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">CIN</Typography>
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium', fontFamily: 'monospace' }}>{details.cin}</Typography>
                     </Grid>
                     <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">CNSS</Typography>
-                      <Typography variant="body1">{details.cnss || '-'}</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">Tel</Typography>
-                      <Typography variant="body1">{details.tel}</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">Mail</Typography>
-                      <Typography variant="body1">{details.mail || '-'}</Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Typography variant="subtitle2" color="textSecondary">Adresse</Typography>
-                      <Typography variant="body1">{details.adresse || '-'}</Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <AssignmentIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">CNSS</Typography>
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium', fontFamily: 'monospace' }}>{details.cnss || '-'}</Typography>
                     </Grid>
                   </Grid>
                 </CardContent>
               </Card>
             </Grid>
 
-            {/* Informations professionnelles */}
+            {/* Section 2: Informations de contact */}
             <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <WorkIcon />
-                    Informations professionnelles
+              <Card sx={{ height: '100%', borderRadius: 3, boxShadow: 3 }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Typography variant="h6" gutterBottom sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 1, 
+                    color: '#1976d2',
+                    fontWeight: 'bold',
+                    mb: 3
+                  }}>
+                    <PhoneIcon />
+                    Informations de contact
                   </Typography>
-                  <Divider sx={{ mb: 2 }} />
+                  
+                  <Grid container spacing={3}>
+                    <Grid item xs={6}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <PhoneIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">Téléphone</Typography>
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium', fontFamily: 'monospace' }}>{details.tel}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <EmailIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">Email</Typography>
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium', fontFamily: 'monospace' }}>{details.mail || '-'}</Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <LocationIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">Adresse</Typography>
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>{details.adresse || '-'}</Typography>
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Grid>
 
-                  <Grid container spacing={2}>
+            {/* Section 3: Informations professionnelles */}
+            <Grid item xs={12} md={6}>
+              <Card sx={{ height: '100%', borderRadius: 3, boxShadow: 3 }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Typography variant="h6" gutterBottom sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 1, 
+                    color: '#1976d2',
+                    fontWeight: 'bold',
+                    mb: 3
+                  }}>
+                    <BusinessIcon />
+                    Affectation & CCT
+                  </Typography>
+                  
+                  <Grid container spacing={3}>
                     <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">CCT</Typography>
-                      <Typography variant="body1">{details.cct || '-'}</Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <WorkIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">CCT</Typography>
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>{details.cct || '-'}</Typography>
                     </Grid>
                     <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">Date affectation</Typography>
-                      <Typography variant="body1">{formatDate(details.dateAffectationCCT)}</Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <CalendarIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">Date affectation</Typography>
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>{formatDate(details.dateAffectationCCT)}</Typography>
                     </Grid>
                     <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">Réseau</Typography>
-                      <Typography variant="body1">
-                        {details.reseau || '-'}
-                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <BusinessIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">Réseau</Typography>
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>{details.reseau || '-'}</Typography>
                     </Grid>
                     <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">Ville</Typography>
-                      <Typography variant="body1">
-                        {details.ville || '-'}
-                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <LocationIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">Ville</Typography>
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>{details.ville || '-'}</Typography>
                     </Grid>
                     <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">Statut Administratif</Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <CalendarIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">Année autorisation</Typography>
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium', fontFamily: 'monospace' }}>{details.anneeAutorisation}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <AssignmentIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">Statut administratif</Typography>
+                      </Box>
                       <Chip 
                         label={getStatutAdministratifLabel()} 
                         sx={{ 
-                          backgroundColor: getStatusColor(getStatutAdministratifLabel()),
-                          color: 'white',
-                          fontWeight: 'bold'
+                          backgroundColor: getStatutAdministratifColor(details.statutAdministratifId).bg,
+                          color: getStatutAdministratifColor(details.statutAdministratifId).text,
+                          fontWeight: 'bold',
+                          fontSize: '0.8rem'
                         }}
-                        size="small" 
+                        size="small"
+                      />
+                    </Grid>
+
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Section 4: Informations CAP */}
+            <Grid item xs={12} md={6}>
+              <Card sx={{ height: '100%', borderRadius: 3, boxShadow: 3 }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Typography variant="h6" gutterBottom sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 1, 
+                    color: '#1976d2',
+                    fontWeight: 'bold',
+                    mb: 3
+                  }}>
+                    <AssignmentIcon />
+                    Permis de conduire (CAP)
+                  </Typography>
+                  
+                  <Grid container spacing={3}>
+                    <Grid item xs={6}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <BadgeIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">Numéro CAP</Typography>
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium', fontFamily: 'monospace' }}>{details.numeroCAP}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <CalendarIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">Date CAP</Typography>
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>{formatDate(details.dateCAP)}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <CalendarIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">Date expiration</Typography>
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>{formatDate(details.dateExpirationCAP)}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <AssignmentIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">Catégorie</Typography>
+                      </Box>
+                      <Chip 
+                        label={getCategorieCAPLabel()} 
+                        sx={{ 
+                          backgroundColor: categorieColor.bg,
+                          color: categorieColor.text,
+                          fontWeight: 'bold',
+                          fontSize: '0.8rem'
+                        }}
+                        size="small"
                       />
                     </Grid>
                     <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">Année Autorisation</Typography>
-                      <Typography variant="body1">{details.anneeAutorisation}</Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <BadgeIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">N° renouvellement</Typography>
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium', fontFamily: 'monospace' }}>{details.numDecisionRenouv || '-'}</Typography>
                     </Grid>
                     <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">CAP</Typography>
-                      <Typography variant="body1">{details.numeroCAP}</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">Date CAP</Typography>
-                      <Typography variant="body1">{formatDate(details.dateCAP)}</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">Date Expiration CAP</Typography>
-                      <Typography variant="body1">{formatDate(details.dateExpirationCAP)}</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">Catégorie</Typography>
-                      <Typography variant="body1">{details.categorieCAP || '-'}</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">N° renouvellement CAP</Typography>
-                      <Typography variant="body1">{details.numDecisionRenouv || '-'}</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="textSecondary">Date renouvellement CAP</Typography>
-                      <Typography variant="body1">{formatDate(details.dateDecisionRenouv)}</Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <CalendarIcon sx={{ color: '#666', fontSize: 20 }} />
+                        <Typography variant="subtitle2" color="textSecondary">Date renouvellement</Typography>
+                      </Box>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>{formatDate(details.dateDecisionRenouv)}</Typography>
                     </Grid>
                   </Grid>
                 </CardContent>
@@ -249,32 +495,44 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
         )}
 
         {activeTab === 1 && (
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
+            <CardContent sx={{ p: 3 }}>
+              <Typography variant="h6" gutterBottom sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1, 
+                color: '#1976d2',
+                fontWeight: 'bold',
+                mb: 3
+              }}>
                 <HistoryIcon />
-                Historique Agent [{details.prenom} {details.nom}]
+                Historique des affectations - {details.prenom} {details.nom}
               </Typography>
-              <Divider sx={{ mb: 2 }} />
 
               {Array.isArray(details.historique) && details.historique.length > 0 ? (
-                <TableContainer component={Paper}>
+                <TableContainer component={Paper} sx={{ borderRadius: 2, overflow: 'hidden' }}>
                   <Table>
                     <TableHead>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>CCT</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Date Affectation</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Date Fin Affectation</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Motif Affectation</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>Motif Fin Affectation</TableCell>
+                      <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                        <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>CCT</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Date Affectation</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Date Fin</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Motif Affectation</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Motif Fin</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {details.historique.map((item, index) => (
-                        <TableRow key={index} sx={{ '&:hover': { backgroundColor: '#f8f9fa' } }}>
-                          <TableCell>{item.cct || '-'}</TableCell>
-                          <TableCell>{formatDate(item.dateAffectation)}</TableCell>
-                          <TableCell>{formatDate(item.dateFinAffectation)}</TableCell>
+                        <TableRow 
+                          key={index} 
+                          sx={{ 
+                            '&:hover': { backgroundColor: '#f8f9fa' },
+                            '&:nth-of-type(even)': { backgroundColor: '#fafafa' }
+                          }}
+                        >
+                          <TableCell sx={{ fontWeight: 'medium' }}>{item.cct || '-'}</TableCell>
+                          <TableCell sx={{ fontFamily: 'monospace' }}>{formatDate(item.dateAffectation)}</TableCell>
+                          <TableCell sx={{ fontFamily: 'monospace' }}>{formatDate(item.dateFinAffectation)}</TableCell>
                           <TableCell>
                             <Chip 
                               label={item.motifAffectation || '-'} 
@@ -282,7 +540,8 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
                               sx={{ 
                                 backgroundColor: '#e3f2fd',
                                 color: '#1976d2',
-                                fontWeight: 'medium'
+                                fontWeight: 'medium',
+                                borderRadius: 2
                               }}
                             />
                           </TableCell>
@@ -294,7 +553,8 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
                                 sx={{ 
                                   backgroundColor: '#ffebee',
                                   color: '#d32f2f',
-                                  fontWeight: 'medium'
+                                  fontWeight: 'medium',
+                                  borderRadius: 2
                                 }}
                               />
                             ) : (
@@ -307,7 +567,12 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
                   </Table>
                 </TableContainer>
               ) : (
-                <Box sx={{ textAlign: 'center', py: 4 }}>
+                <Box sx={{ 
+                  textAlign: 'center', 
+                  py: 6,
+                  backgroundColor: '#f8f9fa',
+                  borderRadius: 3
+                }}>
                   <Typography variant="h6" color="textSecondary" gutterBottom>
                     📋 Aucun historique disponible
                   </Typography>
@@ -320,6 +585,21 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
           </Card>
         )}
       </DialogContent>
+
+      <DialogActions sx={{ p: 3, pt: 1 }}>
+        <Button
+          onClick={onClose}
+          variant="outlined"
+          sx={{ 
+            borderRadius: 2,
+            textTransform: 'none',
+            fontWeight: 'bold',
+            px: 3
+          }}
+        >
+          Fermer
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 } 

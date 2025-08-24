@@ -117,27 +117,45 @@ using (var scope = app.Services.CreateScope())
     {
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         
+        Console.WriteLine("=== DÉBUT INITIALISATION BASE DE DONNÉES ===");
+        
         // Vérifier si la base existe, sinon la créer
         if (!context.Database.CanConnect())
         {
+            Console.WriteLine("Base de données non accessible, création...");
             context.Database.EnsureCreated();
             Console.WriteLine("Base de données créée avec succès !");
         }
-        
-        // Seeding des données de test seulement si nécessaire
-        if (!context.Users.Any())
+        else
         {
+            Console.WriteLine("Base de données accessible.");
+        }
+        
+        // Vérifier le nombre d'utilisateurs
+        var userCount = context.Users.Count();
+        Console.WriteLine($"Nombre d'utilisateurs dans la base : {userCount}");
+        
+        // Forcer le seeding si pas d'utilisateurs
+        if (userCount == 0)
+        {
+            Console.WriteLine("Aucun utilisateur trouvé, exécution du seeding...");
             await SeedData.InitializeAsync(context);
             Console.WriteLine("Base de données peuplée avec succès !");
+            
+            // Vérifier après seeding
+            var newUserCount = context.Users.Count();
+            Console.WriteLine($"Nombre d'utilisateurs après seeding : {newUserCount}");
         }
         else
         {
-            Console.WriteLine("Base de données déjà peuplée, seeding ignoré.");
+            Console.WriteLine("Utilisateurs trouvés, seeding ignoré.");
         }
+        
+        Console.WriteLine("=== FIN INITIALISATION BASE DE DONNÉES ===");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Erreur lors de l'initialisation de la base : {ex.Message}");
+        Console.WriteLine($"❌ ERREUR lors de l'initialisation de la base : {ex.Message}");
         Console.WriteLine($"Stack trace : {ex.StackTrace}");
     }
 }

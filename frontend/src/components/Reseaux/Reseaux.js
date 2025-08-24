@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions,
   Table, TableHead, TableRow, TableCell, TableBody, IconButton, Select, MenuItem, InputLabel, FormControl, Pagination, CircularProgress,
-  Typography, Divider, Box, Avatar, Chip, Autocomplete
+  Typography, Divider, Box, Avatar, Chip, Autocomplete, FormHelperText
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -25,7 +25,13 @@ import dropdownsService from '../../services/dropdownsService';
  */
 // Fonction pour obtenir le style coloré des statuts
 const getStatutStyle = (statutLibelle) => {
-  switch (statutLibelle?.toLowerCase()) {
+  // Vérifier que statutLibelle est une chaîne valide
+  if (!statutLibelle || typeof statutLibelle !== 'string') {
+    console.warn('⚠️ getStatutStyle appelé avec une valeur invalide:', statutLibelle);
+    return { backgroundColor: '#e0e0e0', color: '#333' }; // Gris clair par défaut
+  }
+  
+  switch (statutLibelle.toLowerCase()) {
     case 'en activité':
     case 'active':
       return { backgroundColor: '#4caf50', color: 'white' }; // Vert
@@ -44,120 +50,37 @@ const getStatutStyle = (statutLibelle) => {
 // Fonction pour obtenir le statut affiché et son style
 const getStatutAffichage = (statutReseau) => {
   console.log('🔍 getStatutAffichage appelé avec:', statutReseau);
-  console.log('🔍 Type de statutReseau:', typeof statutReseau);
-  console.log('🔍 Contenu de statutReseau:', statutReseau);
   
-  // Utiliser les statuts de fallback pour l'affichage
-  const statutsFallback = [
-    { id: 1, libelle: 'En activité' },
-    { id: 2, libelle: 'Suspendu' },
-    { id: 3, libelle: 'En attente d\'agrément' },
-    { id: 4, libelle: 'Fermé' }
-  ];
-  
-  // Trouver le statut correspondant par ID ou utiliser une valeur par défaut
+  // Utiliser directement les données de l'API
   let statutAAfficher = 'Statut inconnu';
   let couleurStatut = { backgroundColor: '#e0e0e0', color: '#333' };
   
   if (statutReseau) {
-    // Si statutReseau est un ID, trouver le libellé correspondant
-    if (typeof statutReseau === 'number') {
-      console.log('🔍 StatutReseau est un ID (number):', statutReseau);
-      const statutTrouve = statutsFallback.find(s => s.id === statutReseau);
-      if (statutTrouve) {
-        statutAAfficher = statutTrouve.libelle;
-        couleurStatut = getStatutStyle(statutTrouve.libelle);
-        console.log('✅ Statut trouvé par ID:', statutTrouve.libelle);
-      } else {
-        console.log('❌ Aucun statut trouvé pour l\'ID:', statutReseau);
-      }
+    // Si statutReseau est un objet avec nom (API)
+    if (statutReseau.nom) {
+      statutAAfficher = statutReseau.nom;
+      couleurStatut = getStatutStyle(statutReseau.nom);
+      console.log('✅ Statut utilisé depuis l\'API:', statutReseau.nom);
     }
-    // Si statutReseau est un objet avec libelle
+    // Si statutReseau est un objet avec libelle (fallback)
     else if (statutReseau.libelle) {
-      console.log('🔍 StatutReseau a une propriété libelle:', statutReseau.libelle);
-      
-      // Vérifier si c'est un ancien statut à mapper
-      if (statutReseau.libelle === 'Actif' || statutReseau.libelle === 'Inactif') {
-        console.log('🔍 Ancien statut détecté dans libelle:', statutReseau.libelle);
-        // Mapper les anciens statuts vers les nouveaux
-        const mappingStatuts = {
-          'Actif': 'En activité',
-          'Inactif': 'Suspendu'
-        };
-        const nouveauStatut = mappingStatuts[statutReseau.libelle];
-        if (nouveauStatut) {
-          statutAAfficher = nouveauStatut;
-          couleurStatut = getStatutStyle(nouveauStatut);
-          console.log('✅ Statut mappé depuis libelle:', statutReseau.libelle, '→', nouveauStatut);
-        }
-      } else {
-        // Utiliser directement le libellé s'il n'est pas à mapper
-        statutAAfficher = statutReseau.libelle;
-        couleurStatut = getStatutStyle(statutReseau.libelle);
-        console.log('✅ Libellé utilisé directement:', statutReseau.libelle);
-      }
+      statutAAfficher = statutReseau.libelle;
+      couleurStatut = getStatutStyle(statutReseau.libelle);
+      console.log('✅ Statut utilisé depuis libelle:', statutReseau.libelle);
     }
-    // Si statutReseau est un objet avec nom
-    else if (statutReseau.nom) {
-      console.log('🔍 StatutReseau a une propriété nom:', statutReseau.nom);
-      // Mapper les anciens statuts vers les nouveaux
-      const mappingStatuts = {
-        'En exploitation': 'En activité',
-        'En construction': 'En attente d\'agrément',
-        'Hors service': 'Suspendu',
-        'En maintenance': 'Fermé'
-      };
-      const nouveauStatut = mappingStatuts[statutReseau.nom];
-      if (nouveauStatut) {
-        statutAAfficher = nouveauStatut;
-        couleurStatut = getStatutStyle(nouveauStatut);
-        console.log('✅ Statut mappé:', statutReseau.nom, '→', nouveauStatut);
-      } else {
-        console.log('❌ Aucun mapping trouvé pour:', statutReseau.nom);
-      }
-    }
-    // Ajouter la gestion des statuts "Actif" et "Inactif"
-    else if (statutReseau === 'Actif' || statutReseau === 'Inactif') {
-      console.log('🔍 StatutReseau est une chaîne:', statutReseau);
-      // Mapper les anciens statuts vers les nouveaux
-      const mappingStatuts = {
-        'Actif': 'En activité',
-        'Inactif': 'Suspendu'
-      };
-      const nouveauStatut = mappingStatuts[statutReseau];
-      if (nouveauStatut) {
-        statutAAfficher = nouveauStatut;
-        couleurStatut = getStatutStyle(nouveauStatut);
-        console.log('✅ Statut mappé:', statutReseau, '→', nouveauStatut);
-      }
-    }
-    // Si c'est une chaîne de caractères
+    // Si statutReseau est une chaîne
     else if (typeof statutReseau === 'string') {
-      console.log('🔍 StatutReseau est une chaîne non reconnue:', statutReseau);
-      // Essayer de mapper avec les valeurs exactes
-      const mappingStatuts = {
-        'Actif': 'En activité',
-        'Inactif': 'Suspendu',
-        'En exploitation': 'En activité',
-        'En construction': 'En attente d\'agrément',
-        'Hors service': 'Suspendu',
-        'En maintenance': 'Fermé'
-      };
-      const nouveauStatut = mappingStatuts[statutReseau];
-      if (nouveauStatut) {
-        statutAAfficher = nouveauStatut;
-        couleurStatut = getStatutStyle(nouveauStatut);
-        console.log('✅ Statut mappé:', statutReseau, '→', nouveauStatut);
-      } else {
-        console.log('❌ Aucun mapping trouvé pour la chaîne:', statutReseau);
-      }
+      statutAAfficher = statutReseau;
+      couleurStatut = getStatutStyle(statutReseau);
+      console.log('✅ Statut utilisé directement:', statutReseau);
     }
-  } else {
-    console.log('🔍 StatutReseau est null/undefined');
+    // Si statutReseau est un ID numérique
+    else if (typeof statutReseau === 'number') {
+      console.log('⚠️ StatutReseau est un ID numérique, impossible de l\'afficher sans contexte');
+    }
   }
   
-  console.log('🔍 Résultat final:', { label: statutAAfficher, style: couleurStatut });
-  return { label: statutAAfficher, style: couleurStatut };
+  return { statutAAfficher, couleurStatut };
 };
 
 const REQUIRED_FIELDS = [
@@ -226,53 +149,13 @@ export default function Reseaux() {
   const [form, setForm] = useState(emptyForm);
   const [formLoading, setFormLoading] = useState(false);
 
-  // Initialiser les dropdowns avec des données par défaut
-  const initialiserDropdowns = () => {
-    console.log('🚀 Initialisation des dropdowns...');
-    
-    const statutsInitiaux = [
-      { id: 1, libelle: 'En activité' },
-      { id: 2, libelle: 'En attente d\'agrément' },
-      { id: 3, libelle: 'Suspendu' },
-      { id: 4, libelle: 'Fermé' }
-    ];
-    
-    const villesInitiales = [
-      { id: 1, nom: 'Casablanca' },
-      { id: 2, nom: 'Rabat' },
-      { id: 3, nom: 'Fès' },
-      { id: 4, nom: 'Marrakech' },
-      { id: 5, nom: 'Tanger' }
-    ];
-    
-    const cadresInitiaux = [
-      { id: 1, libelle: 'Autorisation Standard' },
-      { id: 2, libelle: 'Autorisation Spéciale' },
-      { id: 3, libelle: 'Autorisation Temporaire' }
-    ];
-    
-    console.log('📊 Données de fallback prêtes:', {
-      statuts: statutsInitiaux,
-      villes: villesInitiales,
-      cadres: cadresInitiaux
-    });
-    
-    setDropdowns({
-      statuts: statutsInitiaux,
-      villes: villesInitiales,
-      cadres: cadresInitiaux
-    });
-    
-    console.log('✅ Dropdowns initialisés avec données par défaut');
-    console.log('🔍 Vérification des statuts:', statutsInitiaux.map(s => `${s.id}: ${s.libelle}`));
-    
-    // Vérification immédiate après setState
-    setTimeout(() => {
-      console.log('🔍 État des dropdowns après initialisation:', dropdowns);
-      console.log('🔍 Nombre de statuts dans l\'état:', dropdowns.statuts?.length);
-      console.log('🔍 Contenu des statuts:', dropdowns.statuts);
-    }, 100);
-  };
+  // Charger les dropdowns au montage du composant
+  useEffect(() => {
+    // Charger les données du service directement
+    loadDropdowns();
+    // Charger les réseaux après l'initialisation
+    setTimeout(() => loadReseaux(), 100);
+  }, []);
 
   // Nouvelles fonctions de gestion des changements Autocomplete
   const handleVilleChange = (event, newValue) => {
@@ -289,16 +172,6 @@ export default function Reseaux() {
     setSelectedCadre(newValue);
     setForm({ ...form, cadreAutorisation: newValue?.id || '' });
   };
-
-  // Charger les dropdowns au montage du composant
-  useEffect(() => {
-    // Initialiser immédiatement avec les données par défaut
-    initialiserDropdowns();
-    // Puis essayer de charger les données du service
-    loadDropdowns();
-    // Charger les réseaux après l'initialisation
-    setTimeout(() => loadReseaux(), 100);
-  }, []);
 
   // Charger les réseaux quand la page ou rowsPerPage changent
   useEffect(() => {
@@ -319,78 +192,41 @@ export default function Reseaux() {
     try {
       setDropdownsLoading(true);
       const data = await dropdownsService.getAllDropdowns();
-      console.log('Données des dropdowns reçues:', data);
+      console.log('✅ Données des dropdowns reçues depuis l\'API:', data);
       
-      // S'assurer que nous avons les bons statuts avec les bonnes couleurs
-      const statutsParDefaut = [
-        { id: 1, libelle: 'En activité' },
-        { id: 2, libelle: 'En attente d\'agrément' },
-        { id: 3, libelle: 'Suspendu' },
-        { id: 4, libelle: 'Fermé' }
-      ];
+      // Utiliser UNIQUEMENT les données de l'API
+      const statutsFinaux = data.statuts || [];
+      const villesFinales = data.villes || [];
+      const cadresFinaux = data.cadresAutorisation || [];
       
-      const villesParDefaut = [
-        { id: 1, nom: 'Casablanca' },
-        { id: 2, nom: 'Rabat' },
-        { id: 3, nom: 'Fès' },
-        { id: 4, nom: 'Marrakech' },
-        { id: 5, nom: 'Tanger' }
-      ];
-      
-      const cadresParDefaut = [
-        { id: 1, libelle: 'Autorisation Standard' },
-        { id: 2, libelle: 'Autorisation Spéciale' },
-        { id: 3, libelle: 'Autorisation Temporaire' }
-      ];
-      
-      // FORCER l'utilisation des données de fallback car l'API retourne des statuts différents
-      // L'API retourne des statuts avec 'nom' au lieu de 'libelle' et des valeurs différentes
-      console.log('⚠️ L\'API retourne des statuts différents de ceux attendus');
-      console.log('📊 Statuts de l\'API:', data.statuts);
-      console.log('📊 Statuts de fallback à utiliser:', statutsParDefaut);
-      
-      const statutsFinaux = statutsParDefaut; // Toujours utiliser les statuts de fallback
-      const villesFinales = data.villes && data.villes.length > 0 ? data.villes : villesParDefaut;
-      const cadresFinaux = data.cadresAutorisation && data.cadresAutorisation.length > 0 ? data.cadresAutorisation : cadresParDefaut;
-      
-      setDropdowns({
+      console.log('📊 Données finales des dropdowns:', {
         statuts: statutsFinaux,
         villes: villesFinales,
         cadres: cadresFinaux
       });
       
-      console.log('Dropdowns configurés avec données finales:', {
+      setDropdowns({
         statuts: statutsFinaux,
         villes: villesFinales,
         cadres: cadresFinaux
       });
       
       // Vérifier que les statuts sont bien chargés
-      console.log('Statuts chargés:', statutsFinaux);
-      console.log('Nombre de statuts:', statutsFinaux.length);
+      console.log('✅ Statuts chargés depuis l\'API:', statutsFinaux);
+      console.log('📊 Nombre de statuts:', statutsFinaux.length);
+      
+      if (statutsFinaux.length === 0) {
+        console.warn('⚠️ Aucun statut chargé depuis l\'API');
+        toast.warning('Aucun statut disponible - vérifiez la connexion à l\'API');
+      }
     } catch (error) {
-      console.error('Erreur loadDropdowns:', error);
+      console.error('❌ Erreur loadDropdowns:', error);
       toast.error('Erreur lors du chargement des données de référence');
-      // Utiliser des données par défaut en cas d'erreur
+      // En cas d'erreur, laisser les dropdowns vides
       setDropdowns({
-        statuts: [
-          { id: 1, libelle: 'En activité' },
-          { id: 2, libelle: 'En attente d\'agrément' },
-          { id: 3, libelle: 'Suspendu' },
-          { id: 4, libelle: 'Fermé' }
-        ],
-        villes: [
-          { id: 1, nom: 'Casablanca' },
-          { id: 2, nom: 'Rabat' },
-          { id: 3, nom: 'Fès' },
-          { id: 4, nom: 'Marrakech' },
-          { id: 5, nom: 'Tanger' }
-        ],
-        cadres: [
-          { id: 1, libelle: 'Autorisation Standard' },
-          { id: 2, libelle: 'Autorisation Spéciale' },
-          { id: 3, libelle: 'Autorisation Temporaire' }
-        ]
+        statuts: [],
+        villes: [],
+        cadres: []
       });
     } finally {
       setDropdownsLoading(false);
@@ -540,34 +376,31 @@ export default function Reseaux() {
     setOpenForm(true);
   };
 
-  // Validation des champs obligatoires
-  const validateForm = () => {
-    console.log('Validation du formulaire avec les valeurs:', form);
-    console.log('Validation des sélections:', { selectedVille, selectedStatut, selectedCadre });
+  // Soumission du formulaire
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log('🚀 === DÉBUT SOUMISSION ===');
+    console.log('📋 État des sélections:', {
+      selectedVille: selectedVille?.id,
+      selectedStatut: selectedStatut?.id,
+      selectedCadre: selectedCadre?.id
+    });
+    console.log('📝 État du formulaire:', form);
     
-    // Validation des sélections Autocomplete
-    if (!selectedVille) {
-      toast.error('Veuillez sélectionner une ville.');
-      return false;
+    // VALIDATION UNIFIÉE AVEC LES SÉLECTIONS
+    if (!selectedVille || !selectedStatut || !selectedCadre) {
+      console.log('❌ Validation des sélections échouée');
+      toast.error('Veuillez sélectionner tous les champs obligatoires (Ville, Statut, Cadre d\'autorisation)');
+      return;
     }
     
-    if (!selectedStatut) {
-      toast.error('Veuillez sélectionner un statut.');
-      return false;
-    }
-    
-    if (!selectedCadre) {
-      toast.error('Veuillez sélectionner un cadre d\'autorisation.');
-      return false;
-    }
+    console.log('✅ Validation des sélections réussie');
     
     // Validation des autres champs obligatoires
     const fieldsToValidate = ['nom', 'agrement', 'dateAgrement', 'dateStatut', 'adresseSiege', 'tel', 'fax', 'mail', 'nomRepresentantLegal', 'telRepresentantLegal', 'adressRepresentantLegal'];
     
     for (const field of fieldsToValidate) {
       const value = form[field];
-      console.log(`Vérification du champ ${field}:`, value);
-      
       if (!value || value.toString().trim() === '') {
         const fieldLabels = {
           nom: 'Réseau',
@@ -582,36 +415,13 @@ export default function Reseaux() {
           telRepresentantLegal: 'Téléphone du représentant légal',
           adressRepresentantLegal: 'Adresse du représentant légal'
         };
+        console.log(`❌ Champ ${field} vide:`, value);
         toast.error(`Le champ "${fieldLabels[field] || field}" est obligatoire.`);
-        return false;
+        return;
       }
     }
-    
-    console.log('Validation réussie !');
-    return true;
-  };
 
-  // Soumission du formulaire
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log('Tentative de soumission du formulaire');
-    
-    // VALIDATION AVEC LES NOUVELLES SÉLECTIONS
-    if (!selectedVille || !selectedStatut || !selectedCadre) {
-      toast.error('Veuillez sélectionner tous les champs obligatoires (Ville, Statut, Cadre d\'autorisation)');
-      return;
-    }
-    
-    if (!validateForm()) {
-      console.log('Validation échouée, arrêt de la soumission');
-      return;
-    }
-
-    // Validation du cadre d'autorisation - plus flexible
-    if (!form.cadreAutorisation) {
-      toast.error('Veuillez sélectionner un cadre d\'autorisation.');
-      return;
-    }
+    console.log('✅ Validation de tous les champs réussie');
 
     try {
       setFormLoading(true);
@@ -624,7 +434,7 @@ export default function Reseaux() {
         cadreAutorisation: selectedCadre.id
       };
       
-      console.log('Formulaire envoyé avec données finales:', formData);
+      console.log('📤 Formulaire envoyé avec données finales:', formData);
       
       let reseauId;
       if (selected) {
@@ -656,9 +466,10 @@ export default function Reseaux() {
       setSelectedStatut(null);
       setSelectedCadre(null);
       loadReseaux(); // Recharger la liste
+      console.log('✅ Soumission terminée avec succès');
     } catch (error) {
+      console.error('❌ Erreur lors de la soumission:', error);
       toast.error(selected ? 'Erreur lors de la modification' : 'Erreur lors de l\'ajout');
-      console.error('Erreur submit:', error);
     } finally {
       setFormLoading(false);
     }
@@ -775,10 +586,10 @@ export default function Reseaux() {
                             width: 12, 
                             height: 12, 
                             borderRadius: '50%',
-                            ...getStatutStyle(s.libelle)
+                            ...getStatutStyle(s.nom || s.libelle || 'Statut inconnu')
                           }} 
                         />
-                        {s.libelle}
+                        {s.nom || s.libelle || 'Statut inconnu'}
                       </Box>
                     </MenuItem>
                   ));
@@ -799,10 +610,10 @@ export default function Reseaux() {
                             width: 12, 
                             height: 12, 
                             borderRadius: '50%',
-                            ...getStatutStyle(s.libelle)
+                            ...getStatutStyle(s.libelle || 'Statut inconnu')
                           }} 
                         />
-                        {s.libelle}
+                        {s.libelle || 'Statut inconnu'}
                       </Box>
                     </MenuItem>
                   ));
@@ -931,11 +742,11 @@ export default function Reseaux() {
                 <TableCell>{r.ville?.nom || r.ville}</TableCell>
                                 <TableCell>
                   {(() => {
-                    const { label, style } = getStatutAffichage(r.statut);
+                    const { statutAAfficher, couleurStatut } = getStatutAffichage(r.statut);
                     return (
                       <Chip 
-                        label={label} 
-                        sx={style} 
+                        label={statutAAfficher} 
+                        sx={couleurStatut} 
                       />
                     );
                   })()}
@@ -1074,10 +885,15 @@ export default function Reseaux() {
                     label="Statut" 
                     name="statut" 
                     value={selectedStatut?.id || ''} 
-                    onChange={(e) => {
-                      const statut = dropdowns.statuts?.find(s => s.id === e.target.value);
-                      setSelectedStatut(statut || null);
-                    }} 
+                    onChange={(event) => {
+                      const selectedId = event.target.value;
+                      console.log('🔍 Sélection statut - ID sélectionné:', selectedId);
+                      const selectedStatutObj = dropdowns.statuts?.find(s => s.id === selectedId);
+                      console.log('🔍 Statut objet trouvé:', selectedStatutObj);
+                      setSelectedStatut(selectedStatutObj);
+                      setForm({ ...form, statut: selectedId });
+                      console.log('✅ Statut mis à jour dans le form:', selectedId);
+                    }}
                     required
                     disabled={formLoading || dropdownsLoading}
                   >
@@ -1089,14 +905,19 @@ export default function Reseaux() {
                               width: 12, 
                               height: 12, 
                               borderRadius: '50%',
-                              ...getStatutStyle(s.libelle)
+                              ...getStatutStyle(s.nom || s.libelle || 'Statut inconnu')
                             }} 
                           />
-                          {s.libelle}
+                          {s.nom || s.libelle || 'Statut inconnu'}
                         </Box>
                       </MenuItem>
                     ))}
                   </Select>
+                  {dropdowns.statuts && dropdowns.statuts.length > 0 && (
+                    <FormHelperText>
+                      {dropdowns.statuts.length} statut(s) disponible(s)
+                    </FormHelperText>
+                  )}
                 </FormControl>
                 <TextField 
                   label="Date statut" 
@@ -1225,10 +1046,15 @@ export default function Reseaux() {
                     label="Cadre d'autorisation" 
                     name="cadreAutorisation" 
                     value={selectedCadre?.id || ''} 
-                    onChange={(e) => {
-                      const cadre = dropdowns.cadres?.find(c => c.id === e.target.value);
-                      setSelectedCadre(cadre || null);
-                    }} 
+                    onChange={(event) => {
+                      const selectedId = event.target.value;
+                      console.log('🔍 Sélection cadre - ID sélectionné:', selectedId);
+                      const selectedCadreObj = dropdowns.cadres?.find(c => c.id === selectedId);
+                      console.log('🔍 Cadre objet trouvé:', selectedCadreObj);
+                      setSelectedCadre(selectedCadreObj);
+                      setForm({ ...form, cadreAutorisation: selectedId });
+                      console.log('✅ Cadre mis à jour dans le form:', selectedId);
+                    }}
                     required
                     disabled={formLoading || dropdownsLoading}
                   >
@@ -1236,6 +1062,11 @@ export default function Reseaux() {
                       <MenuItem key={c.id} value={c.id}>{c.libelle || 'Cadre inconnu'}</MenuItem>
                     ))}
                   </Select>
+                  {dropdowns.cadres && dropdowns.cadres.length > 0 && (
+                    <FormHelperText>
+                      {dropdowns.cadres.length} cadre(s) disponible(s)
+                    </FormHelperText>
+                  )}
                 </FormControl>
                 <TextField
                   label="Nom représentant légal"
@@ -1303,98 +1134,104 @@ export default function Reseaux() {
         </DialogTitle>
         <DialogContent>
           {selected && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                <Avatar
-                  src={selected.logoUrl ? `http://localhost:7000${selected.logoUrl}` : undefined}
-                  alt="logo"
-                  sx={{ width: 80, height: 80, bgcolor: '#e3f2fd', fontSize: 32 }}
-                >
-                  {selected.nom?.charAt(0) || '?'}
-                </Avatar>
-                <Box>
-                  <Typography variant="h6">{selected.nom}</Typography>
-                  <Typography variant="body2" color="text.secondary">{selected.agrement}</Typography>
+            <>
+              {console.log('🔍 Données du réseau sélectionné:', selected)}
+              {console.log('🔍 Structure du statut:', selected.statut)}
+              {console.log('🔍 Structure du cadre:', selected.cadreAutorisation)}
+              {console.log('🔍 Structure de la ville:', selected.ville)}
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                  <Avatar
+                    src={selected.logoUrl ? `http://localhost:7000${selected.logoUrl}` : undefined}
+                    alt="logo"
+                    sx={{ width: 80, height: 80, bgcolor: '#e3f2fd', fontSize: 32 }}
+                  >
+                    {selected.nom?.charAt(0) || '?'}
+                  </Avatar>
+                  <Box>
+                    <Typography variant="h6">{selected.nom}</Typography>
+                    <Typography variant="body2" color="text.secondary">{selected.agrement}</Typography>
+                  </Box>
+                </Box>
+                <Divider />
+                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                  <div>
+                    <Typography variant="subtitle2">Statut</Typography>
+                    <Chip 
+                      label={selected.statut?.nom || selected.statut?.libelle || selected.statut || 'Statut inconnu'} 
+                      sx={{ ...getStatutStyle(selected.statut?.nom || selected.statut?.libelle || selected.statut || 'Statut inconnu') }} 
+                    />
+                  </div>
+                  <div>
+                    <Typography variant="subtitle2">Cadre d'autorisation</Typography>
+                    <Typography>{selected.cadreAutorisation?.libelle || selected.cadreAutorisation?.nom || selected.cadreAutorisation || '—'}</Typography>
+                  </div>
+                  <div>
+                    <Typography variant="subtitle2">Date agrément</Typography>
+                    <Typography>{selected.dateAgrement ? new Date(selected.dateAgrement).toLocaleDateString('fr-FR') : '—'}</Typography>
+                  </div>
+                  <div>
+                    <Typography variant="subtitle2">Date statut</Typography>
+                    <Typography>{selected.dateStatut ? new Date(selected.dateStatut).toLocaleDateString('fr-FR') : '—'}</Typography>
+                  </div>
+                  <div>
+                    <Typography variant="subtitle2">Ville</Typography>
+                    <Typography>{selected.ville?.nom || selected.ville || '—'}</Typography>
+                  </div>
+                  <div>
+                    <Typography variant="subtitle2">Adresse siège</Typography>
+                    <Typography>{selected.adresseSiege}</Typography>
+                  </div>
+                  <div>
+                    <Typography variant="subtitle2">Adresse domiciliation</Typography>
+                    <Typography>{selected.adresseDomiciliation || '—'}</Typography>
+                  </div>
+                  <div>
+                    <Typography variant="subtitle2">Téléphone</Typography>
+                    <Typography>{selected.tel || '—'}</Typography>
+                  </div>
+                  <div>
+                    <Typography variant="subtitle2">Fax</Typography>
+                    <Typography>{selected.fax || '—'}</Typography>
+                  </div>
+                  <div>
+                    <Typography variant="subtitle2">Mail</Typography>
+                    <Typography>{selected.mail || '—'}</Typography>
+                  </div>
+                  <div>
+                    <Typography variant="subtitle2">ICE</Typography>
+                    <Typography>{selected.ice || '—'}</Typography>
+                  </div>
+                  <div>
+                    <Typography variant="subtitle2">Id. Fiscal</Typography>
+                    <Typography>{selected.idFiscal || '—'}</Typography>
+                  </div>
+                  <div>
+                    <Typography variant="subtitle2">N° RegisterCommerce</Typography>
+                    <Typography>{selected.registerCommerce || '—'}</Typography>
+                  </div>
+                </Box>
+                <Divider sx={{ my: 1 }} />
+                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                  <div>
+                    <Typography variant="subtitle2">Nom représentant légal</Typography>
+                    <Typography>{selected.nomRepresentantLegal || '—'}</Typography>
+                  </div>
+                  <div>
+                    <Typography variant="subtitle2">Adresse représentant légal</Typography>
+                    <Typography>{selected.adressRepresentantLegal || '—'}</Typography>
+                  </div>
+                  <div>
+                    <Typography variant="subtitle2">N° tel représentant légal</Typography>
+                    <Typography>{selected.telRepresentantLegal || '—'}</Typography>
+                  </div>
+                  <div>
+                    <Typography variant="subtitle2">Mail représentant</Typography>
+                    <Typography>{selected.mailRepresentant || '—'}</Typography>
+                  </div>
                 </Box>
               </Box>
-              <Divider />
-              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                <div>
-                  <Typography variant="subtitle2">Statut</Typography>
-                  <Chip 
-                    label={selected.statut?.libelle || selected.statut} 
-                    sx={{ ...getStatutStyle(selected.statut?.libelle || selected.statut) }} 
-                  />
-                </div>
-                <div>
-                  <Typography variant="subtitle2">Cadre d'autorisation</Typography>
-                  <Typography>{selected.cadreAutorisation?.libelle || selected.cadreAutorisation}</Typography>
-                </div>
-                <div>
-                  <Typography variant="subtitle2">Date agrément</Typography>
-                  <Typography>{selected.dateAgrement ? new Date(selected.dateAgrement).toLocaleDateString('fr-FR') : '—'}</Typography>
-                </div>
-                <div>
-                  <Typography variant="subtitle2">Date statut</Typography>
-                  <Typography>{selected.dateStatut ? new Date(selected.dateStatut).toLocaleDateString('fr-FR') : '—'}</Typography>
-                </div>
-                <div>
-                  <Typography variant="subtitle2">Ville</Typography>
-                  <Typography>{selected.ville?.nom || selected.ville}</Typography>
-                </div>
-                <div>
-                  <Typography variant="subtitle2">Adresse siège</Typography>
-                  <Typography>{selected.adresseSiege}</Typography>
-                </div>
-                <div>
-                  <Typography variant="subtitle2">Adresse domiciliation</Typography>
-                  <Typography>{selected.adresseDomiciliation || '—'}</Typography>
-                </div>
-                <div>
-                  <Typography variant="subtitle2">Téléphone</Typography>
-                  <Typography>{selected.tel || '—'}</Typography>
-                </div>
-                <div>
-                  <Typography variant="subtitle2">Fax</Typography>
-                  <Typography>{selected.fax || '—'}</Typography>
-                </div>
-                <div>
-                  <Typography variant="subtitle2">Mail</Typography>
-                  <Typography>{selected.mail || '—'}</Typography>
-                </div>
-                <div>
-                  <Typography variant="subtitle2">ICE</Typography>
-                  <Typography>{selected.ice || '—'}</Typography>
-                </div>
-                <div>
-                  <Typography variant="subtitle2">Id. Fiscal</Typography>
-                  <Typography>{selected.idFiscal || '—'}</Typography>
-                </div>
-                <div>
-                  <Typography variant="subtitle2">N° RegisterCommerce</Typography>
-                  <Typography>{selected.registerCommerce || '—'}</Typography>
-                </div>
-              </Box>
-              <Divider sx={{ my: 1 }} />
-              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                <div>
-                  <Typography variant="subtitle2">Nom représentant légal</Typography>
-                  <Typography>{selected.nomRepresentantLegal || '—'}</Typography>
-                </div>
-                <div>
-                  <Typography variant="subtitle2">Adresse représentant légal</Typography>
-                  <Typography>{selected.adressRepresentantLegal || '—'}</Typography>
-                </div>
-                <div>
-                  <Typography variant="subtitle2">N° tel représentant légal</Typography>
-                  <Typography>{selected.telRepresentantLegal || '—'}</Typography>
-                </div>
-                <div>
-                  <Typography variant="subtitle2">Mail représentant</Typography>
-                  <Typography>{selected.mailRepresentant || '—'}</Typography>
-                </div>
-              </Box>
-            </Box>
+            </>
           )}
         </DialogContent>
         <DialogActions>

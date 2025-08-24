@@ -100,3 +100,6 @@ console.log('3. Vérifiez que les statuts ont les bonnes couleurs');
 console.log('4. Testez dans la recherche et le formulaire');
 console.log('5. Les points colorés doivent correspondre aux couleurs définies');
 
+
+
+

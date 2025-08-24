@@ -284,22 +284,24 @@ export default function AgentFormModal({ open, onClose, onSubmit, initialValues,
 
             {/* Catégorie CAP */}
             <Box sx={{ mt: 3 }}>
-              <FormControl fullWidth margin="normal" required>
-                <InputLabel>Catégorie CAP *</InputLabel>
-                <Select 
-                  label="Catégorie CAP *" 
-                  name="categorieCAPId" 
-                  value={formData.categorieCAPId || ''} 
-                  onChange={(e) => handleChange('categorieCAPId', e.target.value)} 
-                  required
-                >
-                  {dropdowns.categories?.map(cat => (
-                    <MenuItem key={cat.id} value={cat.id}>
-                      {cat.libelle}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <SearchableSelect
+                label="Catégorie CAP *"
+                value={formData.categorieCAPId}
+                onChange={(value) => handleChange('categorieCAPId', value)}
+                options={dropdowns.categories || []}
+                placeholder="Rechercher une catégorie..."
+                getOptionLabel={(option) => option.libelle}
+                getOptionValue={(option) => option.id}
+                isCategorieField={true}
+                showDescriptions={true}
+                required
+                sx={{ 
+                  '& .MuiOutlinedInput-root': { 
+                    borderRadius: 2,
+                    minHeight: '56px'
+                  }
+                }}
+              />
             </Box>
           </Box>
 

@@ -1,0 +1,55 @@
+### Test des endpoints pour le formulaire Agent
+### Vérification que tous les dropdowns sont liés aux bonnes tables
+
+### 1. Test des Statuts Administratifs
+GET {{baseUrl}}/api/StatutsAdministratifs
+Content-Type: application/json
+
+### 2. Test des Catégories CAP (utilise CategorieCCTs)
+GET {{baseUrl}}/api/CategorieCAPs
+Content-Type: application/json
+
+### 3. Test des CCTs
+GET {{baseUrl}}/api/CCTs
+Content-Type: application/json
+
+### 4. Test des Régions
+GET {{baseUrl}}/api/Regions
+Content-Type: application/json
+
+### 5. Test des Villes
+GET {{baseUrl}}/api/Villes
+Content-Type: application/json
+
+### 6. Test des Réseaux
+GET {{baseUrl}}/api/Reseaux
+Content-Type: application/json
+
+### 7. Test de création d'un Agent (POST)
+POST {{baseUrl}}/api/Agents
+Content-Type: application/json
+
+{
+  "nom": "Test",
+  "prenom": "Agent",
+  "cin": "AB123456",
+  "tel": "0612345678",
+  "mail": "test@example.com",
+  "cnss": "CN123456",
+  "cctId": 1,
+  "numeroCAP": "CAP001",
+  "dateCAP": "2024-01-01",
+  "dateExpirationCAP": "2029-01-01",
+  "categorieCAPId": 1,
+  "statutAdministratifId": 1,
+  "anneeAutorisation": 2024,
+  "dateAffectationCCT": "2024-01-01",
+  "adresse": "123 Rue Test, Ville Test"
+}
+
+### 8. Test de récupération des Agents
+GET {{baseUrl}}/api/Agents
+Content-Type: application/json
+
+### Variables d'environnement
+@baseUrl = https://localhost:7001

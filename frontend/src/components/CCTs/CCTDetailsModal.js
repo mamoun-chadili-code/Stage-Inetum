@@ -123,177 +123,210 @@ export default function CCTDetailsModal({ open, onClose, cct, details, tab = 0, 
 
           {/* Contenu des onglets */}
           {tab === 0 && (
-            <Grid container spacing={3}>
-              {/* Informations d'identification */}
-              <Grid item xs={12} md={6}>
-                <Card elevation={2}>
-                  <CardContent>
-                    <Typography variant="h6" color="primary" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <AssignmentIcon />
-                      Informations d'identification
-                    </Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">CCT</Typography>
-                        <Typography variant="body1" fontWeight="bold">{cct.nom || '-'}</Typography>
+            <Box>
+              {/* Section 1: Informations principales (2 colonnes équilibrées) */}
+              <Grid container spacing={3} sx={{ mb: 3 }}>
+                {/* Colonne gauche: Informations d'identification */}
+                <Grid item xs={12} md={6}>
+                  <Card elevation={2} sx={{ height: '100%' }}>
+                    <CardContent>
+                      <Typography variant="h6" color="primary" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                        <AssignmentIcon />
+                        Informations d'identification
+                      </Typography>
+                      <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>CCT</Typography>
+                          <Typography variant="body1" fontWeight="bold">{cct.nom || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Agrément</Typography>
+                          <Typography variant="body1" fontWeight="bold">{cct.agrement || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Date agrément</Typography>
+                          <Typography variant="body1">{formatDate(cct.dateAgrement) || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Statut</Typography>
+                          <Typography variant="body1">{cct.statut || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Catégorie</Typography>
+                          <Typography variant="body1">{cct.categorie || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Type</Typography>
+                          <Typography variant="body1">{cct.type || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Réseau</Typography>
+                          <Typography variant="body1">{cct.reseau || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Cadre d'autorisation</Typography>
+                          <Typography variant="body1">{cct.cadreAutorisation || '-'}</Typography>
+                        </Grid>
                       </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">Agrément</Typography>
-                        <Typography variant="body1" fontWeight="bold">{cct.agrement || '-'}</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Colonne droite: Informations de contact */}
+                <Grid item xs={12} md={6}>
+                  <Card elevation={2} sx={{ height: '100%' }}>
+                    <CardContent>
+                      <Typography variant="h6" color="primary" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                        <PhoneIcon />
+                        Informations de contact
+                      </Typography>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Adresse siège</Typography>
+                          <Typography variant="body1">{cct.adresseSiege || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Téléphone</Typography>
+                          <Typography variant="body1">{cct.tel || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Fax</Typography>
+                          <Typography variant="body1">{cct.fax || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Email</Typography>
+                          <Typography variant="body1">{cct.mail || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>ICE</Typography>
+                          <Typography variant="body1">{cct.ice || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Id. Fiscal</Typography>
+                          <Typography variant="body1">{cct.idFiscal || '-'}</Typography>
+                        </Grid>
                       </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">Date agrément</Typography>
-                        <Typography variant="body1">{formatDate(cct.dateAgrement) || '-'}</Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">Cadre d'autorisation</Typography>
-                        <Typography variant="body1">{cct.cadreAutorisation || '-'}</Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">Catégorie</Typography>
-                        <Typography variant="body1">{cct.categorie || '-'}</Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">Statut</Typography>
-                        <Typography variant="body1">{cct.statut || '-'}</Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">Date statut</Typography>
-                        <Typography variant="body1">{formatDate(cct.dateStatut) || '-'}</Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">Réseau</Typography>
-                        <Typography variant="body1">{cct.reseau || '-'}</Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">Date ralliement</Typography>
-                        <Typography variant="body1">{formatDate(cct.dateRalliement) || '-'}</Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">Type</Typography>
-                        <Typography variant="body1">{cct.type || '-'}</Typography>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </Grid>
               </Grid>
 
-              {/* Informations géographiques */}
-              <Grid item xs={12} md={6}>
-                <Card elevation={2}>
-                  <CardContent>
-                    <Typography variant="h6" color="primary" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <LocationIcon />
-                      Informations géographiques
-                    </Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">Région</Typography>
-                        <Typography variant="body1">{cct.region || '-'}</Typography>
+              {/* Section 2: Informations géographiques (pleine largeur) */}
+              <Grid container spacing={3} sx={{ mb: 3 }}>
+                <Grid item xs={12}>
+                  <Card elevation={2}>
+                    <CardContent>
+                      <Typography variant="h6" color="primary" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                        <LocationIcon />
+                        Informations géographiques
+                      </Typography>
+                      <Grid container spacing={3}>
+                        <Grid item xs={12} md={3}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Région</Typography>
+                          <Typography variant="body1" fontWeight="bold">{cct.region || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={12} md={3}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Province</Typography>
+                          <Typography variant="body1" fontWeight="bold">{cct.province || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={12} md={3}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Ville</Typography>
+                          <Typography variant="body1" fontWeight="bold">{cct.ville || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={12} md={3}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Adresse domiciliation</Typography>
+                          <Typography variant="body1">{cct.adresseDomiciliation || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Adresse CCT</Typography>
+                          <Typography variant="body1" fontWeight="bold">{cct.adresseCCT || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Coordonnées GPS</Typography>
+                          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                            <Box>
+                              <Typography variant="caption" color="text.secondary">Latitude</Typography>
+                              <Typography variant="body2" fontWeight="bold">{cct.latitude || '-'}</Typography>
+                            </Box>
+                            <Box>
+                              <Typography variant="caption" color="text.secondary">Longitude</Typography>
+                              <Typography variant="body2" fontWeight="bold">{cct.longitude || '-'}</Typography>
+                            </Box>
+                          </Box>
+                        </Grid>
                       </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">Province</Typography>
-                        <Typography variant="body1">{cct.province || '-'}</Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">Ville</Typography>
-                        <Typography variant="body1">{cct.ville || '-'}</Typography>
-                      </Grid>
-                      <Grid size={{ xs: 12 }}>
-                        <Typography variant="subtitle2" color="text.secondary">Adresse</Typography>
-                        <Typography variant="body1">{cct.adresseCCT || '-'}</Typography>
-                      </Grid>
-                      <Grid size={{ xs: 6 }}>
-                        <Typography variant="subtitle2" color="text.secondary">Latitude</Typography>
-                        <Typography variant="body1">{cct.latitude || '-'}</Typography>
-                      </Grid>
-                      <Grid size={{ xs: 6 }}>
-                        <Typography variant="subtitle2" color="text.secondary">Longitude</Typography>
-                        <Typography variant="body1">{cct.longitude || '-'}</Typography>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </Grid>
               </Grid>
 
-              {/* Informations de contact */}
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Card elevation={2}>
-                  <CardContent>
-                    <Typography variant="h6" color="primary" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <PhoneIcon />
-                      Informations de contact
-                    </Typography>
-                    <Grid container spacing={2}>
-                      <Grid size={{ xs: 12 }}>
-                        <Typography variant="subtitle2" color="text.secondary">Adresse siège</Typography>
-                        <Typography variant="body1">{cct.adresseSiege || '-'}</Typography>
+              {/* Section 3: Informations complémentaires et dates (2 colonnes équilibrées) */}
+              <Grid container spacing={3}>
+                {/* Colonne gauche: Informations complémentaires */}
+                <Grid item xs={12} md={6}>
+                  <Card elevation={2} sx={{ height: '100%' }}>
+                    <CardContent>
+                      <Typography variant="h6" color="primary" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                        <SettingsIcon />
+                        Informations complémentaires
+                      </Typography>
+                      <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Personne morale</Typography>
+                          <Box>
+                            {cct.isPersonneMorale ? (
+                              <Chip label="Oui" color="success" size="small" icon={<CheckCircleIcon />} />
+                            ) : (
+                              <Chip label="Non" color="default" size="small" />
+                            )}
+                          </Box>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Engagements spécifiques</Typography>
+                          <Typography variant="body1">{cct.engagementSpecifique || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Quota VL</Typography>
+                          <Typography variant="body1" fontWeight="bold" color="primary">{cct.quotaVL || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Quota PL</Typography>
+                          <Typography variant="body1" fontWeight="bold" color="primary">{cct.quotaPL || '-'}</Typography>
+                        </Grid>
                       </Grid>
-                      <Grid size={{ xs: 12 }}>
-                        <Typography variant="subtitle2" color="text.secondary">Adresse domiciliation</Typography>
-                        <Typography variant="body1">{cct.adresseDomiciliation || '-'}</Typography>
-                      </Grid>
-                      <Grid size={{ xs: 6 }}>
-                        <Typography variant="subtitle2" color="text.secondary">Téléphone</Typography>
-                        <Typography variant="body1">{cct.tel || '-'}</Typography>
-                      </Grid>
-                      <Grid size={{ xs: 6 }}>
-                        <Typography variant="subtitle2" color="text.secondary">Fax</Typography>
-                        <Typography variant="body1">{cct.fax || '-'}</Typography>
-                      </Grid>
-                      <Grid size={{ xs: 12 }}>
-                        <Typography variant="subtitle2" color="text.secondary">Email</Typography>
-                        <Typography variant="body1">{cct.mail || '-'}</Typography>
-                      </Grid>
-                      <Grid size={{ xs: 6 }}>
-                        <Typography variant="subtitle2" color="text.secondary">ICE</Typography>
-                        <Typography variant="body1">{cct.ice || '-'}</Typography>
-                      </Grid>
-                      <Grid size={{ xs: 6 }}>
-                        <Typography variant="subtitle2" color="text.secondary">Id. Fiscal</Typography>
-                        <Typography variant="body1">{cct.idFiscal || '-'}</Typography>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-              </Grid>
+                    </CardContent>
+                  </Card>
+                </Grid>
 
-              {/* Informations complémentaires */}
-              <Grid item xs={12} md={6}>
-                <Card elevation={2}>
-                  <CardContent>
-                    <Typography variant="h6" color="primary" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <SettingsIcon />
-                      Informations complémentaires
-                    </Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12}>
-                        <Typography variant="subtitle2" color="text.secondary">Engagements spécifiques</Typography>
-                        <Typography variant="body1">{cct.engagementSpecifique || '-'}</Typography>
+                {/* Colonne droite: Dates importantes */}
+                <Grid item xs={12} md={6}>
+                  <Card elevation={2} sx={{ height: '100%' }}>
+                    <CardContent>
+                      <Typography variant="h6" color="primary" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                        <CalendarIcon />
+                        Dates importantes
+                      </Typography>
+                      <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Date statut</Typography>
+                          <Typography variant="body1" fontWeight="bold">{formatDate(cct.dateStatut) || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Date ralliement</Typography>
+                          <Typography variant="body1" fontWeight="bold">{formatDate(cct.dateRalliement) || '-'}</Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Thumbprint certificat</Typography>
+                          <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.8rem', wordBreak: 'break-all' }}>
+                            {cct.thumbprintCertificat || '-'}
+                          </Typography>
+                        </Grid>
                       </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">Personne morale</Typography>
-                        <Box>
-                          {cct.isPersonneMorale ? (
-                            <Chip label="Oui" color="success" size="small" icon={<CheckCircleIcon />} />
-                          ) : (
-                            <Chip label="Non" color="default" size="small" />
-                          )}
-                        </Box>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">Quota VL</Typography>
-                        <Typography variant="body1" fontWeight="bold">{cct.quotaVL || '-'}</Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="text.secondary">Quota PL</Typography>
-                        <Typography variant="body1" fontWeight="bold">{cct.quotaPL || '-'}</Typography>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </Grid>
               </Grid>
-            </Grid>
+            </Box>
           )}
 
           {/* Onglet Lignes/Agents CCT */}

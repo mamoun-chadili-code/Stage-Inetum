@@ -54,6 +54,7 @@ import { dropdownsService } from '../../services/dropdownsService';
 import ChefCentreFormModal from './ChefCentreFormModal';
 import ChefCentreDetailsModal from './ChefCentreDetailsModal';
 import SearchableSelect from '../common/SearchableSelect';
+import SearchSection from '../common/SearchSection';
 
 export default function ChefsCentre() {
   // États principaux
@@ -274,64 +275,18 @@ export default function ChefsCentre() {
   );
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
+    <Box sx={{ p: 2 }}>
+      <Typography variant="h4" gutterBottom sx={{ mb: 2 }}>
         Gestion des Chefs de Centre
       </Typography>
 
       {/* Section Recherche */}
-      <Paper 
-        elevation={3}
-        sx={{ 
-          p: 4, 
-          mb: 4, 
-          bgcolor: 'white',
-          borderRadius: 3,
-          border: '1px solid',
-          borderColor: 'grey.200',
-          background: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)',
-          '&:hover': {
-            boxShadow: '0 8px 25px rgba(0,0,0,0.12)',
-            transform: 'translateY(-2px)',
-            transition: 'all 0.3s ease-in-out'
-          },
-          transition: 'all 0.3s ease-in-out'
-        }}
-      >
-        <Typography 
-          variant="h6" 
-          gutterBottom 
-          sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 2,
-            color: 'primary.main',
-            fontWeight: 600,
-            mb: 3,
-            fontSize: '1.2rem',
-            textTransform: 'none',
-            letterSpacing: '0.3px',
-            borderBottom: '2px solid',
-            borderColor: 'primary.light',
-            pb: 1,
-            '& .MuiSvgIcon-root': {
-              fontSize: '1.5rem',
-              color: 'primary.main'
-            }
-          }}
-        >
-          <SearchIcon />
-          Recherche
-        </Typography>
-        
-
-
-        {/* Zone de recherche organisée */}
+      <SearchSection>
         <Box sx={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: 3,
-          mb: 3
+          gridTemplateColumns: 'repeat(6, 1fr)',
+          gap: 2,
+          mb: 2
         }}>
           <SearchableSelect
             label="Région"
@@ -346,10 +301,10 @@ export default function ChefsCentre() {
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
-                minHeight: '56px'
+                minHeight: '48px'
               },
               '& .MuiInputLabel-root': {
-                fontSize: '1rem',
+                fontSize: '0.9rem',
                 fontWeight: 500,
                 color: 'text.primary'
               }
@@ -369,10 +324,10 @@ export default function ChefsCentre() {
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
-                minHeight: '56px'
+                minHeight: '48px'
               },
               '& .MuiInputLabel-root': {
-                fontSize: '1rem',
+                fontSize: '0.9rem',
                 fontWeight: 500,
                 color: 'text.primary'
               }
@@ -392,10 +347,10 @@ export default function ChefsCentre() {
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
-                minHeight: '56px'
+                minHeight: '48px'
               },
               '& .MuiInputLabel-root': {
-                fontSize: '1rem',
+                fontSize: '0.9rem',
                 fontWeight: 500,
                 color: 'text.primary'
               }
@@ -415,10 +370,10 @@ export default function ChefsCentre() {
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
-                minHeight: '56px'
+                minHeight: '48px'
               },
               '& .MuiInputLabel-root': {
-                fontSize: '1rem',
+                fontSize: '0.9rem',
                 fontWeight: 500,
                 color: 'text.primary'
               }
@@ -438,10 +393,10 @@ export default function ChefsCentre() {
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
-                minHeight: '56px'
+                minHeight: '48px'
               },
               '& .MuiInputLabel-root': {
-                fontSize: '1rem',
+                fontSize: '0.9rem',
                 fontWeight: 500,
                 color: 'text.primary'
               }
@@ -465,10 +420,10 @@ export default function ChefsCentre() {
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
-                minHeight: '56px'
+                minHeight: '48px'
               },
               '& .MuiInputLabel-root': {
-                fontSize: '1rem',
+                fontSize: '0.9rem',
                 fontWeight: 500,
                 color: 'text.primary'
               }
@@ -481,9 +436,9 @@ export default function ChefsCentre() {
             onClick={applyFilters}
             startIcon={<FilterIcon />}
             sx={{
-              minWidth: '220px',
-              height: '56px',
-              fontSize: '1rem',
+              minWidth: '200px',
+              height: '48px',
+              fontSize: '0.9rem',
               fontWeight: 600,
               borderRadius: 2,
               textTransform: 'uppercase',
@@ -502,9 +457,9 @@ export default function ChefsCentre() {
             onClick={clearFilters}
             startIcon={<ClearIcon />}
             sx={{
-              minWidth: '220px',
-              height: '56px',
-              fontSize: '1rem',
+              minWidth: '200px',
+              height: '48px',
+              fontSize: '0.9rem',
               fontWeight: 600,
               borderRadius: 2,
               textTransform: 'uppercase',
@@ -524,7 +479,7 @@ export default function ChefsCentre() {
         </Box>
         
 
-      </Paper>
+      </SearchSection>
 
       {/* Section Chefs des Centres */}
       <Paper sx={{ p: 3 }}>

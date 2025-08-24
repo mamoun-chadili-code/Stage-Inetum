@@ -80,3 +80,6 @@ SELECT * FROM TypeCTTs;
 PRINT 'Mise à jour terminée avec succès !';
 GO
 
+
+
+

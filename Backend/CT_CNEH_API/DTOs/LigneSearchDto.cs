@@ -8,7 +8,7 @@ namespace CT_CNEH_API.DTOs
         public int? VilleId { get; set; }
         public int? ReseauId { get; set; }
         public int? CCTId { get; set; }
-        public int? AnneeDemarrage { get; set; }
+        public string? AnneeDemarrage { get; set; }
         public int? CategorieId { get; set; }
         public int? StatutId { get; set; }
         

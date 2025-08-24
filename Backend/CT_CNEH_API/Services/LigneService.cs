@@ -1,6 +1,6 @@
 using CT_CNEH_API.Data;
-using CT_CNEH_API.Models;
 using CT_CNEH_API.DTOs;
+using CT_CNEH_API.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CT_CNEH_API.Services
@@ -17,9 +17,7 @@ namespace CT_CNEH_API.Services
         public async Task<IEnumerable<LigneDto>> GetAllLignesAsync()
         {
             var lignes = await _context.Lignes
-                .Include(l => l.Categorie)
-                .Include(l => l.CCT)
-                .Include(l => l.Statut)
+                .OrderBy(l => l.NumeroLigne)
                 .Select(l => new LigneDto
                 {
                     Id = l.Id,
@@ -31,9 +29,18 @@ namespace CT_CNEH_API.Services
                     DecisionId = l.DecisionId,
                     DateDecision = l.DateDecision,
                     AnneeDemarrage = l.AnneeDemarrage,
-                    CategorieNom = l.Categorie.Nom,
-                    CCTNom = l.CCT.Nom,
-                    StatutNom = l.Statut.Nom,
+                    CategorieNom = _context.CategorieLignes
+                        .Where(c => c.Id == l.CategorieId)
+                        .Select(c => c.Libelle)
+                        .FirstOrDefault() ?? "N/A",
+                    CCTNom = _context.CCTs
+                        .Where(c => c.Id == l.CCTId)
+                        .Select(c => c.Nom)
+                        .FirstOrDefault() ?? "N/A",
+                    StatutNom = _context.StatutLignes
+                        .Where(s => s.Id == l.StatutId)
+                        .Select(s => s.Libelle)
+                        .FirstOrDefault() ?? "N/A",
                     DecisionNom = null
                 })
                 .ToListAsync();
@@ -44,13 +51,17 @@ namespace CT_CNEH_API.Services
         public async Task<LigneDto?> GetLigneByIdAsync(int id)
         {
             var ligne = await _context.Lignes
-                .Include(l => l.Categorie)
-                .Include(l => l.CCT)
-                .Include(l => l.Statut)
                 .FirstOrDefaultAsync(l => l.Id == id);
 
             if (ligne == null)
                 return null;
+
+            var categorie = await _context.CategorieLignes
+                .FirstOrDefaultAsync(c => c.Id == ligne.CategorieId);
+            var cct = await _context.CCTs
+                .FirstOrDefaultAsync(c => c.Id == ligne.CCTId);
+            var statut = await _context.StatutLignes
+                .FirstOrDefaultAsync(s => s.Id == ligne.StatutId);
 
             return new LigneDto
             {
@@ -63,9 +74,9 @@ namespace CT_CNEH_API.Services
                 DecisionId = ligne.DecisionId,
                 DateDecision = ligne.DateDecision,
                 AnneeDemarrage = ligne.AnneeDemarrage,
-                CategorieNom = ligne.Categorie.Nom,
-                CCTNom = ligne.CCT.Nom,
-                StatutNom = ligne.Statut.Nom,
+                CategorieNom = categorie?.Libelle ?? "N/A",
+                CCTNom = cct?.Nom ?? "N/A",
+                StatutNom = statut?.Libelle ?? "N/A",
                 DecisionNom = null
             };
         }
@@ -76,26 +87,28 @@ namespace CT_CNEH_API.Services
             if (searchDto.Page < 1) searchDto.Page = 1;
             if (searchDto.PageSize < 1 || searchDto.PageSize > 100) searchDto.PageSize = 10;
             
-            var query = _context.Lignes
-                .Include(l => l.Categorie)
-                .Include(l => l.CCT)
-                .Include(l => l.Statut)
-                .AsQueryable();
+            var query = _context.Lignes.AsQueryable();
 
             // Filtres de recherche
             if (searchDto.RegionId.HasValue)
             {
-                query = query.Where(l => l.CCT.RegionId == searchDto.RegionId.Value);
+                query = query.Where(l => _context.CCTs
+                    .Where(c => c.Id == l.CCTId && c.RegionId == searchDto.RegionId.Value)
+                    .Any());
             }
 
             if (searchDto.VilleId.HasValue)
             {
-                query = query.Where(l => l.CCT.VilleId == searchDto.VilleId.Value);
+                query = query.Where(l => _context.CCTs
+                    .Where(c => c.Id == l.CCTId && c.VilleId == searchDto.VilleId.Value)
+                    .Any());
             }
 
             if (searchDto.ReseauId.HasValue)
             {
-                query = query.Where(l => l.CCT.ReseauId == searchDto.ReseauId.Value);
+                query = query.Where(l => _context.CCTs
+                    .Where(c => c.Id == l.CCTId && c.ReseauId == searchDto.ReseauId.Value)
+                    .Any());
             }
 
             if (searchDto.CCTId.HasValue)
@@ -103,9 +116,9 @@ namespace CT_CNEH_API.Services
                 query = query.Where(l => l.CCTId == searchDto.CCTId.Value);
             }
 
-            if (searchDto.AnneeDemarrage.HasValue)
+            if (!string.IsNullOrEmpty(searchDto.AnneeDemarrage))
             {
-                query = query.Where(l => l.AnneeDemarrage == searchDto.AnneeDemarrage.Value);
+                query = query.Where(l => l.AnneeDemarrage == searchDto.AnneeDemarrage);
             }
 
             if (searchDto.CategorieId.HasValue)
@@ -118,23 +131,24 @@ namespace CT_CNEH_API.Services
                 query = query.Where(l => l.StatutId == searchDto.StatutId.Value);
             }
 
-            // Recherche textuelle
             if (!string.IsNullOrEmpty(searchDto.SearchTerm))
             {
                 var searchTerm = searchDto.SearchTerm.ToLower();
                 query = query.Where(l => 
                     l.NumeroLigne.ToString().Contains(searchTerm) ||
-                    l.Categorie.Nom.ToLower().Contains(searchTerm) ||
-                    l.CCT.Nom.ToLower().Contains(searchTerm) ||
-                    l.Statut.Nom.ToLower().Contains(searchTerm)
+                    _context.CCTs
+                        .Where(c => c.Id == l.CCTId && c.Nom.ToLower().Contains(searchTerm))
+                        .Any() ||
+                    _context.CategorieLignes
+                        .Where(c => c.Id == l.CategorieId && c.Libelle.ToLower().Contains(searchTerm))
+                        .Any()
                 );
             }
 
-            // Compter le total avant pagination
             var totalCount = await query.CountAsync();
 
-            // Pagination
             var lignes = await query
+                .OrderBy(l => l.NumeroLigne)
                 .Skip((searchDto.Page - 1) * searchDto.PageSize)
                 .Take(searchDto.PageSize)
                 .Select(l => new LigneDto
@@ -148,14 +162,58 @@ namespace CT_CNEH_API.Services
                     DecisionId = l.DecisionId,
                     DateDecision = l.DateDecision,
                     AnneeDemarrage = l.AnneeDemarrage,
-                    CategorieNom = l.Categorie.Nom,
-                    CCTNom = l.CCT.Nom,
-                    StatutNom = l.Statut.Nom,
+                    CategorieNom = _context.CategorieLignes
+                        .Where(c => c.Id == l.CategorieId)
+                        .Select(c => c.Libelle)
+                        .FirstOrDefault() ?? "N/A",
+                    CCTNom = _context.CCTs
+                        .Where(c => c.Id == l.CCTId)
+                        .Select(c => c.Nom)
+                        .FirstOrDefault() ?? "N/A",
+                    StatutNom = _context.StatutLignes
+                        .Where(s => s.Id == l.StatutId)
+                        .Select(s => s.Libelle)
+                        .FirstOrDefault() ?? "N/A",
                     DecisionNom = null
                 })
                 .ToListAsync();
 
             return (lignes, totalCount);
+        }
+
+        public async Task<IEnumerable<LigneDto>> GetLignesByCCTAsync(int cctId)
+        {
+            var lignes = await _context.Lignes
+                .Where(l => l.CCTId == cctId)
+                .OrderBy(l => l.NumeroLigne)
+                .Select(l => new LigneDto
+                {
+                    Id = l.Id,
+                    NumeroLigne = l.NumeroLigne,
+                    CategorieId = l.CategorieId,
+                    CCTId = l.CCTId,
+                    StatutId = l.StatutId,
+                    DateStatut = l.DateStatut,
+                    DecisionId = l.DecisionId,
+                    DateDecision = l.DateDecision,
+                    AnneeDemarrage = l.AnneeDemarrage,
+                    CategorieNom = _context.CategorieLignes
+                        .Where(c => c.Id == l.CategorieId)
+                        .Select(c => c.Libelle)
+                        .FirstOrDefault() ?? "N/A",
+                    CCTNom = _context.CCTs
+                        .Where(c => c.Id == l.CCTId)
+                        .Select(c => c.Nom)
+                        .FirstOrDefault() ?? "N/A",
+                    StatutNom = _context.StatutLignes
+                        .Where(s => s.Id == l.StatutId)
+                        .Select(s => s.Libelle)
+                        .FirstOrDefault() ?? "N/A",
+                    DecisionNom = null
+                })
+                .ToListAsync();
+
+            return lignes;
         }
 
         public async Task<Ligne> CreateLigneAsync(LigneCreateDto dto)
@@ -170,18 +228,18 @@ namespace CT_CNEH_API.Services
                 DecisionId = dto.DecisionId,
                 DateDecision = dto.DateDecision,
                 AnneeDemarrage = dto.AnneeDemarrage,
-                DateCreation = DateTime.Now
+                DateCreation = DateTime.UtcNow
             };
 
             _context.Lignes.Add(ligne);
             await _context.SaveChangesAsync();
+
             return ligne;
         }
 
         public async Task<bool> UpdateLigneAsync(int id, LigneUpdateDto dto)
         {
             var ligne = await _context.Lignes.FindAsync(id);
-            
             if (ligne == null)
                 return false;
 
@@ -193,79 +251,35 @@ namespace CT_CNEH_API.Services
             ligne.DecisionId = dto.DecisionId;
             ligne.DateDecision = dto.DateDecision;
             ligne.AnneeDemarrage = dto.AnneeDemarrage;
-            ligne.DateModification = DateTime.Now;
+            ligne.DateModification = DateTime.UtcNow;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> DeleteLigneAsync(int id)
         {
             var ligne = await _context.Lignes.FindAsync(id);
-            
             if (ligne == null)
                 return false;
 
-            // Suppression physique
             _context.Lignes.Remove(ligne);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public async Task<IEnumerable<LigneDto>> GetLignesByCCTAsync(int cctId)
-        {
-            var lignes = await _context.Lignes
-                .Include(l => l.Categorie)
-                .Include(l => l.CCT)
-                .Include(l => l.Statut)
-                .Where(l => l.CCTId == cctId)
-                .Select(l => new LigneDto
-                {
-                    Id = l.Id,
-                    NumeroLigne = l.NumeroLigne,
-                    CategorieId = l.CategorieId,
-                    CCTId = l.CCTId,
-                    StatutId = l.StatutId,
-                    DateStatut = l.DateStatut,
-                    DecisionId = l.DecisionId,
-                    DateDecision = l.DateDecision,
-                    AnneeDemarrage = l.AnneeDemarrage,
-                    CategorieNom = l.Categorie.Nom,
-                    CCTNom = l.CCT.Nom,
-                    StatutNom = l.Statut.Nom,
-                    DecisionNom = null
-                })
-                .ToListAsync();
-
-            return lignes;
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> LigneExistsAsync(int numeroLigne, int cctId, int? excludeId = null)
         {
-            var query = _context.Lignes
-                .Where(l => l.NumeroLigne == numeroLigne && l.CCTId == cctId);
-
             if (excludeId.HasValue)
             {
-                query = query.Where(l => l.Id != excludeId.Value);
+                return await _context.Lignes
+                    .AnyAsync(l => l.NumeroLigne == numeroLigne && 
+                                   l.CCTId == cctId && 
+                                   l.Id != excludeId.Value);
             }
 
-            return await query.AnyAsync();
+            return await _context.Lignes
+                .AnyAsync(l => l.NumeroLigne == numeroLigne && l.CCTId == cctId);
         }
     }
 }
