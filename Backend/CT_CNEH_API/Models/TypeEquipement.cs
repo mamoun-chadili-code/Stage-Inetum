@@ -17,6 +17,9 @@ namespace CT_CNEH_API.Models
         [Required]
         public bool Etalonnable { get; set; }
         
+        [StringLength(500)]
+        public string? Description { get; set; }
+        
         // Navigation properties
         public virtual ICollection<Equipement> Equipements { get; set; } = new List<Equipement>();
     }

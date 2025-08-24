@@ -32,7 +32,7 @@ export default function Equipements() {
   // États pour les données
   const [equipements, setEquipements] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [dropdowns, setDropdowns] = useState({ types: [], ccts: [], statuts: [] });
+  const [dropdowns, setDropdowns] = useState({ types: [], ccts: [], statuts: [], lignes: [] });
   const [dropdownsLoading, setDropdownsLoading] = useState(true);
 
   // États pour la pagination
@@ -43,10 +43,10 @@ export default function Equipements() {
 
   // États pour la recherche
   const [search, setSearch] = useState({
-    nom: '',
-    type: '',
     cct: '',
-    statut: ''
+    ligne: '',
+    type: '',
+    dateEtalonnage: ''
   });
 
   // États pour les modals
@@ -86,10 +86,19 @@ export default function Equipements() {
       const statuts = await equipementService.getStatutsEquipement();
       console.log('🔍 Statuts récupérés:', statuts);
       
+      // Charger les lignes
+      const lignes = await equipementService.getLignes();
+      console.log('🔍 Lignes récupérées:', lignes);
+      
       const mappedDropdowns = {
-        types: types.map(t => ({ id: t.id || t.Id, libelle: t.libelle || t.Libelle })),
+        types: types.map(t => ({ 
+          id: t.id || t.Id, 
+          libelle: t.libelle || t.Libelle,
+          description: t.description || t.Description 
+        })),
         ccts: ccts.map(c => ({ id: c.id || c.Id, nom: c.nom || c.Nom })),
-        statuts: statuts.map(s => ({ id: s.id || s.Id, libelle: s.libelle || s.Libelle }))
+        statuts: statuts.map(s => ({ id: s.id || s.Id, libelle: s.libelle || s.Libelle })),
+        lignes: lignes.map(l => ({ id: l.id || l.Id, numeroLigne: l.numeroLigne || l.NumeroLigne }))
       };
       
       console.log('🔍 Dropdowns mappés:', mappedDropdowns);
@@ -102,10 +111,10 @@ export default function Equipements() {
       // Fallback vers des données mockées en cas d'erreur
       setDropdowns({
         types: [
-          { id: 1, libelle: 'Informatique' },
-          { id: 2, libelle: 'Bureau' },
-          { id: 3, libelle: 'Technique' },
-          { id: 4, libelle: 'Sécurité' }
+          { id: 1, libelle: 'Informatique', description: 'Équipements informatiques et logiciels' },
+          { id: 2, libelle: 'Bureau', description: 'Matériel de bureau et accessoires' },
+          { id: 3, libelle: 'Technique', description: 'Équipements techniques spécialisés' },
+          { id: 4, libelle: 'Sécurité', description: 'Systèmes de sécurité et protection' }
         ],
         ccts: [
           { id: 1, nom: 'CCT Casablanca' },
@@ -117,6 +126,12 @@ export default function Equipements() {
           { id: 2, libelle: 'En maintenance' },
           { id: 3, libelle: 'Hors service' },
           { id: 4, libelle: 'En réparation' }
+        ],
+        lignes: [
+          { id: 1, numeroLigne: 101 },
+          { id: 2, numeroLigne: 102 },
+          { id: 3, numeroLigne: 103 },
+          { id: 4, numeroLigne: 104 }
         ]
       });
     } finally {
@@ -132,10 +147,10 @@ export default function Equipements() {
       const response = await equipementService.getEquipements({
         page,
         pageSize: rowsPerPage,
-        nom: search.nom || undefined,
-        type: search.type || undefined,
         cct: search.cct || undefined,
-        statut: search.statut || undefined
+        ligne: search.ligne || undefined,
+        type: search.type || undefined,
+        dateEtalonnage: search.dateEtalonnage || undefined
       });
       
       // Vérifier que la réponse contient des données
@@ -194,10 +209,10 @@ export default function Equipements() {
 
   const handleResetSearch = () => {
     setSearch({
-      nom: '',
-      type: '',
       cct: '',
-      statut: ''
+      ligne: '',
+      type: '',
+      dateEtalonnage: ''
     });
     setPage(1);
     loadEquipements();
@@ -317,8 +332,56 @@ export default function Equipements() {
     }
   };
 
+  // Fonction pour générer des couleurs uniques pour chaque type d'équipement
+  const getTypeEquipementColor = (typeId) => {
+    const colors = [
+      '#FF6B6B', // Rouge vif
+      '#4ECDC4', // Turquoise
+      '#45B7D1', // Bleu clair
+      '#96CEB4', // Vert clair
+      '#FFEAA7', // Jaune clair
+      '#DDA0DD', // Prune
+      '#98D8C8', // Vert menthe
+      '#F7DC6F', // Jaune doré
+      '#BB8FCE', // Violet clair
+      '#85C1E9', // Bleu ciel
+      '#F8C471', // Orange clair
+      '#82E0AA', // Vert pomme
+      '#F1948A', // Rose saumon
+      '#5DADE2', // Bleu azur (différent du précédent)
+      '#D7BDE2', // Lavande
+      '#F9E79F', // Jaune pâle
+      '#A9DFBF', // Vert pâle
+      '#FAD7A0', // Orange pâle
+      '#D5A6BD', // Rose pâle
+      '#A3E4D7', // Vert bleu pâle
+      '#E74C3C', // Rouge foncé
+      '#3498DB', // Bleu royal
+      '#2ECC71', // Vert émeraude
+      '#F39C12', // Orange foncé
+      '#9B59B6', // Violet foncé
+      '#1ABC9C', // Vert turquoise
+      '#E67E22', // Orange rouge
+      '#34495E', // Bleu gris foncé
+      '#16A085', // Vert océan
+      '#8E44AD'  // Violet profond
+    ];
+    
+    // Pour éviter la répétition, on utilise l'ID directement
+    // Si l'ID dépasse le nombre de couleurs, on génère une couleur unique
+    if (typeId <= colors.length) {
+      return colors[typeId - 1];
+    } else {
+      // Générer une couleur unique basée sur l'ID
+      const hue = (typeId * 137.508) % 360; // Nombre d'or pour la distribution
+      const saturation = 70 + (typeId % 20); // 70-90%
+      const lightness = 50 + (typeId % 20);  // 50-70%
+      return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+    }
+  };
+
   // Vérifier que les dropdowns sont chargés et non vides
-  if (dropdownsLoading || !dropdowns.types || !dropdowns.ccts || !dropdowns.statuts) {
+  if (dropdownsLoading || !dropdowns.types || !dropdowns.ccts || !dropdowns.statuts || !dropdowns.lignes) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
         <CircularProgress />
@@ -335,31 +398,12 @@ export default function Equipements() {
         Gestion des Équipements
       </Typography>
       
-      {/* Barre de recherche */}
+      {/* Section Recherche */}
       <Box sx={{ mb: 3, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
         <Typography variant="h6" gutterBottom>
-          Recherche
+          Section Recherche
         </Typography>
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2, mb: 2 }}>
-          <TextField
-            label="Nom de l'équipement"
-            value={search.nom}
-            onChange={(e) => setSearch(prev => ({ ...prev, nom: e.target.value }))}
-            size="small"
-          />
-          <FormControl size="small">
-            <InputLabel>Type</InputLabel>
-            <Select
-              value={search.type}
-              onChange={(e) => setSearch(prev => ({ ...prev, type: e.target.value }))}
-              label="Type"
-            >
-              <MenuItem value="">Tous</MenuItem>
-              {dropdowns.types?.map(type => (
-                <MenuItem key={type?.id} value={type?.id}>{type?.libelle || 'Type inconnu'}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
           <FormControl size="small">
             <InputLabel>CCT</InputLabel>
             <Select
@@ -367,32 +411,96 @@ export default function Equipements() {
               onChange={(e) => setSearch(prev => ({ ...prev, cct: e.target.value }))}
               label="CCT"
             >
-              <MenuItem value="">Tous</MenuItem>
+              <MenuItem value="">Tous les CCTs</MenuItem>
               {dropdowns.ccts?.map(cct => (
                 <MenuItem key={cct?.id} value={cct?.id}>{cct?.nom || 'CCT inconnu'}</MenuItem>
               ))}
             </Select>
           </FormControl>
           <FormControl size="small">
-            <InputLabel>Statut</InputLabel>
+            <InputLabel>Ligne</InputLabel>
             <Select
-              value={search.statut}
-              onChange={(e) => setSearch(prev => ({ ...prev, statut: e.target.value }))}
-              label="Statut"
+              value={search.ligne}
+              onChange={(e) => setSearch(prev => ({ ...prev, ligne: e.target.value }))}
+              label="Ligne"
             >
-              <MenuItem value="">Tous</MenuItem>
-              {dropdowns.statuts?.map(statut => (
-                <MenuItem key={statut?.id} value={statut?.id}>{statut?.libelle || 'Statut inconnu'}</MenuItem>
+              <MenuItem value="">Toutes les lignes</MenuItem>
+              {dropdowns.lignes?.map(ligne => (
+                <MenuItem key={ligne?.id} value={ligne?.id}>{`Ligne ${ligne?.numeroLigne || 'N/A'}`}</MenuItem>
               ))}
             </Select>
           </FormControl>
+          <FormControl size="small">
+            <InputLabel>Type d'équipement</InputLabel>
+            <Select
+              value={search.type}
+              onChange={(e) => setSearch(prev => ({ ...prev, type: e.target.value }))}
+              label="Type d'équipement"
+            >
+              <MenuItem value="">Tous les types</MenuItem>
+              {dropdowns.types?.map(type => {
+                const typeColor = getTypeEquipementColor(type?.id);
+                return (
+                  <MenuItem key={type?.id} value={type?.id} sx={{ py: 1 }}>
+                    <Box display="flex" flexDirection="column" width="100%">
+                      {/* Ligne 1 : Point coloré + Nom du type */}
+                      <Box display="flex" alignItems="center" gap={1} mb={0.5}>
+                        <Box
+                          sx={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: '50%',
+                            backgroundColor: typeColor,
+                            flexShrink: 0,
+                            border: '1px solid rgba(0,0,0,0.1)',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                          }}
+                        />
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: 600,
+                            color: 'text.primary'
+                          }}
+                        >
+                          {type?.libelle || 'Type inconnu'}
+                        </Typography>
+                      </Box>
+                      {/* Ligne 2 : Description en italique */}
+                      {type?.description && (
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: 'text.secondary',
+                            fontStyle: 'italic',
+                            ml: 3,
+                            lineHeight: 1.2
+                          }}
+                        >
+                          {type.description}
+                        </Typography>
+                      )}
+                    </Box>
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
+          <TextField
+            label="Date d'étalonnage"
+            type="date"
+            value={search.dateEtalonnage}
+            onChange={(e) => setSearch(prev => ({ ...prev, dateEtalonnage: e.target.value }))}
+            size="small"
+            InputLabelProps={{ shrink: true }}
+          />
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button variant="contained" onClick={handleSearch}>
             Rechercher
           </Button>
           <Button variant="outlined" onClick={handleResetSearch}>
-            Réinitialiser
+            Annuler
           </Button>
         </Box>
       </Box>
@@ -438,7 +546,24 @@ export default function Equipements() {
               equipements.map((equipement) => (
                 <TableRow key={equipement.id} hover>
                   <TableCell>{equipement.nom}</TableCell>
-                  <TableCell>{equipement.type?.libelle || `Type ${equipement.typeId || 'N/A'}`}</TableCell>
+                  <TableCell>
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Box
+                        sx={{
+                          width: 10,
+                          height: 10,
+                          borderRadius: '50%',
+                          backgroundColor: getTypeEquipementColor(equipement.type?.id || equipement.typeId),
+                          flexShrink: 0,
+                          border: '1px solid rgba(0,0,0,0.1)',
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                        }}
+                      />
+                      <Typography variant="body2">
+                        {equipement.type?.libelle || `Type ${equipement.typeId || 'N/A'}`}
+                      </Typography>
+                    </Box>
+                  </TableCell>
                   <TableCell>{equipement.cct?.nom || `CCT ${equipement.cctId || 'N/A'}`}</TableCell>
                   <TableCell>
                     <Chip
@@ -512,9 +637,52 @@ export default function Equipements() {
                 onChange={(e) => handleFormChange('type', e.target.value)}
                 label="Type *"
               >
-                {dropdowns.types.map(type => (
-                  <MenuItem key={type.id} value={type.id}>{type.libelle}</MenuItem>
-                ))}
+                {dropdowns.types.map(type => {
+                  const typeColor = getTypeEquipementColor(type.id);
+                  return (
+                    <MenuItem key={type.id} value={type.id} sx={{ py: 1 }}>
+                      <Box display="flex" flexDirection="column" width="100%">
+                        {/* Ligne 1 : Point coloré + Nom du type */}
+                        <Box display="flex" alignItems="center" gap={1} mb={0.5}>
+                          <Box
+                            sx={{
+                              width: 12,
+                              height: 12,
+                              borderRadius: '50%',
+                              backgroundColor: typeColor,
+                              flexShrink: 0,
+                              border: '1px solid rgba(0,0,0,0.1)',
+                              boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                            }}
+                          />
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontWeight: 600,
+                              color: 'text.primary'
+                            }}
+                          >
+                            {type.libelle}
+                          </Typography>
+                        </Box>
+                        {/* Ligne 2 : Description en italique */}
+                        {type.description && (
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: 'text.secondary',
+                              fontStyle: 'italic',
+                              ml: 3,
+                              lineHeight: 1.2
+                            }}
+                          >
+                            {type.description}
+                          </Typography>
+                        )}
+                      </Box>
+                    </MenuItem>
+                  );
+                })}
               </Select>
             </FormControl>
             <FormControl fullWidth required>

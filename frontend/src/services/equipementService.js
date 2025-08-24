@@ -9,10 +9,10 @@ export const equipementService = {
     
     if (params.page) queryParams.append('page', params.page);
     if (params.pageSize) queryParams.append('pageSize', params.pageSize);
-    if (params.nom) queryParams.append('nom', params.nom);
-    if (params.type) queryParams.append('type', params.type);
     if (params.cct) queryParams.append('cct', params.cct);
-    if (params.statut) queryParams.append('statut', params.statut);
+    if (params.ligne) queryParams.append('ligne', params.ligne);
+    if (params.type) queryParams.append('type', params.type);
+    if (params.dateEtalonnage) queryParams.append('dateEtalonnage', params.dateEtalonnage);
     
     const response = await api.get(`${BASE_URL}?${queryParams.toString()}`);
     return response.data;
@@ -97,6 +97,19 @@ export const equipementService = {
   async getEquipementsByType(typeId) {
     const response = await api.get(`${BASE_URL}/type/${typeId}`);
     return response.data;
+  },
+
+  // Récupérer toutes les lignes pour les dropdowns
+  async getLignes() {
+    try {
+      const response = await api.get('/Lignes');
+      console.log('🔍 API Lignes - Response complète:', response);
+      console.log('🔍 API Lignes - Data:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Erreur API Lignes:', error);
+      throw error;
+    }
   },
 
   // Récupérer les équipements par statut
