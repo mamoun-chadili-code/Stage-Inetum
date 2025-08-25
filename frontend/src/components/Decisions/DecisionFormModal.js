@@ -15,7 +15,8 @@ import {
   Box,
   Typography,
   Paper,
-  InputAdornment
+  InputAdornment,
+  IconButton
 } from '@mui/material';
 import {
   Save as SaveIcon,
@@ -37,7 +38,8 @@ const DecisionFormModal = ({ open, decision, editMode, dropdowns, onClose, onSav
     agentId: '',
     ligneId: '',
     dateReference: null,
-    lienDocument: '',
+    lienDocumentUrl: '',
+    fileName: '',
     montant: '',
     dateDebut: null,
     dateFin: null,
@@ -49,34 +51,45 @@ const DecisionFormModal = ({ open, decision, editMode, dropdowns, onClose, onSav
 
   // Initialiser le formulaire avec les données de la décision en mode édition
   useEffect(() => {
+    console.log('DecisionFormModal useEffect:', { decision, editMode });
+    
     if (decision && editMode) {
+      console.log('Mode édition - Décision reçue:', decision);
       setForm({
-        typeDecision: decision.typeDecision || '',
-        entiteConcernee: decision.entiteConcernee || '',
+        typeDecision: decision.typeDecisionId || '',
+        entiteConcernee: decision.entiteTypeId || '',
         reseauId: decision.reseauId || '',
         cctId: decision.cctId || '',
         chefCentreId: decision.chefCentreId || '',
         agentId: decision.agentId || '',
         ligneId: decision.ligneId || '',
         dateReference: decision.dateReference ? new Date(decision.dateReference) : null,
-        lienDocument: decision.lienDocument || '',
+        lienDocumentUrl: decision.lienDocumentUrl || '',
+        fileName: decision.fileName || '',
         montant: decision.montant || '',
         dateDebut: decision.dateDebut ? new Date(decision.dateDebut) : null,
         dateFin: decision.dateFin ? new Date(decision.dateFin) : null,
         observation: decision.observation || ''
       });
+      console.log('Formulaire initialisé avec:', {
+        typeDecision: decision.typeDecisionId,
+        entiteConcernee: decision.entiteTypeId,
+        dateReference: decision.dateReference
+      });
     } else {
+      console.log('Mode ajout - Réinitialisation du formulaire');
       // Réinitialiser le formulaire en mode ajout
       setForm({
         typeDecision: '',
-        entiteConcernee: 'Agent', // Valeur par défaut
+        entiteConcernee: 3, // Valeur par défaut pour AGENT
         reseauId: '',
         cctId: '',
         chefCentreId: '',
         agentId: '',
         ligneId: '',
         dateReference: null,
-        lienDocument: '',
+        lienDocumentUrl: '',
+        fileName: '',
         montant: '',
         dateDebut: null,
         dateFin: null,
@@ -100,11 +113,15 @@ const DecisionFormModal = ({ open, decision, editMode, dropdowns, onClose, onSav
   const validateForm = () => {
     const newErrors = {};
 
-    if (!form.typeDecision.trim()) {
+    // Validation du type de décision (peut être objet ou chaîne)
+    const typeDecisionValue = typeof form.typeDecision === 'object' ? form.typeDecision?.libelle || form.typeDecision : form.typeDecision;
+    if (!typeDecisionValue || !String(typeDecisionValue).trim()) {
       newErrors.typeDecision = 'Le type de décision est requis';
     }
 
-    if (!form.entiteConcernee.trim()) {
+    // Validation de l'entité concernée (peut être objet ou chaîne)
+    const entiteValue = typeof form.entiteConcernee === 'object' ? form.entiteConcernee?.libelle || form.entiteConcernee : form.entiteConcernee;
+    if (!entiteValue || !String(entiteValue).trim()) {
       newErrors.entiteConcernee = 'L\'entité concernée est requise';
     }
 
@@ -135,18 +152,34 @@ const DecisionFormModal = ({ open, decision, editMode, dropdowns, onClose, onSav
     setLoading(true);
 
     try {
+      // Préparer les données selon le format attendu par le backend
       const decisionData = {
-        ...form,
+        // Champs obligatoires selon le modèle backend
+        typeDecisionId: form.typeDecision,      // ID du type de décision
+        entiteTypeId: form.entiteConcernee,     // ID du type d'entité
+        entiteId: form.agentId || form.chefCentreId || form.cctId || form.reseauId || form.ligneId || 0,
         dateReference: form.dateReference?.toISOString(),
-        dateDebut: form.dateDebut?.toISOString(),
-        dateFin: form.dateFin?.toISOString(),
+        
+        // Champs optionnels
+        dateDebut: form.dateDebut?.toISOString() || null,
+        dateFin: form.dateFin?.toISOString() || null,
+        lienDocumentUrl: form.lienDocumentUrl || null,
         montant: form.montant ? parseFloat(form.montant) : null,
+        observation: form.observation || null,
+        
+        // Informations de contexte optionnelles
         reseauId: form.reseauId || null,
         cctId: form.cctId || null,
-        chefCentreId: form.chefCentreId || null,
-        agentId: form.agentId || null,
-        ligneId: form.ligneId || null
+        
+        // Champs d'audit (seront gérés par le backend)
+        createdAt: new Date().toISOString()
       };
+
+      // Log pour déboguer
+      console.log('🔍 DONNÉES DU FORMULAIRE:', form);
+      console.log('🔍 DONNÉES PRÉPARÉES:', decisionData);
+      console.log('🔍 Type de typeDecision:', typeof form.typeDecision, form.typeDecision);
+      console.log('🔍 Type de entiteConcernee:', typeof form.entiteConcernee, form.entiteConcernee);
 
       if (editMode) {
         await decisionService.updateDecision(decision.id, decisionData);
@@ -218,7 +251,9 @@ const DecisionFormModal = ({ open, decision, editMode, dropdowns, onClose, onSav
             
             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
               <FormControl fullWidth error={!!errors.typeDecision}>
-                <InputLabel>Type de décision *</InputLabel>
+                <InputLabel>
+                  Type de décision <span style={{ color: 'red' }}>*</span>
+                </InputLabel>
                 <Select
                   value={form.typeDecision}
                   onChange={(e) => handleChange('typeDecision', e.target.value)}
@@ -237,7 +272,9 @@ const DecisionFormModal = ({ open, decision, editMode, dropdowns, onClose, onSav
               </FormControl>
 
               <FormControl fullWidth error={!!errors.entiteConcernee}>
-                <InputLabel>Entité concernée *</InputLabel>
+                <InputLabel>
+                  Entité concernée <span style={{ color: 'red' }}>*</span>
+                </InputLabel>
                 <Select
                   value={form.entiteConcernee}
                   onChange={(e) => handleChange('entiteConcernee', e.target.value)}
@@ -311,7 +348,7 @@ const DecisionFormModal = ({ open, decision, editMode, dropdowns, onClose, onSav
                   <MenuItem value="">Sélectionnez un élément</MenuItem>
                   {dropdowns.agents?.map((agent) => (
                     <MenuItem key={agent.id} value={agent.id}>
-                      {agent.nom}
+                      {agent.prenom} {agent.nom}
                     </MenuItem>
                   ))}
                 </Select>
@@ -319,7 +356,11 @@ const DecisionFormModal = ({ open, decision, editMode, dropdowns, onClose, onSav
 
               <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>
                 <DatePicker
-                  label="Date référence *"
+                  label={
+                    <span>
+                      Date référence <span style={{ color: 'red' }}>*</span>
+                    </span>
+                  }
                   value={form.dateReference}
                   onChange={(newValue) => handleChange('dateReference', newValue)}
                   renderInput={(params) => (
@@ -344,55 +385,126 @@ const DecisionFormModal = ({ open, decision, editMode, dropdowns, onClose, onSav
             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
               <TextField
                 fullWidth
-                label="Lien du document"
-                value={form.lienDocument}
-                onChange={(e) => handleChange('lienDocument', e.target.value)}
+                label={
+                  <span>
+                    Lien du document <span style={{ color: 'red' }}>*</span>
+                  </span>
+                }
+                value={form.lienDocumentUrl}
+                onChange={(e) => handleChange('lienDocumentUrl', e.target.value)}
+                placeholder="Saisir une URL ou cliquer sur l'icône pour sélectionner un fichier"
                 InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <AttachFileIcon />
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <input
+                        type="file"
+                        id="file-upload"
+                        style={{ display: 'none' }}
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            // Vérifier le type de fichier
+                            const allowedTypes = [
+                              'application/pdf',
+                              'application/msword',
+                              'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                              'application/vnd.ms-excel',
+                              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                              'image/jpeg',
+                              'image/png'
+                            ];
+                            
+                            if (allowedTypes.includes(file.type)) {
+                              const fileName = file.name;
+                              const fileUrl = URL.createObjectURL(file);
+                              handleChange('lienDocumentUrl', fileUrl);
+                              handleChange('fileName', fileName);
+                              // Effacer les erreurs précédentes
+                              if (errors.lienDocumentUrl) {
+                                setErrors(prev => ({ ...prev, lienDocumentUrl: '' }));
+                              }
+                            } else {
+                              // Afficher une erreur pour type de fichier non autorisé
+                              setErrors(prev => ({ 
+                                ...prev, 
+                                lienDocumentUrl: 'Type de fichier non autorisé. Formats acceptés : PDF, DOC, DOCX, XLS, XLSX, JPG, PNG' 
+                              }));
+                              // Réinitialiser le champ
+                              handleChange('lienDocumentUrl', '');
+                              handleChange('fileName', '');
+                            }
+                          }
+                        }}
+                      />
+                      <label htmlFor="file-upload">
+                        <IconButton
+                          component="span"
+                          size="small"
+                          sx={{ color: '#1976d2' }}
+                          title="Sélectionner un fichier"
+                        >
+                          <AttachFileIcon />
+                        </IconButton>
+                      </label>
                     </InputAdornment>
                   ),
                 }}
-                helperText="Choisir un fichier"
-              />
-
-              <TextField
-                fullWidth
-                label="Montant"
-                value={form.montant}
-                onChange={(e) => handleChange('montant', e.target.value)}
-                type="number"
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">DH</InputAdornment>,
+                helperText={
+                  form.fileName 
+                    ? `✓ Fichier sélectionné : ${form.fileName}` 
+                    : "Saisir une URL ou cliquer sur l'icône pour sélectionner un fichier (PDF, DOC, DOCX, XLS, XLSX, JPG, PNG)"
+                }
+                error={!!errors.lienDocumentUrl}
+                FormHelperTextProps={{
+                  error: !!errors.lienDocumentUrl
                 }}
-                helperText="Montant optionnel"
               />
 
-              <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>
-                <DatePicker
-                  label="Date début"
-                  value={form.dateDebut}
-                  onChange={(newValue) => handleChange('dateDebut', newValue)}
-                  renderInput={(params) => <TextField {...params} fullWidth helperText="Date optionnelle" />}
-                />
-              </LocalizationProvider>
+              {/* Champs optionnels - Affichés uniquement en mode modification */}
+              {editMode && (
+                <>
+                  <TextField
+                    fullWidth
+                    label="Montant"
+                    value={form.montant}
+                    onChange={(e) => handleChange('montant', e.target.value)}
+                    type="number"
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">DH</InputAdornment>,
+                    }}
+                    helperText="Montant optionnel"
+                  />
 
-              <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>
-                <DatePicker
-                  label="Date fin"
-                  value={form.dateFin}
-                  onChange={(newValue) => handleChange('dateFin', newValue)}
-                  renderInput={(params) => <TextField {...params} fullWidth helperText="Date optionnelle" />}
-                />
-              </LocalizationProvider>
+                  <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>
+                    <DatePicker
+                      label="Date début"
+                      value={form.dateDebut}
+                      onChange={(newValue) => handleChange('dateDebut', newValue)}
+                      renderInput={(params) => <TextField {...params} fullWidth helperText="Date optionnelle" />}
+                    />
+                  </LocalizationProvider>
+
+                  <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>
+                    <DatePicker
+                      label="Date fin"
+                      value={form.dateFin}
+                      onChange={(newValue) => handleChange('dateFin', newValue)}
+                      renderInput={(params) => <TextField {...params} fullWidth helperText="Date optionnelle" />}
+                    />
+                  </LocalizationProvider>
+                </>
+              )}
             </Box>
 
             {/* Champ Observation en pleine largeur */}
             <Box sx={{ mt: 3 }}>
               <TextField
                 fullWidth
-                label="Observation"
+                label={
+                  <span>
+                    Observation <span style={{ color: 'red' }}>*</span>
+                  </span>
+                }
                 value={form.observation}
                 onChange={(e) => handleChange('observation', e.target.value)}
                 multiline

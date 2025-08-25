@@ -8,12 +8,10 @@ namespace CT_CNEH_API.Models
         public int Id { get; set; }
 
         [Required]
-        [StringLength(100)]
-        public string TypeDecision { get; set; } = string.Empty;
+        public int TypeDecisionId { get; set; }
 
         [Required]
-        [StringLength(50)]
-        public string EntiteType { get; set; } = string.Empty;
+        public int EntiteTypeId { get; set; }
 
         [Required]
         public int EntiteId { get; set; }

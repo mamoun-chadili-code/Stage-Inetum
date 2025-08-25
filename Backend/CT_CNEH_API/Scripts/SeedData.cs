@@ -742,8 +742,8 @@ namespace CT_CNEH_API.Scripts
             {
                 new Decision
                 {
-                    TypeDecision = "Changement de nom",
-                    EntiteType = "Agent",
+                    TypeDecisionId = 1, // Changement de nom
+                    EntiteTypeId = 1,   // Agent
                     EntiteId = 1,
                     DateReference = new DateTime(2024, 2, 8),
                     DateDebut = new DateTime(2024, 5, 21),
@@ -756,8 +756,8 @@ namespace CT_CNEH_API.Scripts
                 },
                 new Decision
                 {
-                    TypeDecision = "Promotion",
-                    EntiteType = "ChefCentre",
+                    TypeDecisionId = 2, // Promotion
+                    EntiteTypeId = 2,   // ChefCentre
                     EntiteId = 1,
                     DateReference = new DateTime(2024, 3, 15),
                     DateDebut = new DateTime(2024, 6, 1),
@@ -769,8 +769,8 @@ namespace CT_CNEH_API.Scripts
                 },
                 new Decision
                 {
-                    TypeDecision = "Suspension",
-                    EntiteType = "Agent",
+                    TypeDecisionId = 3, // Suspension
+                    EntiteTypeId = 1,   // Agent
                     EntiteId = 2,
                     DateReference = new DateTime(2024, 4, 10),
                     DateDebut = new DateTime(2024, 4, 10),
@@ -782,8 +782,8 @@ namespace CT_CNEH_API.Scripts
                 },
                 new Decision
                 {
-                    TypeDecision = "Création",
-                    EntiteType = "Ligne",
+                    TypeDecisionId = 4, // Création
+                    EntiteTypeId = 5,   // Ligne
                     EntiteId = 1,
                     DateReference = new DateTime(2024, 1, 20),
                     DateDebut = new DateTime(2024, 1, 20),
@@ -794,8 +794,8 @@ namespace CT_CNEH_API.Scripts
                 },
                 new Decision
                 {
-                    TypeDecision = "Formation",
-                    EntiteType = "Agent",
+                    TypeDecisionId = 5, // Formation
+                    EntiteTypeId = 1,   // Agent
                     EntiteId = 3,
                     DateReference = new DateTime(2024, 5, 5),
                     DateDebut = new DateTime(2024, 8, 1),

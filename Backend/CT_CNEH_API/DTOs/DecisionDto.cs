@@ -3,8 +3,10 @@ namespace CT_CNEH_API.DTOs
     public class DecisionDto
     {
         public int Id { get; set; }
-        public string TypeDecision { get; set; } = string.Empty;
-        public string EntiteType { get; set; } = string.Empty;
+        public int TypeDecisionId { get; set; }
+        public string? TypeDecisionLibelle { get; set; }
+        public int EntiteTypeId { get; set; }
+        public string? EntiteTypeLibelle { get; set; }
         public int EntiteId { get; set; }
         public string? EntiteNom { get; set; }
         public DateTime DateReference { get; set; }

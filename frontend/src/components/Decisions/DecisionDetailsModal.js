@@ -22,6 +22,11 @@ import {
 const DecisionDetailsModal = ({ open, decision, onClose }) => {
   if (!decision) return null;
 
+  // Log pour déboguer
+  console.log('🔍 DecisionDetailsModal - Décision reçue:', decision);
+  console.log('🔍 Observation:', decision.observation);
+  console.log('🔍 LienDocumentUrl:', decision.lienDocumentUrl);
+
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('fr-FR');
@@ -38,9 +43,15 @@ const DecisionDetailsModal = ({ open, decision, onClose }) => {
         <Typography variant="subtitle2" color="text.secondary" gutterBottom>
           {label}
         </Typography>
-        <Typography variant="body1" color={color} sx={{ fontWeight: 500 }}>
-          {value}
-        </Typography>
+        {React.isValidElement(value) ? (
+          <Box sx={{ mt: 1 }}>
+            {value}
+          </Box>
+        ) : (
+          <Typography variant="body1" color={color} sx={{ fontWeight: 500 }}>
+            {value}
+          </Typography>
+        )}
       </Box>
     </Grid>
   );
@@ -94,36 +105,33 @@ const DecisionDetailsModal = ({ open, decision, onClose }) => {
               <Typography variant="subtitle1" sx={{ color: '#1976d2', mb: 2, fontWeight: 'bold' }}>
                 Informations principales
               </Typography>
-              <Grid container spacing={2}>
-                {renderDetailRow('CCT', decision.cctNom || '-')}
-                {renderDetailRow('Réseau', decision.reseauNom || '-')}
-                {renderDetailRow('Date référence', formatDate(decision.dateReference))}
-                {renderDetailRow('Type Décision', 
-                  <Chip label={decision.typeDecision} size="small" color="primary" variant="outlined" />
-                )}
-                {renderDetailRow('Entité concernée', 
-                  <Chip label={decision.entiteConcernee} size="small" color="secondary" variant="outlined" />
-                )}
-                {renderDetailRow('Agent', decision.agentNom || '-')}
-              </Grid>
+                             <Grid container spacing={2}>
+                 {renderDetailRow('CCT', decision.cctNom || '-')}
+                 {renderDetailRow('Réseau', decision.reseauNom || '-')}
+                 {renderDetailRow('Date référence', formatDate(decision.dateReference))}
+                 {renderDetailRow('Type Décision', 
+                   <Chip label={decision.typeDecisionLibelle || `Type ${decision.typeDecisionId}`} size="small" color="primary" variant="outlined" />
+                 )}
+                 {renderDetailRow('Chef de centre', decision.chefCentreNom || '-')}
+                 {renderDetailRow('Ligne', decision.ligneNumero || '-')}
+                 {renderDetailRow('Agent', decision.agentNom || '-')}
+                 {renderDetailRow('Type Entité', decision.entiteTypeLibelle || `Entité ${decision.entiteTypeId}`)}
+               </Grid>
             </Grid>
 
             <Grid item xs={12}>
               <Divider sx={{ my: 2 }} />
             </Grid>
 
-            {/* Informations supplémentaires */}
+            {/* Section Détails */}
             <Grid item xs={12}>
               <Typography variant="subtitle1" sx={{ color: '#1976d2', mb: 2, fontWeight: 'bold' }}>
-                Informations supplémentaires
+                Détails
               </Typography>
               <Grid container spacing={2}>
                 {renderDetailRow('Date début', formatDate(decision.dateDebut))}
                 {renderDetailRow('Date fin', formatDate(decision.dateFin))}
                 {renderDetailRow('Montant', formatMontant(decision.montant))}
-                {renderDetailRow('Chef de centre', decision.chefCentreNom || '-')}
-                {renderDetailRow('Ligne', decision.ligneNumero || '-')}
-                {renderDetailRow('Type Entité', decision.entiteConcernee)}
               </Grid>
             </Grid>
 
@@ -142,24 +150,24 @@ const DecisionDetailsModal = ({ open, decision, onClose }) => {
                     <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                       Lien du document
                     </Typography>
-                    {decision.lienDocument ? (
-                      <Link
-                        href={decision.lienDocument}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        sx={{ 
-                          color: '#1976d2', 
-                          textDecoration: 'none',
-                          '&:hover': { textDecoration: 'underline' }
-                        }}
-                      >
-                        Consulter
-                      </Link>
-                    ) : (
-                      <Typography variant="body1" color="text.secondary">
-                        Aucun document
-                      </Typography>
-                    )}
+                                         {decision.lienDocumentUrl ? (
+                       <Link
+                         href={decision.lienDocumentUrl}
+                         target="_blank"
+                         rel="noopener noreferrer"
+                         sx={{ 
+                           color: '#1976d2', 
+                           textDecoration: 'none',
+                           '&:hover': { textDecoration: 'underline' }
+                         }}
+                       >
+                         Consulter
+                       </Link>
+                     ) : (
+                       <Typography variant="body1" color="text.secondary">
+                         Aucun document
+                       </Typography>
+                     )}
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -167,30 +175,26 @@ const DecisionDetailsModal = ({ open, decision, onClose }) => {
                     <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                       Observation
                     </Typography>
-                    <Typography variant="body1" color="text.primary">
-                      {decision.observation || 'Aucune observation'}
-                    </Typography>
+                    {decision.observation ? (
+                      <Typography variant="body1" color="text.primary" sx={{ 
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                        maxHeight: '100px',
+                        overflow: 'auto'
+                      }}>
+                        {decision.observation}
+                      </Typography>
+                    ) : (
+                      <Typography variant="body1" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                        Aucune observation
+                      </Typography>
+                    )}
                   </Box>
                 </Grid>
               </Grid>
             </Grid>
 
-            <Grid item xs={12}>
-              <Divider sx={{ my: 2 }} />
-            </Grid>
 
-            {/* Informations d'audit */}
-            <Grid item xs={12}>
-              <Typography variant="subtitle1" sx={{ color: '#1976d2', mb: 2, fontWeight: 'bold' }}>
-                Informations d'audit
-              </Typography>
-              <Grid container spacing={2}>
-                {renderDetailRow('Date de création', formatDate(decision.dateCreation))}
-                {renderDetailRow('Utilisateur de création', decision.utilisateurCreation || '-')}
-                {renderDetailRow('Date de modification', formatDate(decision.dateModification))}
-                {renderDetailRow('Utilisateur de modification', decision.utilisateurModification || '-')}
-              </Grid>
-            </Grid>
           </Grid>
         </Paper>
       </DialogContent>

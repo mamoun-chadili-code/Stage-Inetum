@@ -215,6 +215,7 @@ const Decisions = () => {
   const handleCloseFormModal = () => {
     setOpenFormModal(false);
     setSelectedDecision(null);
+    setEditMode(false);
   };
 
   const handleCloseDetailsModal = () => {
@@ -311,7 +312,7 @@ const Decisions = () => {
               <MenuItem value="">Sélectionnez un agent</MenuItem>
               {dropdowns.agents.map((agent) => (
                 <MenuItem key={agent.id} value={agent.id}>
-                  {agent.nom}
+                  {agent.prenom} {agent.nom}
                 </MenuItem>
               ))}
             </Select>
@@ -471,7 +472,7 @@ const Decisions = () => {
                   <TableRow key={decision.id} hover>
                     <TableCell>
                       <Chip
-                        label={decision.typeDecision}
+                        label={decision.typeDecisionLibelle || `Type ${decision.typeDecisionId}`}
                         size="small"
                         color="primary"
                         variant="outlined"
@@ -479,7 +480,7 @@ const Decisions = () => {
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={decision.entiteConcernee}
+                        label={decision.entiteTypeLibelle || `Entité ${decision.entiteTypeId}`}
                         size="small"
                         color="secondary"
                         variant="outlined"

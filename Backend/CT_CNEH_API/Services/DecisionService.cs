@@ -37,17 +37,17 @@ namespace CT_CNEH_API.Services
             if (searchDto.CCTId.HasValue)
                 query = query.Where(d => d.CCTId == searchDto.CCTId);
 
-            if (!string.IsNullOrEmpty(searchDto.TypeDecision))
-                query = query.Where(d => d.TypeDecision.Contains(searchDto.TypeDecision));
+            if (searchDto.TypeDecisionId.HasValue)
+                query = query.Where(d => d.TypeDecisionId == searchDto.TypeDecisionId.Value);
 
-            if (!string.IsNullOrEmpty(searchDto.EntiteType))
-                query = query.Where(d => d.EntiteType.ToString() == searchDto.EntiteType);
+            if (searchDto.EntiteTypeId.HasValue)
+                query = query.Where(d => d.EntiteTypeId == searchDto.EntiteTypeId.Value);
 
             if (searchDto.EntiteId.HasValue)
                 query = query.Where(d => d.EntiteId == searchDto.EntiteId);
 
-            if (searchDto.DateDecision.HasValue)
-                query = query.Where(d => d.DateReference.Date == searchDto.DateDecision.Value.Date);
+            if (searchDto.DateReference.HasValue)
+                query = query.Where(d => d.DateReference.Date == searchDto.DateReference.Value.Date);
 
             // Compter le total avant pagination
             var totalCount = await query.CountAsync();
@@ -64,12 +64,17 @@ namespace CT_CNEH_API.Services
             var decisions = new List<DecisionDto>();
             foreach (var d in decisionsData)
             {
-                var entiteNom = await GetEntiteNomAsync(d.EntiteType.ToString(), d.EntiteId);
+                var entiteNom = await GetEntiteNomAsync(d.EntiteTypeId, d.EntiteId);
+                var typeDecision = await _context.TypeDecisions.FindAsync(d.TypeDecisionId);
+                var typeEntite = await _context.TypeEntites.FindAsync(d.EntiteTypeId);
+                
                 decisions.Add(new DecisionDto
                 {
                     Id = d.Id,
-                    TypeDecision = d.TypeDecision,
-                    EntiteType = d.EntiteType.ToString(),
+                    TypeDecisionId = d.TypeDecisionId,
+                    TypeDecisionLibelle = typeDecision?.Libelle,
+                    EntiteTypeId = d.EntiteTypeId,
+                    EntiteTypeLibelle = typeEntite?.Libelle,
                     EntiteId = d.EntiteId,
                     EntiteNom = entiteNom,
                     DateReference = d.DateReference,
@@ -99,13 +104,18 @@ namespace CT_CNEH_API.Services
 
             if (decision == null) return null;
 
+            var typeDecision = await _context.TypeDecisions.FindAsync(decision.TypeDecisionId);
+            var typeEntite = await _context.TypeEntites.FindAsync(decision.EntiteTypeId);
+            
             return new DecisionDto
             {
                 Id = decision.Id,
-                TypeDecision = decision.TypeDecision,
-                EntiteType = decision.EntiteType.ToString(),
+                TypeDecisionId = decision.TypeDecisionId,
+                TypeDecisionLibelle = typeDecision?.Libelle,
+                EntiteTypeId = decision.EntiteTypeId,
+                EntiteTypeLibelle = typeEntite?.Libelle,
                 EntiteId = decision.EntiteId,
-                                     EntiteNom = await GetEntiteNomAsync(decision.EntiteType.ToString(), decision.EntiteId),
+                EntiteNom = await GetEntiteNomAsync(decision.EntiteTypeId, decision.EntiteId),
                 DateReference = decision.DateReference,
                 DateDebut = decision.DateDebut,
                 DateFin = decision.DateFin,
@@ -138,8 +148,8 @@ namespace CT_CNEH_API.Services
                 throw new InvalidOperationException("Décision non trouvée");
 
             // Mettre à jour les propriétés
-            existingDecision.TypeDecision = decisionUpdate.TypeDecision;
-            existingDecision.EntiteType = decisionUpdate.EntiteType;
+            existingDecision.TypeDecisionId = decisionUpdate.TypeDecisionId;
+            existingDecision.EntiteTypeId = decisionUpdate.EntiteTypeId;
             existingDecision.EntiteId = decisionUpdate.EntiteId;
             existingDecision.DateReference = decisionUpdate.DateReference;
             existingDecision.DateDebut = decisionUpdate.DateDebut;
@@ -168,21 +178,34 @@ namespace CT_CNEH_API.Services
             return true;
         }
 
-        private async Task<string?> GetEntiteNomAsync(string entiteType, int entiteId)
+        private async Task<string?> GetEntiteNomAsync(int entiteTypeId, int entiteId)
         {
             try
             {
-                switch (entiteType.ToLower())
+                switch (entiteTypeId)
                 {
-                    case "cct":
+                    case 1: // RESEAU
+                        var reseau = await _context.Reseaux.FindAsync(entiteId);
+                        return reseau?.Nom;
+                    case 2: // CCT
                         var cct = await _context.CCTs.FindAsync(entiteId);
                         return cct?.Nom;
-                    case "agent":
+                    case 3: // AGENT
                         var agent = await _context.Agents.FindAsync(entiteId);
                         return agent != null ? $"{agent.Nom} {agent.Prenom}" : null;
-                    case "chef de centre":
+                    case 4: // CHEF_CENTRE
                         var chef = await _context.ChefCentres.FindAsync(entiteId);
                         return chef != null ? $"{chef.Nom} {chef.Prenom}" : null;
+                    case 5: // LIGNE
+                        return $"Ligne {entiteId}";
+                    case 6: // EQUIPEMENT
+                        var equipement = await _context.Equipements.FindAsync(entiteId);
+                        return equipement != null ? $"{equipement.Marque} {equipement.Modele}" : null;
+                    case 7: // FORMATION
+                        var formation = await _context.Formations.FindAsync(entiteId);
+                        return formation?.Intitule;
+                    case 8: // DECISION
+                        return "Décision";
                     default:
                         return null;
                 }

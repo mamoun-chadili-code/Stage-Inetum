@@ -11,18 +11,18 @@ namespace CT_CNEH_API.DTOs
         // Critères de recherche
         public int? ReseauId { get; set; }
         public int? CCTId { get; set; }
-        public string? TypeDecision { get; set; }
-        public string? EntiteType { get; set; }
+        public int? TypeDecisionId { get; set; }
+        public int? EntiteTypeId { get; set; }
         public int? EntiteId { get; set; }
-        public DateTime? DateDecision { get; set; }
+        public DateTime? DateReference { get; set; }
 
         // Validation
         public bool IsValid()
         {
             if (Page < 1) return false;
             if (PageSize < 1 || PageSize > 100) return false;
-            if (TypeDecision != null && TypeDecision.Length < 2) return false;
-            if (EntiteType != null && EntiteType.Length < 2) return false;
+            if (TypeDecisionId.HasValue && TypeDecisionId.Value < 1) return false;
+            if (EntiteTypeId.HasValue && EntiteTypeId.Value < 1) return false;
 
             return true;
         }
@@ -33,8 +33,8 @@ namespace CT_CNEH_API.DTOs
 
             if (Page < 1) errors.Add("Page invalide");
             if (PageSize < 1 || PageSize > 100) errors.Add("Taille de page invalide");
-            if (TypeDecision != null && TypeDecision.Length < 2) errors.Add("Type de décision trop court");
-            if (EntiteType != null && EntiteType.Length < 2) errors.Add("Type d'entité trop court");
+            if (TypeDecisionId.HasValue && TypeDecisionId.Value < 1) errors.Add("ID de type de décision invalide");
+            if (EntiteTypeId.HasValue && EntiteTypeId.Value < 1) errors.Add("ID de type d'entité invalide");
 
             return errors;
         }
