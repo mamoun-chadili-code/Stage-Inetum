@@ -46,3 +46,4 @@ GO
 PRINT '✅ VÉRIFICATION TERMINÉE !';
 PRINT '🎯 Maintenant redémarrez le backend pour que les changements prennent effet.';
 GO
+

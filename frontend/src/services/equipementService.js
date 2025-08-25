@@ -15,7 +15,12 @@ export const equipementService = {
     if (params.dateEtalonnage) queryParams.append('dateEtalonnage', params.dateEtalonnage);
     
     const response = await api.get(`${BASE_URL}?${queryParams.toString()}`);
-    return response.data;
+    
+    // Retourner la réponse complète avec les headers pour la pagination
+    return {
+      data: response.data,
+      headers: response.headers
+    };
   },
 
   // Récupérer un équipement par ID

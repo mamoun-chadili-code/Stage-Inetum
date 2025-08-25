@@ -42,3 +42,4 @@ PRINT '✅ 4 NOUVEAUX TYPES D''ÉQUIPEMENTS AJOUTÉS AVEC SUCCÈS !';
 PRINT '📊 Scanner OBD, Testeur ABS/ESP, Réglophare VL/PL, Réglophare motos.';
 PRINT '🎯 Tous ces équipements sont étalonnables (Etalonnable = 1).';
 GO
+

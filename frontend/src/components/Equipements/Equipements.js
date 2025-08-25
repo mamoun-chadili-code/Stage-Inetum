@@ -8,24 +8,24 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { toast } from 'react-toastify';
 import equipementService from '../../services/equipementService';
 
-const REQUIRED_FIELDS = ['nom', 'type', 'cct', 'dateAcquisition', 'statut'];
+const REQUIRED_FIELDS = ['marque', 'modele', 'typeEquipement', 'protocole', 'referenceHomologation'];
 
 const emptyForm = {
-  nom: '',
-  description: '',
-  type: '',
-  cct: '',
-  dateAcquisition: '',
-  dateMaintenance: '',
-  statut: '',
-  numeroSerie: '',
-  fabricant: '',
+  marque: '',
   modele: '',
-  coutAcquisition: '',
-  localisation: ''
+  typeEquipement: '',
+  protocole: '',
+  referenceHomologation: '',
+  dateHomologation: '',
+  dateMiseService: '',
+  ligne: '',
+  dateEtalonnage: '',
+  dateExpirationEtalonnage: '',
+  cct: ''
 };
 
 export default function Equipements() {
@@ -37,7 +37,7 @@ export default function Equipements() {
 
   // États pour la pagination
   const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [totalCount, setTotalCount] = useState(0);
   const [pageCount, setPageCount] = useState(0);
 
@@ -63,12 +63,12 @@ export default function Equipements() {
     loadEquipements();
   }, []);
 
-  // Charger les équipements quand la page ou rowsPerPage changent
+  // Charger les équipements quand la page, rowsPerPage ou search changent
   useEffect(() => {
     if (dropdowns.types.length > 0) {
       loadEquipements();
     }
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, search]);
 
   const loadDropdowns = async () => {
     try {
@@ -154,15 +154,22 @@ export default function Equipements() {
       });
       
       // Vérifier que la réponse contient des données
-      if (response && Array.isArray(response)) {
-        setEquipements(response);
+      if (response && response.data && Array.isArray(response.data)) {
+        setEquipements(response.data);
         
-        // Récupérer le total depuis les headers de réponse si disponibles
+        // Récupérer le total depuis les headers de réponse
+        // Le backend envoie X-Total-Count et X-Page-Count dans les headers
         const totalCount = parseInt(response.headers?.['x-total-count'] || '0');
         const pageCount = parseInt(response.headers?.['x-page-count'] || '1');
         
+        if (totalCount > 0) {
         setTotalCount(totalCount);
         setPageCount(pageCount);
+        } else {
+          // Fallback si les headers ne sont pas disponibles
+          setTotalCount(response.data.length);
+          setPageCount(Math.ceil(response.data.length / rowsPerPage));
+        }
       } else {
         console.warn('Réponse invalide du service équipements:', response);
         setEquipements([]);
@@ -204,7 +211,7 @@ export default function Equipements() {
 
   const handleSearch = () => {
     setPage(1);
-    loadEquipements();
+    // loadEquipements() sera automatiquement appelé par useEffect
   };
 
   const handleResetSearch = () => {
@@ -215,25 +222,26 @@ export default function Equipements() {
       dateEtalonnage: ''
     });
     setPage(1);
-    loadEquipements();
+    // loadEquipements() sera automatiquement appelé par useEffect
   };
 
   const handleOpenForm = (equipement = null) => {
     if (equipement) {
+      console.log('🔍 Équipement sélectionné pour modification:', equipement);
       setForm({
-        nom: equipement.nom,
-        description: equipement.description,
-        type: equipement.type.id.toString(),
-        cct: equipement.cct.id.toString(),
-        dateAcquisition: equipement.dateAcquisition,
-        dateMaintenance: equipement.dateMaintenance,
-        statut: equipement.statutId?.toString() || equipement.statut?.id?.toString() || '',
-        numeroSerie: equipement.numeroSerie,
-        fabricant: equipement.fabricant,
-        modele: equipement.modele,
-        coutAcquisition: equipement.coutAcquisition,
-        localisation: equipement.localisation
+        marque: equipement.marque || '',
+        modele: equipement.modele || '',
+        typeEquipement: equipement.typeEquipementId?.toString() || '',
+        protocole: equipement.protocole || '',
+        referenceHomologation: equipement.refHomologation || '',
+        dateHomologation: equipement.dateHomologation ? new Date(equipement.dateHomologation).toISOString().split('T')[0] : '',
+        dateMiseService: equipement.dateMiseService ? new Date(equipement.dateMiseService).toISOString().split('T')[0] : '',
+        ligne: equipement.ligneId?.toString() || '',
+        dateEtalonnage: equipement.dateEtalonnage ? new Date(equipement.dateEtalonnage).toISOString().split('T')[0] : '',
+        dateExpirationEtalonnage: equipement.dateExpirationEtalonnage ? new Date(equipement.dateExpirationEtalonnage).toISOString().split('T')[0] : '',
+        cct: '' // Le CCT n'est pas géré dans le modèle backend actuel
       });
+      console.log('🔍 Formulaire rempli:', form);
       setIsEdit(true);
       setSelected(equipement);
     } else {
@@ -267,18 +275,16 @@ export default function Equipements() {
       setFormLoading(true);
       
       const equipementData = {
-        nom: form.nom,
-        description: form.description,
-        typeId: parseInt(form.type),
-        cctId: parseInt(form.cct),
-        dateAcquisition: form.dateAcquisition ? new Date(form.dateAcquisition) : null,
-        dateMaintenance: form.dateMaintenance ? new Date(form.dateMaintenance) : null,
-        statutId: parseInt(form.statut),
-        numeroSerie: form.numeroSerie,
-        fabricant: form.fabricant,
+        marque: form.marque,
         modele: form.modele,
-        coutAcquisition: form.coutAcquisition ? parseFloat(form.coutAcquisition) : null,
-        localisation: form.localisation
+        typeEquipementId: parseInt(form.typeEquipement),
+        protocole: form.protocole,
+        refHomologation: form.referenceHomologation,
+        dateHomologation: form.dateHomologation ? new Date(form.dateHomologation) : null,
+        dateMiseService: form.dateMiseService ? new Date(form.dateMiseService) : null,
+        ligneId: parseInt(form.ligne) || 1, // Valeur par défaut si pas de ligne
+        dateEtalonnage: form.dateEtalonnage ? new Date(form.dateEtalonnage) : null,
+        dateExpirationEtalonnage: form.dateExpirationEtalonnage ? new Date(form.dateExpirationEtalonnage) : null
       };
       
       if (isEdit) {
@@ -300,7 +306,7 @@ export default function Equipements() {
   };
 
   const handleDelete = async (equipement) => {
-    if (window.confirm(`Êtes-vous sûr de vouloir supprimer l'équipement "${equipement.nom}" ?`)) {
+    if (window.confirm(`Êtes-vous sûr de vouloir supprimer l'équipement "${equipement.marque} ${equipement.modele}" ?`)) {
       try {
         await equipementService.deleteEquipement(equipement.id);
         toast.success('Équipement supprimé avec succès');
@@ -403,35 +409,37 @@ export default function Equipements() {
         <Typography variant="h6" gutterBottom>
           Section Recherche
         </Typography>
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2, mb: 2 }}>
-          <FormControl size="small">
-            <InputLabel>CCT</InputLabel>
-            <Select
-              value={search.cct}
-              onChange={(e) => setSearch(prev => ({ ...prev, cct: e.target.value }))}
-              label="CCT"
-            >
-              <MenuItem value="">Tous les CCTs</MenuItem>
-              {dropdowns.ccts?.map(cct => (
-                <MenuItem key={cct?.id} value={cct?.id}>{cct?.nom || 'CCT inconnu'}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl size="small">
-            <InputLabel>Ligne</InputLabel>
-            <Select
-              value={search.ligne}
-              onChange={(e) => setSearch(prev => ({ ...prev, ligne: e.target.value }))}
-              label="Ligne"
-            >
-              <MenuItem value="">Toutes les lignes</MenuItem>
-              {dropdowns.lignes?.map(ligne => (
-                <MenuItem key={ligne?.id} value={ligne?.id}>{`Ligne ${ligne?.numeroLigne || 'N/A'}`}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl size="small">
-            <InputLabel>Type d'équipement</InputLabel>
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2, mb: 2 }}>
+            <FormControl size="small">
+              <InputLabel>CCT</InputLabel>
+              <Select
+                value={search.cct}
+                onChange={(e) => setSearch(prev => ({ ...prev, cct: e.target.value }))}
+                label="CCT"
+              >
+                <MenuItem value="">Tous les CCTs</MenuItem>
+                {dropdowns.ccts?.map(cct => (
+                  <MenuItem key={cct?.id} value={cct?.id}>{cct?.nom || 'CCT inconnu'}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl size="small">
+              <InputLabel>Ligne</InputLabel>
+              <Select
+                value={search.ligne}
+                onChange={(e) => setSearch(prev => ({ ...prev, ligne: e.target.value }))}
+                label="Ligne"
+              >
+                <MenuItem value="">Toutes les lignes</MenuItem>
+                {dropdowns.lignes?.map(ligne => (
+                  <MenuItem key={ligne?.id} value={ligne?.id}>{`Ligne ${ligne?.numeroLigne || 'N/A'}`}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl size="small">
+              <InputLabel>Type d'équipement</InputLabel>
             <Select
               value={search.type}
               onChange={(e) => setSearch(prev => ({ ...prev, type: e.target.value }))}
@@ -521,80 +529,95 @@ export default function Equipements() {
       <Table>
         <TableHead>
             <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-              <TableCell>Nom</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>CCT</TableCell>
-              <TableCell>Statut</TableCell>
-              <TableCell>Date d'acquisition</TableCell>
-            <TableCell>Actions</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Marque</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Modèle</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Ligne</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Type d'équipement</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Protocole</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Référence homologation</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Détails</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} align="center">
+                <TableCell colSpan={7} align="center">
                   <CircularProgress size={24} />
                 </TableCell>
               </TableRow>
             ) : equipements.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} align="center">
+                <TableCell colSpan={7} align="center">
                   Aucun équipement trouvé
                 </TableCell>
               </TableRow>
             ) : (
               equipements.map((equipement) => (
                 <TableRow key={equipement.id} hover>
-                  <TableCell>{equipement.nom}</TableCell>
                   <TableCell>
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <Box
-                        sx={{
-                          width: 10,
-                          height: 10,
-                          borderRadius: '50%',
-                          backgroundColor: getTypeEquipementColor(equipement.type?.id || equipement.typeId),
-                          flexShrink: 0,
-                          border: '1px solid rgba(0,0,0,0.1)',
-                          boxShadow: '0 1px 2px rgba(0,0,0,0.2)'
-                        }}
-                      />
-                      <Typography variant="body2">
-                        {equipement.type?.libelle || `Type ${equipement.typeId || 'N/A'}`}
-                      </Typography>
-                    </Box>
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                      {equipement.marque || equipement.fabricant || 'Non spécifiée'}
+                    </Typography>
                   </TableCell>
-                  <TableCell>{equipement.cct?.nom || `CCT ${equipement.cctId || 'N/A'}`}</TableCell>
                   <TableCell>
-                    <Chip
-                      label={equipement.statut?.libelle || `Statut ${equipement.statutId}`}
-                      size="small"
-                      sx={getStatutStyle(equipement.statut?.libelle)}
-                    />
+                    <Typography variant="body2">
+                      {equipement.modele || 'Non spécifié'}
+                    </Typography>
                   </TableCell>
-                  <TableCell>{equipement.dateAcquisition}</TableCell>
+                                            <TableCell>
+                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                              {equipement.ligneNom ? `Ligne ${equipement.ligneNom}` : 'Non assignée'}
+                            </Typography>
+                          </TableCell>
+                                            <TableCell>
+                            <Box display="flex" alignItems="center" gap={1}>
+                              <Box
+                                sx={{
+                                  width: 12,
+                                  height: 12,
+                                  borderRadius: '50%',
+                                  backgroundColor: getTypeEquipementColor(equipement.typeEquipementId),
+                                  flexShrink: 0,
+                                  border: '1px solid rgba(0,0,0,0.1)',
+                                  boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                                }}
+                              />
+                              <Box display="flex" flexDirection="column">
+                                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                                  {equipement.typeEquipementLibelle || `Type ${equipement.typeEquipementId || 'N/A'}`}
+                                </Typography>
+                                {equipement.typeEquipementDescription && (
+                                  <Typography variant="caption" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+                                    {equipement.typeEquipementDescription}
+                                  </Typography>
+                                )}
+                              </Box>
+                            </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">
+                      {equipement.protocole || 'Non spécifié'}
+                    </Typography>
+                  </TableCell>
+                                            <TableCell>
+                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                              {equipement.refHomologation || 'Non spécifiée'}
+                            </Typography>
+                          </TableCell>
               <TableCell>
                     <IconButton
                       size="small"
                       onClick={() => handleOpenDetails(equipement)}
                       title="Voir les détails"
+                      sx={{
+                        '&:hover': {
+                          backgroundColor: 'primary.light',
+                          transform: 'scale(1.1)'
+                        },
+                        transition: 'all 0.2s ease-in-out'
+                      }}
                     >
-                      <InfoIcon />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleOpenForm(equipement)}
-                      title="Modifier"
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleDelete(equipement)}
-                      title="Supprimer"
-                      color="error"
-                    >
-                      <DeleteIcon />
+                      <VisibilityIcon />
                     </IconButton>
               </TableCell>
             </TableRow>
@@ -605,16 +628,39 @@ export default function Equipements() {
       </Box>
 
       {/* Pagination */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 3, gap: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            {equipements.length > 0 
+              ? `Affichage de ${((page - 1) * rowsPerPage) + 1} à ${Math.min(page * rowsPerPage, totalCount)} sur ${totalCount} équipements`
+              : `Aucun équipement trouvé - Page ${page} sur ${pageCount}`
+            }
+          </Typography>
       {pageCount > 1 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
           <Pagination
             count={pageCount}
             page={page}
-            onChange={(_, newPage) => setPage(newPage)}
+              onChange={(event, newPage) => setPage(newPage)}
             color="primary"
-          />
+              showFirstButton
+              showLastButton
+              size="large"
+            />
+          )}
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <Select
+              value={rowsPerPage}
+              onChange={(e) => {
+                setRowsPerPage(e.target.value);
+                setPage(1);
+              }}
+            >
+              <MenuItem value={5}>5 par page</MenuItem>
+              <MenuItem value={10}>10 par page</MenuItem>
+              <MenuItem value={25}>25 par page</MenuItem>
+              <MenuItem value={50}>50 par page</MenuItem>
+            </Select>
+          </FormControl>
         </Box>
-      )}
 
       {/* Modal de formulaire */}
       <Dialog open={openForm} onClose={handleCloseForm} maxWidth="md" fullWidth>
@@ -624,18 +670,27 @@ export default function Equipements() {
         <DialogContent>
           <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2, mt: 1 }}>
             <TextField
-              label="Nom *"
-              value={form.nom}
-              onChange={(e) => handleFormChange('nom', e.target.value)}
+              label="Marque *"
+              value={form.marque}
+              onChange={(e) => handleFormChange('marque', e.target.value)}
               fullWidth
               required
+              placeholder="ex: AACTIA MULLER, ACIA MULLER"
+            />
+            <TextField
+              label="Modèle *"
+              value={form.modele}
+              onChange={(e) => handleFormChange('modele', e.target.value)}
+              fullWidth
+              required
+              placeholder="ex: 495, 43300"
             />
             <FormControl fullWidth required>
-              <InputLabel>Type *</InputLabel>
+              <InputLabel>Type d'équipement *</InputLabel>
               <Select
-                value={form.type}
-                onChange={(e) => handleFormChange('type', e.target.value)}
-                label="Type *"
+                value={form.typeEquipement}
+                onChange={(e) => handleFormChange('typeEquipement', e.target.value)}
+                label="Type d'équipement *"
               >
                 {dropdowns.types.map(type => {
                   const typeColor = getTypeEquipementColor(type.id);
@@ -685,86 +740,67 @@ export default function Equipements() {
                 })}
               </Select>
             </FormControl>
-            <FormControl fullWidth required>
-              <InputLabel>CCT *</InputLabel>
-              <Select
-                value={form.cct}
-                onChange={(e) => handleFormChange('cct', e.target.value)}
-                label="CCT *"
-              >
-                {dropdowns.ccts.map(cct => (
-                  <MenuItem key={cct.id} value={cct.id}>{cct.nom}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
             <TextField
-              label="Numéro de série"
-              value={form.numeroSerie}
-              onChange={(e) => handleFormChange('numeroSerie', e.target.value)}
-              fullWidth
-            />
-            <TextField
-              label="Fabricant"
-              value={form.fabricant}
-              onChange={(e) => handleFormChange('fabricant', e.target.value)}
-              fullWidth
-            />
-            <TextField
-              label="Modèle"
-              value={form.modele}
-              onChange={(e) => handleFormChange('modele', e.target.value)}
-              fullWidth
-            />
-            <TextField
-              label="Date d'acquisition *"
-              type="date"
-              value={form.dateAcquisition}
-              onChange={(e) => handleFormChange('dateAcquisition', e.target.value)}
+              label="Protocole *"
+              value={form.protocole}
+              onChange={(e) => handleFormChange('protocole', e.target.value)}
               fullWidth
               required
-              InputLabelProps={{ shrink: true }}
+              placeholder="ex: Gieglane, X"
             />
             <TextField
-              label="Date de maintenance"
+              label="Référence homologation *"
+              value={form.referenceHomologation}
+              onChange={(e) => handleFormChange('referenceHomologation', e.target.value)}
+              fullWidth
+              required
+              placeholder="ex: 0000, FR 05-54 A VL"
+            />
+
+            <TextField
+              label="Date homologation"
               type="date"
-              value={form.dateMaintenance}
-              onChange={(e) => handleFormChange('dateMaintenance', e.target.value)}
+              value={form.dateHomologation}
+              onChange={(e) => handleFormChange('dateHomologation', e.target.value)}
               fullWidth
               InputLabelProps={{ shrink: true }}
             />
-            <FormControl fullWidth required>
-              <InputLabel>Statut *</InputLabel>
+            <TextField
+              label="Date mise service"
+              type="date"
+              value={form.dateMiseService}
+              onChange={(e) => handleFormChange('dateMiseService', e.target.value)}
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+            />
+            <FormControl fullWidth>
+              <InputLabel>Ligne</InputLabel>
               <Select
-                value={form.statut}
-                onChange={(e) => handleFormChange('statut', e.target.value)}
-                label="Statut *"
+                value={form.ligne}
+                onChange={(e) => handleFormChange('ligne', e.target.value)}
+                label="Ligne"
               >
-                {dropdowns.statuts.map(statut => (
-                  <MenuItem key={statut.id} value={statut.id}>{statut.libelle}</MenuItem>
+                <MenuItem value="">Aucune ligne assignée</MenuItem>
+                {dropdowns.lignes.map(ligne => (
+                  <MenuItem key={ligne.id} value={ligne.id}>{`Ligne ${ligne.numeroLigne || 'N/A'}`}</MenuItem>
                 ))}
               </Select>
             </FormControl>
             <TextField
-              label="Coût d'acquisition"
-              value={form.coutAcquisition}
-              onChange={(e) => handleFormChange('coutAcquisition', e.target.value)}
+              label="Date étalonnage"
+              type="date"
+              value={form.dateEtalonnage}
+              onChange={(e) => handleFormChange('dateEtalonnage', e.target.value)}
               fullWidth
-              type="number"
+              InputLabelProps={{ shrink: true }}
             />
             <TextField
-              label="Localisation"
-              value={form.localisation}
-              onChange={(e) => handleFormChange('localisation', e.target.value)}
+              label="Date expiration étalonnage"
+              type="date"
+              value={form.dateExpirationEtalonnage}
+              onChange={(e) => handleFormChange('dateExpirationEtalonnage', e.target.value)}
               fullWidth
-            />
-            <TextField
-              label="Description"
-              value={form.description}
-              onChange={(e) => handleFormChange('description', e.target.value)}
-              fullWidth
-              multiline
-              rows={3}
-              sx={{ gridColumn: 'span 2' }}
+              InputLabelProps={{ shrink: true }}
             />
           </Box>
         </DialogContent>
@@ -782,60 +818,157 @@ export default function Equipements() {
 
       {/* Modal de détails */}
       <Dialog open={openDetails} onClose={() => setOpenDetails(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Détails de l'équipement</DialogTitle>
+        <DialogTitle>
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Typography variant="h6">DÉTAILS D'ÉQUIPEMENT</Typography>
+            <Button 
+              variant="text" 
+              onClick={() => setOpenDetails(false)}
+              sx={{ color: 'primary.main' }}
+            >
+              GESTION DES ÉQUIPEMENTS
+            </Button>
+          </Box>
+        </DialogTitle>
         <DialogContent>
           {selected && (
             <Box sx={{ mt: 1 }}>
-              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
-                <Typography variant="subtitle2" color="textSecondary">Nom:</Typography>
-                <Typography>{selected.nom}</Typography>
+              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 3 }}>
+                <Typography variant="subtitle2" color="textSecondary" sx={{ fontWeight: 'bold' }}>Marque:</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>{selected.marque || selected.fabricant || 'Non spécifiée'}</Typography>
                 
-                <Typography variant="subtitle2" color="textSecondary">Type:</Typography>
-                <Typography>{selected.type.libelle}</Typography>
+                <Typography variant="subtitle2" color="textSecondary" sx={{ fontWeight: 'bold' }}>Modèle:</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>{selected.modele || 'Non spécifié'}</Typography>
                 
-                <Typography variant="subtitle2" color="textSecondary">CCT:</Typography>
-                <Typography>{selected.cct.nom}</Typography>
+                <Typography variant="subtitle2" color="textSecondary" sx={{ fontWeight: 'bold' }}>Type d'Équipement:</Typography>
+                <Box display="flex" flexDirection="column" gap={1}>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Box
+                      sx={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: '50%',
+                        backgroundColor: getTypeEquipementColor(selected.typeEquipementId),
+                        flexShrink: 0,
+                        border: '1px solid rgba(0,0,0,0.1)',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                      }}
+                    />
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {selected.typeEquipementLibelle || `Type ${selected.typeEquipementId || 'N/A'}`}
+                    </Typography>
+                  </Box>
+                  {selected.typeEquipementDescription && (
+                    <Typography 
+                      variant="body2" 
+                      sx={{ 
+                        color: 'text.secondary', 
+                        fontStyle: 'italic',
+                        ml: 3,
+                        lineHeight: 1.4,
+                        backgroundColor: 'grey.50',
+                        p: 1,
+                        borderRadius: 1,
+                        border: '1px solid',
+                        borderColor: 'grey.200'
+                      }}
+                    >
+                      {selected.typeEquipementDescription}
+                    </Typography>
+                  )}
+                </Box>
                 
-                                 <Typography variant="subtitle2" color="textSecondary">Statut:</Typography>
-                 <Chip
-                   label={selected.statut?.libelle || `Statut ${selected.statutId}`}
-                   size="small"
-                   sx={getStatutStyle(selected.statut?.libelle)}
-                 />
+                <Typography variant="subtitle2" color="textSecondary" sx={{ fontWeight: 'bold' }}>Protocole:</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>{selected.protocole || 'Non spécifié'}</Typography>
                 
-                <Typography variant="subtitle2" color="textSecondary">Numéro de série:</Typography>
-                <Typography>{selected.numeroSerie}</Typography>
+                <Typography variant="subtitle2" color="textSecondary" sx={{ fontWeight: 'bold' }}>Référence homologation:</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>{selected.refHomologation || 'Non spécifiée'}</Typography>
                 
-                <Typography variant="subtitle2" color="textSecondary">Fabricant:</Typography>
-                <Typography>{selected.fabricant}</Typography>
+                <Typography variant="subtitle2" color="textSecondary" sx={{ fontWeight: 'bold' }}>Date homologation:</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {selected.dateHomologation ? new Date(selected.dateHomologation).toLocaleDateString('fr-FR') : 'Non spécifiée'}
+                </Typography>
                 
-                <Typography variant="subtitle2" color="textSecondary">Modèle:</Typography>
-                <Typography>{selected.modele}</Typography>
+                <Typography variant="subtitle2" color="textSecondary" sx={{ fontWeight: 'bold' }}>Date mise service:</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {selected.dateMiseService ? new Date(selected.dateMiseService).toLocaleDateString('fr-FR') : 'Non spécifiée'}
+                </Typography>
                 
-                <Typography variant="subtitle2" color="textSecondary">Date d'acquisition:</Typography>
-                <Typography>{selected.dateAcquisition}</Typography>
+                <Typography variant="subtitle2" color="textSecondary" sx={{ fontWeight: 'bold' }}>N° de ligne:</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {selected.ligneNom ? `Ligne ${selected.ligneNom}` : 'Non assignée'}
+                </Typography>
                 
-                <Typography variant="subtitle2" color="textSecondary">Date de maintenance:</Typography>
-                <Typography>{selected.dateMaintenance || 'Non définie'}</Typography>
+                <Typography variant="subtitle2" color="textSecondary" sx={{ fontWeight: 'bold' }}>Date étalonnage:</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {selected.dateEtalonnage ? new Date(selected.dateEtalonnage).toLocaleDateString('fr-FR') : 'Non spécifiée'}
+                </Typography>
                 
-                <Typography variant="subtitle2" color="textSecondary">Coût d'acquisition:</Typography>
-                <Typography>{selected.coutAcquisition} DH</Typography>
-                
-                <Typography variant="subtitle2" color="textSecondary">Localisation:</Typography>
-                <Typography>{selected.localisation}</Typography>
-              </Box>
-              
-              <Divider sx={{ my: 2 }} />
-              
-              <Typography variant="subtitle2" color="textSecondary" gutterBottom>
-                Description:
+                <Typography variant="subtitle2" color="textSecondary" sx={{ fontWeight: 'bold' }}>Date expiration étalonnage:</Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {selected.dateExpirationEtalonnage ? new Date(selected.dateExpirationEtalonnage).toLocaleDateString('fr-FR') : 'Non spécifiée'}
               </Typography>
-              <Typography>{selected.description}</Typography>
+              </Box>
             </Box>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDetails(false)}>Fermer</Button>
+          <Box display="flex" gap={1} width="100%" justifyContent="space-between">
+            <Box>
+              <Button 
+                variant="contained" 
+                color="error"
+                startIcon={<DeleteIcon />}
+                onClick={() => {
+                  if (window.confirm('Êtes-vous sûr de vouloir supprimer cet équipement ?')) {
+                    handleDelete(selected);
+                    setOpenDetails(false);
+                  }
+                }}
+                sx={{
+                  '&:hover': {
+                    backgroundColor: 'error.dark',
+                    transform: 'scale(1.05)'
+                  },
+                  transition: 'all 0.2s ease-in-out'
+                }}
+              >
+                Supprimer
+              </Button>
+            </Box>
+            <Box display="flex" gap={1}>
+              <Button 
+                variant="contained" 
+                startIcon={<EditIcon />}
+                onClick={() => {
+                  setOpenDetails(false);
+                  handleOpenForm(selected);
+                }}
+                sx={{
+                  '&:hover': {
+                    backgroundColor: 'info.dark',
+                    transform: 'scale(1.05)'
+                  },
+                  transition: 'all 0.2s ease-in-out'
+                }}
+              >
+                Modifier
+              </Button>
+              <Button 
+                variant="outlined" 
+                onClick={() => setOpenDetails(false)}
+                sx={{
+                  '&:hover': {
+                    backgroundColor: 'grey.100',
+                    transform: 'scale(1.05)'
+                  },
+                  transition: 'all 0.2s ease-in-out'
+                }}
+              >
+                Fermer
+              </Button>
+            </Box>
+          </Box>
         </DialogActions>
       </Dialog>
     </Box>

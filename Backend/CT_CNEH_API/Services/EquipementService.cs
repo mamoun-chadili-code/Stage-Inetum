@@ -9,11 +9,12 @@ namespace CT_CNEH_API.Services
     {
         Task<(List<EquipementDto> Equipements, int TotalCount, int TotalPages)> GetEquipementsAsync(
             int page = 1, 
-            int pageSize = 10, 
+            int pageSize = 5, 
             string? marque = null, 
             string? modele = null, 
             int? ligne = null, 
-            int? type = null);
+            int? type = null,
+            int? cct = null);
         
         Task<EquipementDto?> GetEquipementByIdAsync(int id);
     }
@@ -29,11 +30,12 @@ namespace CT_CNEH_API.Services
 
         public async Task<(List<EquipementDto> Equipements, int TotalCount, int TotalPages)> GetEquipementsAsync(
             int page = 1, 
-            int pageSize = 10, 
+            int pageSize = 5, 
             string? marque = null, 
             string? modele = null, 
             int? ligne = null, 
-            int? type = null)
+            int? type = null,
+            int? cct = null)
         {
             var query = _context.Equipements
                 .Include(e => e.TypeEquipement)
@@ -53,9 +55,36 @@ namespace CT_CNEH_API.Services
             if (type.HasValue)
                 query = query.Where(e => e.TypeEquipementId == type.Value);
 
+            // Filtre par CCT : utiliser une approche plus robuste
+            if (cct.HasValue)
+            {
+                // Approche alternative : récupérer d'abord les lignes du CCT
+                var lignesDuCCT = await _context.Lignes
+                    .Where(l => l.CCTId == cct.Value)
+                    .Select(l => l.Id)
+                    .ToListAsync();
+                
+                if (lignesDuCCT.Any())
+                {
+                    query = query.Where(e => lignesDuCCT.Contains(e.LigneId))
+                                .Distinct(); // Éviter les doublons si un équipement est sur plusieurs lignes
+                    Console.WriteLine($"🔍 Filtrage par CCT {cct.Value} appliqué - {lignesDuCCT.Count} lignes trouvées");
+                }
+                else
+                {
+                    Console.WriteLine($"⚠️ Aucune ligne trouvée pour le CCT {cct.Value}");
+                    // Retourner une liste vide si aucun CCT trouvé
+                    return (new List<EquipementDto>(), 0, 0);
+                }
+            }
+
             // Compter le total
             var totalCount = await query.CountAsync();
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+            
+            // Log pour déboguer
+            Console.WriteLine($"🔍 Total équipements après filtrage: {totalCount}");
+            Console.WriteLine($"🔍 Filtres appliqués - CCT: {cct}, Ligne: {ligne}, Type: {type}");
 
             // Appliquer la pagination
             var equipements = await query
@@ -89,7 +118,7 @@ namespace CT_CNEH_API.Services
                 
                 // Informations du type d'équipement
                 TypeEquipementLibelle = e.TypeEquipement?.Libelle,
-                TypeEquipementDescription = e.TypeEquipement?.Code,
+                TypeEquipementDescription = e.TypeEquipement?.Description,
                 
                 // Informations du statut (pour l'instant null, à implémenter si nécessaire)
                 StatutLibelle = null,
@@ -136,7 +165,7 @@ namespace CT_CNEH_API.Services
                 
                 // Informations du type d'équipement
                 TypeEquipementLibelle = equipement.TypeEquipement?.Libelle,
-                TypeEquipementDescription = equipement.TypeEquipement?.Code,
+                TypeEquipementDescription = equipement.TypeEquipement?.Description,
                 
                 // Informations du statut (pour l'instant null, à implémenter si nécessaire)
                 StatutLibelle = null,

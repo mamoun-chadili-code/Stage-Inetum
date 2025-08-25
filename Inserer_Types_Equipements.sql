@@ -45,3 +45,4 @@ GO
 PRINT '✅ TYPES D''ÉQUIPEMENTS INSÉRÉS AVEC SUCCÈS !';
 PRINT '📊 La table TypeEquipements contient maintenant 16 types d''équipements.';
 GO
+
