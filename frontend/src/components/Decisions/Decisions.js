@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   Box,
   Paper,
@@ -13,7 +13,6 @@ import {
   TableRow,
   TablePagination,
   IconButton,
-  Grid,
   FormControl,
   InputLabel,
   Select,
@@ -242,164 +241,156 @@ const Decisions = () => {
           RECHERCHE
         </Typography>
 
-        <Grid container spacing={2}>
-          {/* Première ligne */}
-          <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Réseau</InputLabel>
-              <Select
-                value={filters.reseauId}
-                onChange={(e) => handleFilterChange('reseauId', e.target.value)}
-                label="Réseau"
-              >
-                <MenuItem value="">Sélectionnez un élément</MenuItem>
-                {dropdowns.reseaux.map((reseau) => (
-                  <MenuItem key={reseau.id} value={reseau.id}>
-                    {reseau.libelle}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+        {/* Grille de filtres organisée en 3 colonnes */}
+        <Box sx={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(3, 1fr)', 
+          gap: 3, 
+          mb: 3,
+          '& > *': { width: '100%' }
+        }}>
+          {/* Colonne 1 */}
+          <FormControl fullWidth size="small">
+            <InputLabel>Réseau</InputLabel>
+            <Select
+              value={filters.reseauId}
+              onChange={(e) => handleFilterChange('reseauId', e.target.value)}
+              label="Réseau"
+            >
+              <MenuItem value="">Sélectionnez un réseau</MenuItem>
+              {dropdowns.reseaux.map((reseau) => (
+                <MenuItem key={reseau.id} value={reseau.id}>
+                  {reseau.nom}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth size="small">
-              <InputLabel>CCT</InputLabel>
-              <Select
-                value={filters.cctId}
-                onChange={(e) => handleFilterChange('cctId', e.target.value)}
-                label="CCT"
-              >
-                <MenuItem value="">Sélectionnez un élément</MenuItem>
-                {dropdowns.ccts.map((cct) => (
-                  <MenuItem key={cct.id} value={cct.id}>
-                    {cct.nom}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+          {/* Colonne 2 */}
+          <FormControl fullWidth size="small">
+            <InputLabel>CCT</InputLabel>
+            <Select
+              value={filters.cctId}
+              onChange={(e) => handleFilterChange('cctId', e.target.value)}
+              label="CCT"
+            >
+              <MenuItem value="">Sélectionnez un CCT</MenuItem>
+              {dropdowns.ccts.map((cct) => (
+                <MenuItem key={cct.id} value={cct.id}>
+                  {cct.nom}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Chef de centre</InputLabel>
-              <Select
-                value={filters.chefCentreId}
-                onChange={(e) => handleFilterChange('chefCentreId', e.target.value)}
-                label="Chef de centre"
-              >
-                <MenuItem value="">Sélectionnez un élément</MenuItem>
-                {dropdowns.chefsCentre.map((chef) => (
-                  <MenuItem key={chef.id} value={chef.id}>
-                    {chef.nom}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+          {/* Colonne 3 */}
+          <FormControl fullWidth size="small">
+            <InputLabel>Chef de centre</InputLabel>
+            <Select
+              value={filters.chefCentreId}
+              onChange={(e) => handleFilterChange('chefCentreId', e.target.value)}
+              label="Chef de centre"
+            >
+              <MenuItem value="">Sélectionnez un chef</MenuItem>
+              {dropdowns.chefsCentre.map((chef) => (
+                <MenuItem key={chef.id} value={chef.id}>
+                  {chef.nom}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Agent</InputLabel>
-              <Select
-                value={filters.agentId}
-                onChange={(e) => handleFilterChange('agentId', e.target.value)}
-                label="Agent"
-              >
-                <MenuItem value="">Sélectionnez un élément</MenuItem>
-                {dropdowns.agents.map((agent) => (
-                  <MenuItem key={agent.id} value={agent.id}>
-                    {agent.nom}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+          {/* Colonne 1 - Ligne 2 */}
+          <FormControl fullWidth size="small">
+            <InputLabel>Agent</InputLabel>
+            <Select
+              value={filters.agentId}
+              onChange={(e) => handleFilterChange('agentId', e.target.value)}
+              label="Agent"
+            >
+              <MenuItem value="">Sélectionnez un agent</MenuItem>
+              {dropdowns.agents.map((agent) => (
+                <MenuItem key={agent.id} value={agent.id}>
+                  {agent.nom}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-          {/* Deuxième ligne */}
-          <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Ligne</InputLabel>
-              <Select
-                value={filters.ligneId}
-                onChange={(e) => handleFilterChange('ligneId', e.target.value)}
-                label="Ligne"
-              >
-                <MenuItem value="">Sélectionnez un élément</MenuItem>
-                {dropdowns.lignes.map((ligne) => (
-                  <MenuItem key={ligne.id} value={ligne.id}>
-                    {ligne.numeroLigne}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+          {/* Colonne 2 - Ligne 2 */}
+          <FormControl fullWidth size="small">
+            <InputLabel>Ligne</InputLabel>
+            <Select
+              value={filters.ligneId}
+              onChange={(e) => handleFilterChange('ligneId', e.target.value)}
+              label="Ligne"
+            >
+              <MenuItem value="">Sélectionnez une ligne</MenuItem>
+              {dropdowns.lignes.map((ligne) => (
+                <MenuItem key={ligne.id} value={ligne.id}>
+                  Ligne {ligne.numeroLigne}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Type décision</InputLabel>
-              <Select
-                value={filters.typeDecision}
-                onChange={(e) => handleFilterChange('typeDecision', e.target.value)}
-                label="Type décision"
-              >
-                <MenuItem value="">Sélectionnez un élément</MenuItem>
-                {dropdowns.typesDecision.map((type) => (
-                  <MenuItem key={type} value={type}>
-                    {type}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+          {/* Colonne 3 - Ligne 2 */}
+          <FormControl fullWidth size="small">
+            <InputLabel>Type décision</InputLabel>
+            <Select
+              value={filters.typeDecision}
+              onChange={(e) => handleFilterChange('typeDecision', e.target.value)}
+              label="Type décision"
+            >
+              <MenuItem value="">Sélectionnez un type</MenuItem>
+              {dropdowns.typesDecision.map((type) => (
+                <MenuItem key={type.id || type} value={type.id || type}>
+                  {type.libelle || type}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>
-              <DatePicker
-                label="Date décision"
-                value={filters.dateDecision}
-                onChange={(newValue) => handleFilterChange('dateDecision', newValue)}
-                renderInput={(params) => <TextField {...params} fullWidth size="small" />}
-              />
-            </LocalizationProvider>
-          </Grid>
+          {/* Colonne 1 - Ligne 3 */}
+          <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>
+            <DatePicker
+              label="Date décision"
+              value={filters.dateDecision}
+              onChange={(newValue) => handleFilterChange('dateDecision', newValue)}
+              renderInput={(params) => (
+                <TextField 
+                  {...params} 
+                  fullWidth
+                  size="small"
+                  placeholder="Sélectionnez une date"
+                />
+              )}
+            />
+          </LocalizationProvider>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Entité concernée</InputLabel>
-              <Select
-                value={filters.entiteConcernee}
-                onChange={(e) => handleFilterChange('entiteConcernee', e.target.value)}
-                label="Entité concernée"
-              >
-                <MenuItem value="">Sélectionnez un élément</MenuItem>
-                {dropdowns.typesEntite.map((entite) => (
-                  <MenuItem key={entite} value={entite}>
-                    {entite}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
-
-        {/* Boutons de recherche */}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
-          <Button
-            variant="contained"
-            startIcon={<SearchIcon />}
-            onClick={handleSearch}
-            sx={{ bgcolor: '#1976d2' }}
-          >
-            Rechercher
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<ClearIcon />}
-            onClick={handleClearFilters}
-          >
-            Annuler
-          </Button>
+          {/* Colonnes 2 et 3 - Ligne 3 : Groupe de boutons rapprochés */}
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            gap: 1 // Espacement réduit entre les boutons
+          }}>
+            <Button
+              variant="contained"
+              startIcon={<SearchIcon />}
+              onClick={handleSearch}
+              sx={{ bgcolor: '#1976d2' }}
+            >
+              Rechercher
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<ClearIcon />}
+              onClick={handleClearFilters}
+            >
+              Annuler
+            </Button>
+          </Box>
         </Box>
       </Paper>
 

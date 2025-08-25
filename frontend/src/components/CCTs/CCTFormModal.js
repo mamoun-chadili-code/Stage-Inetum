@@ -598,7 +598,7 @@ export default function CCTFormModal({ open, onClose, onSubmit, initialValues = 
                   }
                 }}
               />
-              
+            
               <SearchableSelect
                 label="Cadre d'autorisation *"
                 value={formData.cadreAutorisationId}

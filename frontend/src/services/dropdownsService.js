@@ -64,13 +64,15 @@ export const dropdownsService = {
       console.log('Tentative de récupération des réseaux depuis l\'API...');
       const response = await api.get('/Reseaux');
       console.log('Réseaux récupérés depuis l\'API:', response.data);
-      // Trier les réseaux par ordre alphabétique
+      // Trier les réseaux par ordre alphabétique (propriété 'nom')
       const sortedReseaux = response.data.sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
       return sortedReseaux;
     } catch (error) {
       console.error('❌ ERREUR: API Reseaux non disponible.');
       console.error('Veuillez vérifier que l\'API backend est démarrée et que la table Reseaux contient des données.');
-      throw new Error('API Reseaux non disponible - Aucune donnée de fallback');
+      // Retourner un tableau vide si l'API échoue
+      console.warn('API Reseaux non disponible - Retour d\'un tableau vide');
+      return [];
     }
   },
 
@@ -270,6 +272,20 @@ export const dropdownsService = {
     } catch (error) {
       console.warn('API Agents non disponible, utilisation des données mockées:', error.message);
       // console.log('Utilisation des agents mockés:', this.MOCK_AGENTS); // Supprimé
+      return []; // Retourner un tableau vide en cas d'erreur
+    }
+  },
+
+  // Récupérer les lignes
+  async getLignes() {
+    try {
+      console.log('Tentative de récupération des lignes depuis l\'API...');
+      const response = await api.get('/Lignes');
+      console.log('Lignes récupérées depuis l\'API:', response.data);
+      // Gérer le format paginé de l'API
+      return response.data.data || response.data;
+    } catch (error) {
+      console.warn('API Lignes non disponible:', error.message);
       return []; // Retourner un tableau vide en cas d'erreur
     }
   },

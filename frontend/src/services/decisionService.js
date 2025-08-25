@@ -70,21 +70,25 @@ export const decisionService = {
   // Récupérer les types de décisions
   async getDecisionTypes() {
     try {
-      const response = await api.get('/Decisions/types');
+      const response = await api.get('/TypeDecisions');
+      console.log('✅ Types de décisions récupérés depuis l\'API TypeDecisions:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Erreur lors de la récupération des types de décisions:', error);
-      // Retourner des types par défaut en cas d'erreur
+      console.error('❌ ERREUR: API TypeDecisions non disponible.');
+      console.error('Veuillez vérifier que l\'API backend est démarrée et que la table TypeDecisions contient des données.');
+      // Retourner des types par défaut en cas d'erreur (12 types comme dans la table TypeDecisions)
       return [
-        'Changement de nom',
-        'Création',
-        'Modification',
+        'Approbation',
+        'Rejet',
         'Suspension',
         'Révocation',
         'Promotion',
         'Mutation',
         'Formation',
         'Sanction',
+        'Changement de nom',
+        'Création',
+        'Modification',
         'Récompense'
       ];
     }
@@ -93,10 +97,12 @@ export const decisionService = {
   // Récupérer les types d'entités
   async getEntiteTypes() {
     try {
-      const response = await api.get('/Decisions/entites');
+      const response = await api.get('/TypeEntites');
+      console.log('✅ Types d\'entités récupérés depuis l\'API TypeEntites:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Erreur lors de la récupération des types d\'entités:', error);
+      console.error('❌ ERREUR: API TypeEntites non disponible.');
+      console.error('Veuillez vérifier que l\'API backend est démarrée et que la table TypeEntites contient des données.');
       // Retourner des types par défaut en cas d'erreur
       return [
         'Agent',
