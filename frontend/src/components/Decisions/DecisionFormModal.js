@@ -459,6 +459,11 @@ const DecisionFormModal = ({ open, decision, editMode, dropdowns, onClose, onSav
                   error: !!errors.lienDocumentUrl
                 }}
               />
+              {errors.lienDocumentUrl && (
+                <FormHelperText error sx={{ mt: 1, ml: 2 }}>
+                  {errors.lienDocumentUrl}
+                </FormHelperText>
+              )}
 
               {/* Champs optionnels - Affichés uniquement en mode modification */}
               {editMode && (
