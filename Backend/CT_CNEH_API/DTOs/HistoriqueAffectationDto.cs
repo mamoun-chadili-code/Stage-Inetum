@@ -19,5 +19,6 @@ namespace CT_CNEH_API.DTOs
         public string AgentNom { get; set; }
         public int? ChefCentreId { get; set; }
         public string ChefCentreNom { get; set; }
+
     }
 }

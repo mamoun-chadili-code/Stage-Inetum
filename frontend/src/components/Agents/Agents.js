@@ -34,6 +34,7 @@ import {
 import { toast } from 'react-toastify';
 import agentService from '../../services/agentService';
 import dropdownsService from '../../services/dropdownsService';
+
 import AgentFormModal from './AgentFormModal';
 import AgentDetailsModal from './AgentDetailsModal';
 
@@ -50,6 +51,7 @@ export default function Agents() {
   const [selectedAgent, setSelectedAgent] = useState(null);
   const [agentDetails, setAgentDetails] = useState(null);
   const [dropdowns, setDropdowns] = useState({});
+  const [activeTab, setActiveTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
 
   // États pour les filtres
@@ -262,12 +264,32 @@ export default function Agents() {
   const handleDetails = async (agent) => {
     try {
       setSelectedAgent(agent);
+      
+      // Charger les détails de l'agent (inclut déjà l'historique)
       const response = await agentService.getAgentDetails(agent.id);
       setAgentDetails(response.data);
       setOpenDetailsModal(true);
     } catch (error) {
       toast.error('Erreur lors du chargement des détails de l\'agent');
       console.error('Erreur handleDetails:', error);
+    }
+  };
+
+  // Gérer l'affichage direct de l'historique
+  const handleHistorique = async (agent) => {
+    try {
+      setSelectedAgent(agent);
+      
+      // Charger les détails de l'agent (inclut déjà l'historique)
+      const response = await agentService.getAgentDetails(agent.id);
+      setAgentDetails(response.data);
+      setOpenDetailsModal(true);
+      
+      // Ouvrir directement l'onglet historique (index 1)
+      setActiveTab(1);
+    } catch (error) {
+      toast.error('Erreur lors du chargement de l\'historique de l\'agent');
+      console.error('Erreur handleHistorique:', error);
     }
   };
 
@@ -663,7 +685,7 @@ export default function Agents() {
                              <Tooltip title="Voir l'historique">
                                <IconButton
                                  color="info"
-                                 onClick={() => handleDetails(agent)}
+                                 onClick={() => handleHistorique(agent)}
                                  sx={{ 
                                    backgroundColor: '#e1f5fe',
                                    '&:hover': { backgroundColor: '#b3e5fc' }
@@ -833,6 +855,8 @@ export default function Agents() {
           handleEdit(selectedAgent);
         }}
         dropdowns={dropdowns}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
       />
 
 

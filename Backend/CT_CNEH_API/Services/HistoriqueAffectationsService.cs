@@ -34,8 +34,8 @@ namespace CT_CNEH_API.Services
         {
             var historiques = await _context.HistoriqueAffectations
                 .Include(h => h.Agent)
-                .Include(h => h.ChefCentre)
                 .Include(h => h.CCT)
+                .Include(h => h.ChefCentre)
                 .OrderByDescending(h => h.DateAffectation)
                 .ToListAsync();
 
@@ -45,17 +45,17 @@ namespace CT_CNEH_API.Services
                 EntiteId = h.EntiteId,
                 TypeEntite = h.TypeEntite,
                 CCTId = h.CCTId,
-                CCTNom = h.CCT?.Nom,
+                CCTNom = h.CCT?.Nom ?? "CCT inconnu",
                 DateAffectation = h.DateAffectation,
                 DateFinAffectation = h.DateFinAffectation,
-                MotifAffectation = h.MotifAffectation,
+                MotifAffectation = h.MotifAffectation ?? "Aucun motif",
                 MotifFinAffectation = h.MotifFinAffectation,
                 IsActive = h.IsActive,
                 DateCreation = h.DateCreation,
                 AgentId = h.AgentId,
-                AgentNom = h.Agent != null ? $"{h.Agent.Prenom} {h.Agent.Nom}" : null,
+                AgentNom = h.Agent != null ? $"{h.Agent.Prenom} {h.Agent.Nom}" : "Agent inconnu",
                 ChefCentreId = h.ChefCentreId,
-                ChefCentreNom = h.ChefCentre != null ? $"{h.ChefCentre.Prenom} {h.ChefCentre.Nom}" : null
+                ChefCentreNom = h.ChefCentre != null ? $"{h.ChefCentre.Prenom} {h.ChefCentre.Nom}" : "Chef Centre inconnu"
             });
         }
 
@@ -63,8 +63,8 @@ namespace CT_CNEH_API.Services
         {
             var historique = await _context.HistoriqueAffectations
                 .Include(h => h.Agent)
-                .Include(h => h.ChefCentre)
                 .Include(h => h.CCT)
+                .Include(h => h.ChefCentre)
                 .FirstOrDefaultAsync(h => h.Id == id);
 
             if (historique == null) return null;
@@ -75,17 +75,17 @@ namespace CT_CNEH_API.Services
                 EntiteId = historique.EntiteId,
                 TypeEntite = historique.TypeEntite,
                 CCTId = historique.CCTId,
-                CCTNom = historique.CCT?.Nom,
+                CCTNom = historique.CCT?.Nom ?? "CCT inconnu",
                 DateAffectation = historique.DateAffectation,
                 DateFinAffectation = historique.DateFinAffectation,
-                MotifAffectation = historique.MotifAffectation,
+                MotifAffectation = historique.MotifAffectation ?? "Aucun motif",
                 MotifFinAffectation = historique.MotifFinAffectation,
                 IsActive = historique.IsActive,
                 DateCreation = historique.DateCreation,
                 AgentId = historique.AgentId,
-                AgentNom = historique.Agent != null ? $"{historique.Agent.Prenom} {historique.Agent.Nom}" : null,
+                AgentNom = historique.Agent != null ? $"{historique.Agent.Prenom} {historique.Agent.Nom}" : "Agent inconnu",
                 ChefCentreId = historique.ChefCentreId,
-                ChefCentreNom = historique.ChefCentre != null ? $"{historique.ChefCentre.Prenom} {historique.ChefCentre.Nom}" : null
+                ChefCentreNom = historique.ChefCentre != null ? $"{historique.ChefCentre.Prenom} {historique.ChefCentre.Nom}" : "Chef Centre inconnu"
             };
         }
 
@@ -93,8 +93,8 @@ namespace CT_CNEH_API.Services
         {
             var historiques = await _context.HistoriqueAffectations
                 .Include(h => h.Agent)
-                .Include(h => h.ChefCentre)
                 .Include(h => h.CCT)
+                .Include(h => h.ChefCentre)
                 .Where(h => h.AgentId == agentId)
                 .OrderByDescending(h => h.DateAffectation)
                 .ToListAsync();
@@ -105,17 +105,17 @@ namespace CT_CNEH_API.Services
                 EntiteId = h.EntiteId,
                 TypeEntite = h.TypeEntite,
                 CCTId = h.CCTId,
-                CCTNom = h.CCT?.Nom,
+                CCTNom = h.CCT?.Nom ?? "CCT inconnu",
                 DateAffectation = h.DateAffectation,
                 DateFinAffectation = h.DateFinAffectation,
-                MotifAffectation = h.MotifAffectation,
+                MotifAffectation = h.MotifAffectation ?? "Aucun motif",
                 MotifFinAffectation = h.MotifFinAffectation,
                 IsActive = h.IsActive,
                 DateCreation = h.DateCreation,
                 AgentId = h.AgentId,
-                AgentNom = h.Agent != null ? $"{h.Agent.Prenom} {h.Agent.Nom}" : null,
+                AgentNom = h.Agent != null ? $"{h.Agent.Prenom} {h.Agent.Nom}" : "Agent inconnu",
                 ChefCentreId = h.ChefCentreId,
-                ChefCentreNom = h.ChefCentre != null ? $"{h.ChefCentre.Prenom} {h.ChefCentre.Nom}" : null
+                ChefCentreNom = h.ChefCentre != null ? $"{h.ChefCentre.Prenom} {h.ChefCentre.Nom}" : "Chef Centre inconnu"
             });
         }
 
@@ -123,8 +123,8 @@ namespace CT_CNEH_API.Services
         {
             var historiques = await _context.HistoriqueAffectations
                 .Include(h => h.Agent)
-                .Include(h => h.ChefCentre)
                 .Include(h => h.CCT)
+                .Include(h => h.ChefCentre)
                 .Where(h => h.ChefCentreId == chefCentreId)
                 .OrderByDescending(h => h.DateAffectation)
                 .ToListAsync();
@@ -135,17 +135,17 @@ namespace CT_CNEH_API.Services
                 EntiteId = h.EntiteId,
                 TypeEntite = h.TypeEntite,
                 CCTId = h.CCTId,
-                CCTNom = h.CCT?.Nom,
+                CCTNom = h.CCT?.Nom ?? "CCT inconnu",
                 DateAffectation = h.DateAffectation,
                 DateFinAffectation = h.DateFinAffectation,
-                MotifAffectation = h.MotifAffectation,
+                MotifAffectation = h.MotifAffectation ?? "Aucun motif",
                 MotifFinAffectation = h.MotifFinAffectation,
                 IsActive = h.IsActive,
                 DateCreation = h.DateCreation,
                 AgentId = h.AgentId,
-                AgentNom = h.Agent != null ? $"{h.Agent.Prenom} {h.Agent.Nom}" : null,
+                AgentNom = h.Agent != null ? $"{h.Agent.Prenom} {h.Agent.Nom}" : "Agent inconnu",
                 ChefCentreId = h.ChefCentreId,
-                ChefCentreNom = h.ChefCentre != null ? $"{h.ChefCentre.Prenom} {h.ChefCentre.Nom}" : null
+                ChefCentreNom = h.ChefCentre != null ? $"{h.ChefCentre.Prenom} {h.ChefCentre.Nom}" : "Chef Centre inconnu"
             });
         }
 
@@ -153,8 +153,8 @@ namespace CT_CNEH_API.Services
         {
             var historiques = await _context.HistoriqueAffectations
                 .Include(h => h.Agent)
-                .Include(h => h.ChefCentre)
                 .Include(h => h.CCT)
+                .Include(h => h.ChefCentre)
                 .Where(h => h.CCTId == cctId)
                 .OrderByDescending(h => h.DateAffectation)
                 .ToListAsync();
@@ -165,17 +165,17 @@ namespace CT_CNEH_API.Services
                 EntiteId = h.EntiteId,
                 TypeEntite = h.TypeEntite,
                 CCTId = h.CCTId,
-                CCTNom = h.CCT?.Nom,
+                CCTNom = h.CCT?.Nom ?? "CCT inconnu",
                 DateAffectation = h.DateAffectation,
                 DateFinAffectation = h.DateFinAffectation,
-                MotifAffectation = h.MotifAffectation,
+                MotifAffectation = h.MotifAffectation ?? "Aucun motif",
                 MotifFinAffectation = h.MotifFinAffectation,
                 IsActive = h.IsActive,
                 DateCreation = h.DateCreation,
                 AgentId = h.AgentId,
-                AgentNom = h.Agent != null ? $"{h.Agent.Prenom} {h.Agent.Nom}" : null,
+                AgentNom = h.Agent != null ? $"{h.Agent.Prenom} {h.Agent.Nom}" : "Agent inconnu",
                 ChefCentreId = h.ChefCentreId,
-                ChefCentreNom = h.ChefCentre != null ? $"{h.ChefCentre.Prenom} {h.ChefCentre.Nom}" : null
+                ChefCentreNom = h.ChefCentre != null ? $"{h.ChefCentre.Prenom} {h.ChefCentre.Nom}" : "Chef Centre inconnu"
             });
         }
 
@@ -190,7 +190,7 @@ namespace CT_CNEH_API.Services
                 DateFinAffectation = historiqueDto.DateFinAffectation,
                 MotifAffectation = historiqueDto.MotifAffectation,
                 MotifFinAffectation = historiqueDto.MotifFinAffectation,
-                IsActive = true,
+                IsActive = historiqueDto.IsActive,
                 DateCreation = DateTime.UtcNow,
                 AgentId = historiqueDto.AgentId,
                 ChefCentreId = historiqueDto.ChefCentreId
@@ -199,7 +199,9 @@ namespace CT_CNEH_API.Services
             _context.HistoriqueAffectations.Add(historique);
             await _context.SaveChangesAsync();
 
-            return await GetByIdAsync(historique.Id);
+            historiqueDto.Id = historique.Id;
+            historiqueDto.DateCreation = historique.DateCreation;
+            return historiqueDto;
         }
 
         public async Task<HistoriqueAffectationDto> UpdateAsync(int id, HistoriqueAffectationDto historiqueDto)
@@ -219,8 +221,7 @@ namespace CT_CNEH_API.Services
             historique.ChefCentreId = historiqueDto.ChefCentreId;
 
             await _context.SaveChangesAsync();
-
-            return await GetByIdAsync(id);
+            return historiqueDto;
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -230,7 +231,6 @@ namespace CT_CNEH_API.Services
 
             _context.HistoriqueAffectations.Remove(historique);
             await _context.SaveChangesAsync();
-
             return true;
         }
     }

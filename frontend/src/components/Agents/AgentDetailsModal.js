@@ -38,8 +38,7 @@ import {
   Business as BusinessIcon
 } from '@mui/icons-material';
 
-export default function AgentDetailsModal({ open, onClose, agent, details, onEdit, dropdowns }) {
-  const [activeTab, setActiveTab] = useState(0);
+export default function AgentDetailsModal({ open, onClose, agent, details, onEdit, dropdowns, activeTab, setActiveTab }) {
 
   const formatDate = (dateString) => {
     if (!dateString) return '-';
@@ -256,7 +255,7 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
             <Grid item xs={12} md={6}>
               <Card sx={{ height: '100%', borderRadius: 3, boxShadow: 3 }}>
                 <CardContent sx={{ p: 3 }}>
-                  <Typography variant="h6" gutterBottom sx={{ 
+                  <Typography variant="h4" gutterBottom sx={{ 
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: 1, 
@@ -306,7 +305,7 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
             <Grid item xs={12} md={6}>
               <Card sx={{ height: '100%', borderRadius: 3, boxShadow: 3 }}>
                 <CardContent sx={{ p: 3 }}>
-                  <Typography variant="h6" gutterBottom sx={{ 
+                  <Typography variant="h4" gutterBottom sx={{ 
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: 1, 
@@ -349,7 +348,7 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
             <Grid item xs={12} md={6}>
               <Card sx={{ height: '100%', borderRadius: 3, boxShadow: 3 }}>
                 <CardContent sx={{ p: 3 }}>
-                  <Typography variant="h6" gutterBottom sx={{ 
+                  <Typography variant="h4" gutterBottom sx={{ 
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: 1, 
@@ -423,7 +422,7 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
             <Grid item xs={12} md={6}>
               <Card sx={{ height: '100%', borderRadius: 3, boxShadow: 3 }}>
                 <CardContent sx={{ p: 3 }}>
-                  <Typography variant="h6" gutterBottom sx={{ 
+                  <Typography variant="h4" gutterBottom sx={{ 
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: 1, 
@@ -497,7 +496,7 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
         {activeTab === 1 && (
           <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
             <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom sx={{ 
+              <Typography variant="h4" gutterBottom sx={{ 
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: 1, 
@@ -510,6 +509,10 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
               </Typography>
 
               {Array.isArray(details.historique) && details.historique.length > 0 ? (
+                <>
+                  {/* Debug: Afficher la structure des données */}
+                  {console.log('🔍 Debug - Historique reçu:', details.historique)}
+                  {console.log('🔍 Debug - Premier item:', details.historique[0])}
                 <TableContainer component={Paper} sx={{ borderRadius: 2, overflow: 'hidden' }}>
                   <Table>
                     <TableHead>
@@ -517,8 +520,7 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
                         <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>CCT</TableCell>
                         <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Date Affectation</TableCell>
                         <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Date Fin</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Motif Affectation</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Motif Fin</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Date Mise à Jour</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -530,50 +532,24 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
                             '&:nth-of-type(even)': { backgroundColor: '#fafafa' }
                           }}
                         >
-                          <TableCell sx={{ fontWeight: 'medium' }}>{item.cct || '-'}</TableCell>
-                          <TableCell sx={{ fontFamily: 'monospace' }}>{formatDate(item.dateAffectation)}</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'medium' }}>{item.cctNom || '-'}</TableCell>
+                          <TableCell sx={{ fontFamily: 'monospace' }}>{formatDate(item.dateDebutAffectation)}</TableCell>
                           <TableCell sx={{ fontFamily: 'monospace' }}>{formatDate(item.dateFinAffectation)}</TableCell>
-                          <TableCell>
-                            <Chip 
-                              label={item.motifAffectation || '-'} 
-                              size="small"
-                              sx={{ 
-                                backgroundColor: '#e3f2fd',
-                                color: '#1976d2',
-                                fontWeight: 'medium',
-                                borderRadius: 2
-                              }}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            {item.motifFinAffectation ? (
-                              <Chip 
-                                label={item.motifFinAffectation} 
-                                size="small"
-                                sx={{ 
-                                  backgroundColor: '#ffebee',
-                                  color: '#d32f2f',
-                                  fontWeight: 'medium',
-                                  borderRadius: 2
-                                }}
-                              />
-                            ) : (
-                              '-'
-                            )}
-                          </TableCell>
+                          <TableCell sx={{ fontFamily: 'monospace' }}>{formatDate(item.dateMiseAJour)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
-                </TableContainer>
-              ) : (
+                                  </TableContainer>
+                  </>
+                ) : (
                 <Box sx={{ 
                   textAlign: 'center', 
                   py: 6,
                   backgroundColor: '#f8f9fa',
                   borderRadius: 3
                 }}>
-                  <Typography variant="h6" color="textSecondary" gutterBottom>
+                  <Typography variant="h4" color="textSecondary" gutterBottom>
                     📋 Aucun historique disponible
                   </Typography>
                   <Typography variant="body2" color="textSecondary">

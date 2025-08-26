@@ -42,6 +42,7 @@ namespace CT_CNEH_API.Data
         public DbSet<Decision> Decisions { get; set; } = null!;
         public DbSet<HistoriqueCCT> HistoriqueCCTs { get; set; } = null!;
         public DbSet<HistoriqueAffectation> HistoriqueAffectations { get; set; } = null!;
+        public DbSet<HistoriqueAgent> HistoriqueAgents { get; set; } = null!;
         public DbSet<Logo> Logos { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -191,6 +192,19 @@ namespace CT_CNEH_API.Data
 
             // Configuration pour HistoriqueAffectation
             modelBuilder.Entity<HistoriqueAffectation>()
+                .HasOne(h => h.CCT)
+                .WithMany()
+                .HasForeignKey(h => h.CCTId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configuration pour HistoriqueAgent
+            modelBuilder.Entity<HistoriqueAgent>()
+                .HasOne(h => h.Agent)
+                .WithMany()
+                .HasForeignKey(h => h.AgentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<HistoriqueAgent>()
                 .HasOne(h => h.CCT)
                 .WithMany()
                 .HasForeignKey(h => h.CCTId)

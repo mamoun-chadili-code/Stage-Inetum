@@ -131,35 +131,27 @@ const agentService = {
     }
   },
 
-  // Récupérer l'historique d'un agent
-  getAgentHistorique: async (id) => {
-    try {
-      const response = await api.get(`/Agents/${id}/historique`);
-      return response;
-    } catch (error) {
-      console.error('Erreur lors de la récupération de l\'historique:', error);
-      throw error;
-    }
-  },
+
 
   // Récupérer les détails d'un agent
   getAgentDetails: async (id) => {
     try {
+      // Utiliser la nouvelle API HistoriqueAgent
       const [agentResponse, historiqueResponse] = await Promise.all([
         api.get(`/Agents/${id}`),
-        api.get(`/Agents/${id}/historique`)
+        api.get(`/HistoriqueAgent/agent/${id}`)
       ]);
       
       const agentData = agentResponse.data;
       const historiqueData = historiqueResponse.data;
       
       console.log('Données agent:', agentData);
-      console.log('Données historique:', historiqueData);
+      console.log('Données historique (nouvelle API):', historiqueData);
       
       // Combiner les données
       const combinedData = {
         ...agentData,
-        historique: historiqueData.historique || []
+        historique: historiqueData || []
       };
       
       console.log('Données combinées:', combinedData);
