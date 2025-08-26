@@ -6,11 +6,14 @@ namespace CT_CNEH_API.DTOs
     {
         // Paramètres de pagination
         public int Page { get; set; } = 1;
-        public int PageSize { get; set; } = 10;
+        public int PageSize { get; set; } = 5; // Changé de 10 à 5
 
         // Critères de recherche
         public int? ReseauId { get; set; }
         public int? CCTId { get; set; }
+        public int? ChefCentreId { get; set; }
+        public int? LigneId { get; set; }
+        public int? AgentId { get; set; }
         public int? TypeDecisionId { get; set; }
         public int? EntiteTypeId { get; set; }
         public int? EntiteId { get; set; }

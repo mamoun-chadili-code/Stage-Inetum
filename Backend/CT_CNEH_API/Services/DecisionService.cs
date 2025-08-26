@@ -28,6 +28,9 @@ namespace CT_CNEH_API.Services
             var query = _context.Decisions
                 .Include(d => d.Reseau)
                 .Include(d => d.CCT)
+                .Include(d => d.ChefCentre)
+                .Include(d => d.Ligne)
+                .Include(d => d.Agent)
                 .AsQueryable();
 
             // Appliquer les filtres
@@ -46,9 +49,34 @@ namespace CT_CNEH_API.Services
             if (searchDto.EntiteId.HasValue)
                 query = query.Where(d => d.EntiteId == searchDto.EntiteId);
 
-            if (searchDto.DateReference.HasValue)
-                query = query.Where(d => d.DateReference.Date == searchDto.DateReference.Value.Date);
+            if (searchDto.ChefCentreId.HasValue)
+                query = query.Where(d => d.ChefCentreId == searchDto.ChefCentreId);
 
+            if (searchDto.LigneId.HasValue)
+                query = query.Where(d => d.LigneId == searchDto.LigneId);
+
+            if (searchDto.AgentId.HasValue)
+                query = query.Where(d => d.AgentId == searchDto.AgentId);
+
+            if (searchDto.DateReference.HasValue)
+            {
+                var searchDate = searchDto.DateReference.Value.Date;
+                var nextDay = searchDate.AddDays(1);
+                query = query.Where(d => d.DateReference >= searchDate && d.DateReference < nextDay);
+                
+                // Log pour déboguer
+                Console.WriteLine($"🔍 Filtrage par date - Date recherchée: {searchDate:yyyy-MM-dd}");
+                Console.WriteLine($"🔍 Filtrage par date - Plage: {searchDate:yyyy-MM-dd} à {nextDay:yyyy-MM-dd}");
+            }
+
+            // Log pour déboguer - Afficher les dates des décisions existantes
+            var allDecisions = await _context.Decisions.ToListAsync();
+            Console.WriteLine($"🔍 Décisions existantes dans la base:");
+            foreach (var d in allDecisions)
+            {
+                Console.WriteLine($"  - ID: {d.Id}, DateReference: {d.DateReference:yyyy-MM-dd HH:mm:ss}");
+            }
+            
             // Compter le total avant pagination
             var totalCount = await query.CountAsync();
             var totalPages = (int)Math.Ceiling((double)totalCount / searchDto.PageSize);
@@ -87,6 +115,12 @@ namespace CT_CNEH_API.Services
                     ReseauNom = d.Reseau != null ? d.Reseau.Nom : null,
                     CCTId = d.CCTId,
                     CCTNom = d.CCT != null ? d.CCT.Nom : null,
+                    ChefCentreId = d.ChefCentreId,
+                    ChefCentreNom = d.ChefCentre != null ? $"{d.ChefCentre.Nom} {d.ChefCentre.Prenom}" : null,
+                    LigneId = d.LigneId,
+                    LigneNumero = d.Ligne != null ? d.Ligne.NumeroLigne.ToString() : null,
+                    AgentId = d.AgentId,
+                    AgentNom = d.Agent != null ? $"{d.Agent.Nom} {d.Agent.Prenom}" : null,
                     CreatedAt = d.CreatedAt,
                     UpdatedAt = d.UpdatedAt
                 });
@@ -100,6 +134,9 @@ namespace CT_CNEH_API.Services
             var decision = await _context.Decisions
                 .Include(d => d.Reseau)
                 .Include(d => d.CCT)
+                .Include(d => d.ChefCentre)
+                .Include(d => d.Ligne)
+                .Include(d => d.Agent)
                 .FirstOrDefaultAsync(d => d.Id == id);
 
             if (decision == null) return null;
@@ -126,6 +163,12 @@ namespace CT_CNEH_API.Services
                 ReseauNom = decision.Reseau != null ? decision.Reseau.Nom : null,
                 CCTId = decision.CCTId,
                 CCTNom = decision.CCT != null ? decision.CCT.Nom : null,
+                ChefCentreId = decision.ChefCentreId,
+                ChefCentreNom = decision.ChefCentre != null ? $"{decision.ChefCentre.Nom} {decision.ChefCentre.Prenom}" : null,
+                LigneId = decision.LigneId,
+                LigneNumero = decision.Ligne != null ? decision.Ligne.NumeroLigne.ToString() : null,
+                AgentId = decision.AgentId,
+                                    AgentNom = decision.Agent != null ? $"{decision.Agent.Nom} {decision.Agent.Prenom}" : null,
                 CreatedAt = decision.CreatedAt,
                 UpdatedAt = decision.UpdatedAt
             };
@@ -133,12 +176,47 @@ namespace CT_CNEH_API.Services
 
         public async Task<DecisionDto> CreateDecisionAsync(Decision decision)
         {
+            // Log pour déboguer
+            Console.WriteLine($"🔍 CreateDecisionAsync - AgentId: {decision.AgentId}");
+            Console.WriteLine($"🔍 CreateDecisionAsync - ChefCentreId: {decision.ChefCentreId}");
+            Console.WriteLine($"🔍 CreateDecisionAsync - LigneId: {decision.LigneId}");
+            Console.WriteLine($"🔍 CreateDecisionAsync - EntiteTypeId: {decision.EntiteTypeId}");
+            Console.WriteLine($"🔍 CreateDecisionAsync - EntiteId: {decision.EntiteId}");
+            
+            // Synchroniser les nouvelles colonnes avec entiteId selon le type
+            if (decision.EntiteTypeId == 3 && decision.EntiteId > 0) // AGENT
+            {
+                decision.AgentId = decision.EntiteId;
+                Console.WriteLine($"🔍 Synchronisation - AgentId mis à jour: {decision.AgentId}");
+            }
+            else if (decision.EntiteTypeId == 4 && decision.EntiteId > 0) // CHEF_CENTRE
+            {
+                decision.ChefCentreId = decision.EntiteId;
+                Console.WriteLine($"🔍 Synchronisation - ChefCentreId mis à jour: {decision.ChefCentreId}");
+            }
+            else if (decision.EntiteTypeId == 5 && decision.EntiteId > 0) // LIGNE
+            {
+                decision.LigneId = decision.EntiteId;
+                Console.WriteLine($"🔍 Synchronisation - LigneId mis à jour: {decision.LigneId}");
+            }
+            
             decision.CreatedAt = DateTime.Now;
 
             _context.Decisions.Add(decision);
             await _context.SaveChangesAsync();
 
-            return await GetDecisionByIdAsync(decision.Id) ?? throw new InvalidOperationException("Erreur lors de la création de la décision");
+            // Log après sauvegarde
+            Console.WriteLine($"🔍 Après sauvegarde - AgentId: {decision.AgentId}");
+            Console.WriteLine($"🔍 Après sauvegarde - ChefCentreId: {decision.ChefCentreId}");
+            Console.WriteLine($"🔍 Après sauvegarde - LigneId: {decision.LigneId}");
+
+            var result = await GetDecisionByIdAsync(decision.Id) ?? throw new InvalidOperationException("Erreur lors de la création de la décision");
+            
+            // Log du résultat
+            Console.WriteLine($"🔍 Résultat GetDecisionByIdAsync - AgentId: {result.AgentId}");
+            Console.WriteLine($"🔍 Résultat GetDecisionByIdAsync - AgentNom: {result.AgentNom}");
+            
+            return result;
         }
 
         public async Task<DecisionDto> UpdateDecisionAsync(int id, Decision decisionUpdate)
@@ -159,6 +237,23 @@ namespace CT_CNEH_API.Services
             existingDecision.Observation = decisionUpdate.Observation;
             existingDecision.ReseauId = decisionUpdate.ReseauId;
             existingDecision.CCTId = decisionUpdate.CCTId;
+            existingDecision.ChefCentreId = decisionUpdate.ChefCentreId;
+            existingDecision.LigneId = decisionUpdate.LigneId;
+            existingDecision.AgentId = decisionUpdate.AgentId;
+
+            // Synchroniser les nouvelles colonnes avec entiteId selon le type
+            if (decisionUpdate.EntiteTypeId == 3 && decisionUpdate.EntiteId > 0) // AGENT
+            {
+                existingDecision.AgentId = decisionUpdate.EntiteId;
+            }
+            else if (decisionUpdate.EntiteTypeId == 4 && decisionUpdate.EntiteId > 0) // CHEF_CENTRE
+            {
+                existingDecision.ChefCentreId = decisionUpdate.EntiteId;
+            }
+            else if (decisionUpdate.EntiteTypeId == 5 && decisionUpdate.EntiteId > 0) // LIGNE
+            {
+                existingDecision.LigneId = decisionUpdate.EntiteId;
+            }
 
             existingDecision.UpdatedAt = DateTime.Now;
 

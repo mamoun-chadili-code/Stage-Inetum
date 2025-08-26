@@ -12,7 +12,11 @@ const api = axios.create({
 // Intercepteur pour les requêtes sortantes
 api.interceptors.request.use(
   (config) => {
-    console.log('Requête API:', config.method?.toUpperCase(), config.url, config.data);
+    if (config.method?.toUpperCase() === 'GET') {
+      console.log('Requête API:', config.method?.toUpperCase(), config.url, config.params);
+    } else {
+      console.log('Requête API:', config.method?.toUpperCase(), config.url, config.data);
+    }
     return config;
   },
   (error) => {

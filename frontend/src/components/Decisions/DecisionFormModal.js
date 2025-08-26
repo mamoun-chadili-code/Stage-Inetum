@@ -170,6 +170,9 @@ const DecisionFormModal = ({ open, decision, editMode, dropdowns, onClose, onSav
         // Informations de contexte optionnelles
         reseauId: form.reseauId || null,
         cctId: form.cctId || null,
+        chefCentreId: form.chefCentreId || null,
+        ligneId: form.ligneId || null,
+        agentId: form.agentId || null,
         
         // Champs d'audit (seront gérés par le backend)
         createdAt: new Date().toISOString()

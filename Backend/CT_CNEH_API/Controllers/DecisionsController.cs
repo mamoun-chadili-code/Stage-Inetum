@@ -22,6 +22,17 @@ namespace CT_CNEH_API.Controllers
         {
             try
             {
+                // Log pour déboguer
+                Console.WriteLine($"🔍 GetDecisions - Paramètres reçus:");
+                Console.WriteLine($"  - ReseauId: {searchDto.ReseauId}");
+                Console.WriteLine($"  - CCTId: {searchDto.CCTId}");
+                Console.WriteLine($"  - ChefCentreId: {searchDto.ChefCentreId}");
+                Console.WriteLine($"  - LigneId: {searchDto.LigneId}");
+                Console.WriteLine($"  - AgentId: {searchDto.AgentId}");
+                Console.WriteLine($"  - TypeDecisionId: {searchDto.TypeDecisionId}");
+                Console.WriteLine($"  - DateReference: {searchDto.DateReference}");
+                Console.WriteLine($"  - Page: {searchDto.Page}, PageSize: {searchDto.PageSize}");
+
                 if (!searchDto.IsValid())
                 {
                     var errors = searchDto.GetValidationErrors();

@@ -21,6 +21,12 @@ namespace CT_CNEH_API.DTOs
         public string? ReseauNom { get; set; }
         public int? CCTId { get; set; }
         public string? CCTNom { get; set; }
+        public int? ChefCentreId { get; set; }
+        public string? ChefCentreNom { get; set; }
+        public int? LigneId { get; set; }
+        public string? LigneNumero { get; set; }
+        public int? AgentId { get; set; }
+        public string? AgentNom { get; set; }
 
         // Propriétés d'audit
         public DateTime CreatedAt { get; set; }

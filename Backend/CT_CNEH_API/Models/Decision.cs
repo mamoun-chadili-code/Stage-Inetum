@@ -41,6 +41,18 @@ namespace CT_CNEH_API.Models
         [ForeignKey("CCTId")]
         public virtual CCT? CCT { get; set; }
 
+        public int? ChefCentreId { get; set; }
+        [ForeignKey("ChefCentreId")]
+        public virtual Agent? ChefCentre { get; set; }
+
+        public int? LigneId { get; set; }
+        [ForeignKey("LigneId")]
+        public virtual Ligne? Ligne { get; set; }
+
+        public int? AgentId { get; set; }
+        [ForeignKey("AgentId")]
+        public virtual Agent? Agent { get; set; }
+
         // Propriétés d'audit
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }
