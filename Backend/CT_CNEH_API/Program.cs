@@ -74,6 +74,8 @@ builder.Services.AddScoped<ChefCentreService>();
 builder.Services.AddScoped<LigneService>();
 builder.Services.AddScoped<IDecisionService, DecisionService>();
 builder.Services.AddScoped<IEquipementService, EquipementService>();
+builder.Services.AddScoped<IHistoriqueCCTService, HistoriqueCCTService>();
+builder.Services.AddScoped<IHistoriqueAffectationsService, HistoriqueAffectationsService>();
 
 // Configuration d'AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));

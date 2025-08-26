@@ -1,53 +1,69 @@
 import api from './api';
 
-const historiqueCCTService = {
-  /**
-   * Récupère l'historique d'un CCT
-   * @param {number} cctId - ID du CCT
-   * @returns {Promise<Array>} - Historique du CCT
-   */
-  async getHistoriqueCCT(cctId) {
+export const historiqueCCTService = {
+  // Récupérer tous les historiques
+  getAll: async () => {
     try {
-      const response = await api.get(`/CCTs/${cctId}/historique`);
+      const response = await api.get('/HistoriqueCCTs');
       return response.data;
     } catch (error) {
-      console.error('Erreur lors de la récupération de l\'historique:', error);
-      // Retourner un tableau vide en cas d'erreur
-      return [];
+      console.error('Erreur lors de la récupération des historiques CCT:', error);
+      throw error;
     }
   },
 
-  /**
-   * Récupère l'historique des ralliements d'un CCT
-   * @param {number} cctId - ID du CCT
-   * @returns {Promise<Array>} - Historique des ralliements
-   */
-  async getHistoriqueRalliements(cctId) {
+  // Récupérer un historique par ID
+  getById: async (id) => {
     try {
-      const response = await api.get(`/CCTs/${cctId}/ralliements`);
+      const response = await api.get(`/HistoriqueCCTs/${id}`);
       return response.data;
     } catch (error) {
-      console.error('Erreur lors de la récupération des ralliements:', error);
-      // Retourner un tableau vide en cas d'erreur
-      return [];
+      console.error('Erreur lors de la récupération de l\'historique CCT:', error);
+      throw error;
     }
   },
 
-  /**
-   * Récupère l'historique des statuts d'un CCT
-   * @param {number} cctId - ID du CCT
-   * @returns {Promise<Array>} - Historique des statuts
-   */
-  async getHistoriqueStatuts(cctId) {
+  // Récupérer les historiques par CCT
+  getByCCTId: async (cctId) => {
     try {
-      const response = await api.get(`/CCTs/${cctId}/statuts`);
+      const response = await api.get(`/HistoriqueCCTs/cct/${cctId}`);
       return response.data;
     } catch (error) {
-      console.error('Erreur lors de la récupération des statuts:', error);
-      // Retourner un tableau vide en cas d'erreur
-      return [];
+      console.error('Erreur lors de la récupération des historiques par CCT:', error);
+      throw error;
+    }
+  },
+
+  // Créer un nouvel historique
+  create: async (historiqueData) => {
+    try {
+      const response = await api.post('/HistoriqueCCTs', historiqueData);
+      return response.data;
+    } catch (error) {
+      console.error('Erreur lors de la création de l\'historique CCT:', error);
+      throw error;
+    }
+  },
+
+  // Mettre à jour un historique
+  update: async (id, historiqueData) => {
+    try {
+      const response = await api.put(`/HistoriqueCCTs/${id}`, historiqueData);
+      return response.data;
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de l\'historique CCT:', error);
+      throw error;
+    }
+  },
+
+  // Supprimer un historique
+  delete: async (id) => {
+    try {
+      await api.delete(`/HistoriqueCCTs/${id}`);
+      return true;
+    } catch (error) {
+      console.error('Erreur lors de la suppression de l\'historique CCT:', error);
+      throw error;
     }
   }
-};
-
-export default historiqueCCTService; 
+}; 

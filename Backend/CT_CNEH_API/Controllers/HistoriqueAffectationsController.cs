@@ -1,137 +1,171 @@
+using CT_CNEH_API.DTOs;
+using CT_CNEH_API.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using CT_CNEH_API.Data;
-using CT_CNEH_API.Models;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CT_CNEH_API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class HistoriqueAffectationsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IHistoriqueAffectationsService _historiqueService;
 
-        public HistoriqueAffectationsController(ApplicationDbContext context)
+        public HistoriqueAffectationsController(IHistoriqueAffectationsService historiqueService)
         {
-            _context = context;
+            _historiqueService = historiqueService;
         }
 
-        // GET: api/HistoriqueAffectations/agent/{agentId}
+        // GET: api/HistoriqueAffectations
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<HistoriqueAffectationDto>>> GetHistoriques()
+        {
+            try
+            {
+                var historiques = await _historiqueService.GetAllAsync();
+                return Ok(historiques);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
+            }
+        }
+
+        // GET: api/HistoriqueAffectations/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<HistoriqueAffectationDto>> GetHistorique(int id)
+        {
+            try
+            {
+                var historique = await _historiqueService.GetByIdAsync(id);
+                if (historique == null)
+                {
+                    return NotFound($"Historique avec l'ID {id} non trouvé");
+                }
+
+                return Ok(historique);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
+            }
+        }
+
+        // GET: api/HistoriqueAffectations/agent/5
         [HttpGet("agent/{agentId}")]
-        public async Task<ActionResult<IEnumerable<HistoriqueAffectation>>> GetHistoriqueAgent(int agentId)
+        public async Task<ActionResult<IEnumerable<HistoriqueAffectationDto>>> GetHistoriquesByAgent(int agentId)
         {
-            var historique = await _context.HistoriqueAffectations
-                .Where(h => h.EntiteId == agentId && h.TypeEntite == "Agent")
-                .Include(h => h.CCT)
-                .OrderByDescending(h => h.DateAffectation)
-                .ToListAsync();
-
-            return Ok(historique);
+            try
+            {
+                var historiques = await _historiqueService.GetByAgentIdAsync(agentId);
+                return Ok(historiques);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
+            }
         }
 
-        // GET: api/HistoriqueAffectations/chefcentre/{chefCentreId}
+        // GET: api/HistoriqueAffectations/chefcentre/5
         [HttpGet("chefcentre/{chefCentreId}")]
-        public async Task<ActionResult<IEnumerable<HistoriqueAffectation>>> GetHistoriqueChefCentre(int chefCentreId)
+        public async Task<ActionResult<IEnumerable<HistoriqueAffectationDto>>> GetHistoriquesByChefCentre(int chefCentreId)
         {
-            var historique = await _context.HistoriqueAffectations
-                .Where(h => h.EntiteId == chefCentreId && h.TypeEntite == "ChefCentre")
-                .Include(h => h.CCT)
-                .OrderByDescending(h => h.DateAffectation)
-                .ToListAsync();
+            try
+            {
+                var historiques = await _historiqueService.GetByChefCentreIdAsync(chefCentreId);
+                return Ok(historiques);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
+            }
+        }
 
-            return Ok(historique);
+        // GET: api/HistoriqueAffectations/cct/5
+        [HttpGet("cct/{cctId}")]
+        public async Task<ActionResult<IEnumerable<HistoriqueAffectationDto>>> GetHistoriquesByCCT(int cctId)
+        {
+            try
+            {
+                var historiques = await _historiqueService.GetByCCTIdAsync(cctId);
+                return Ok(historiques);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
+            }
         }
 
         // POST: api/HistoriqueAffectations
         [HttpPost]
-        public async Task<ActionResult<HistoriqueAffectation>> CreateHistoriqueAffectation(HistoriqueAffectation historique)
+        public async Task<ActionResult<HistoriqueAffectationDto>> CreateHistorique(HistoriqueAffectationDto historiqueDto)
         {
-            // Valider que l'entité existe
-            if (historique.TypeEntite == "Agent")
+            try
             {
-                var agent = await _context.Agents.FindAsync(historique.EntiteId);
-                if (agent == null)
-                    return BadRequest("Agent non trouvé");
-            }
-            else if (historique.TypeEntite == "ChefCentre")
-            {
-                var chefCentre = await _context.ChefCentres.FindAsync(historique.EntiteId);
-                if (chefCentre == null)
-                    return BadRequest("Chef de centre non trouvé");
-            }
-            else
-            {
-                return BadRequest("Type d'entité invalide");
-            }
-
-            // Vérifier que le CCT existe
-            var cct = await _context.CCTs.FindAsync(historique.CCTId);
-            if (cct == null)
-                return BadRequest("CCT non trouvé");
-
-            // Désactiver l'ancienne affectation active
-            var ancienneAffectation = await _context.HistoriqueAffectations
-                .Where(h => h.EntiteId == historique.EntiteId && 
-                           h.TypeEntite == historique.TypeEntite && 
-                           h.IsActive)
-                .FirstOrDefaultAsync();
-
-            if (ancienneAffectation != null)
-            {
-                ancienneAffectation.IsActive = false;
-                ancienneAffectation.DateFinAffectation = DateTime.UtcNow;
-                ancienneAffectation.MotifFinAffectation = "Nouvelle affectation";
-            }
-
-            // Créer la nouvelle affectation
-            historique.DateAffectation = DateTime.UtcNow;
-            historique.IsActive = true;
-            historique.DateCreation = DateTime.UtcNow;
-
-            _context.HistoriqueAffectations.Add(historique);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetHistoriqueAgent), new { agentId = historique.EntiteId }, historique);
-        }
-
-        // PUT: api/HistoriqueAffectations/{id}/terminer
-        [HttpPut("{id}/terminer")]
-        public async Task<IActionResult> TerminerAffectation(int id, [FromBody] string motif)
-        {
-            var historique = await _context.HistoriqueAffectations.FindAsync(id);
-            if (historique == null)
-                return NotFound();
-
-            historique.IsActive = false;
-            historique.DateFinAffectation = DateTime.UtcNow;
-            historique.MotifFinAffectation = motif;
-
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        // GET: api/HistoriqueAffectations/cct/{cctId}
-        [HttpGet("cct/{cctId}")]
-        public async Task<ActionResult<IEnumerable<object>>> GetPersonnelCCT(int cctId)
-        {
-            var personnel = await _context.HistoriqueAffectations
-                .Where(h => h.CCTId == cctId && h.IsActive)
-                .Include(h => h.CCT)
-                .Select(h => new
+                if (!ModelState.IsValid)
                 {
-                    h.Id,
-                    h.EntiteId,
-                    h.TypeEntite,
-                    h.DateAffectation,
-                    h.MotifAffectation,
-                    CCT = new { h.CCT.Id, h.CCT.Nom }
-                })
-                .OrderBy(h => h.TypeEntite)
-                .ThenBy(h => h.DateAffectation)
-                .ToListAsync();
+                    return BadRequest(ModelState);
+                }
 
-            return Ok(personnel);
+                var createdHistorique = await _historiqueService.CreateAsync(historiqueDto);
+                return CreatedAtAction(nameof(GetHistorique), new { id = createdHistorique.Id }, createdHistorique);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
+            }
+        }
+
+        // PUT: api/HistoriqueAffectations/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateHistorique(int id, HistoriqueAffectationDto historiqueDto)
+        {
+            try
+            {
+                if (id != historiqueDto.Id)
+                {
+                    return BadRequest("L'ID dans l'URL ne correspond pas à l'ID dans le corps de la requête");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var updatedHistorique = await _historiqueService.UpdateAsync(id, historiqueDto);
+                if (updatedHistorique == null)
+                {
+                    return NotFound($"Historique avec l'ID {id} non trouvé");
+                }
+
+                return Ok(updatedHistorique);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
+            }
+        }
+
+        // DELETE: api/HistoriqueAffectations/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteHistorique(int id)
+        {
+            try
+            {
+                var result = await _historiqueService.DeleteAsync(id);
+                if (!result)
+                {
+                    return NotFound($"Historique avec l'ID {id} non trouvé");
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
+            }
         }
     }
 }

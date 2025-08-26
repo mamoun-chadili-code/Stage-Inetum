@@ -1,7 +1,9 @@
+using CT_CNEH_API.DTOs;
+using CT_CNEH_API.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using CT_CNEH_API.Data;
-using CT_CNEH_API.Models;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CT_CNEH_API.Controllers
 {
@@ -9,69 +11,131 @@ namespace CT_CNEH_API.Controllers
     [Route("api/[controller]")]
     public class HistoriqueCCTsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IHistoriqueCCTService _historiqueService;
 
-        public HistoriqueCCTsController(ApplicationDbContext context)
+        public HistoriqueCCTsController(IHistoriqueCCTService historiqueService)
         {
-            _context = context;
+            _historiqueService = historiqueService;
+        }
+
+        // GET: api/HistoriqueCCTs
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<HistoriqueCCTDto>>> GetHistoriques()
+        {
+            try
+            {
+                var historiques = await _historiqueService.GetAllAsync();
+                return Ok(historiques);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
+            }
+        }
+
+        // GET: api/HistoriqueCCTs/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<HistoriqueCCTDto>> GetHistorique(int id)
+        {
+            try
+            {
+                var historique = await _historiqueService.GetByIdAsync(id);
+                if (historique == null)
+                {
+                    return NotFound($"Historique avec l'ID {id} non trouvé");
+                }
+
+                return Ok(historique);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
+            }
         }
 
         // GET: api/HistoriqueCCTs/cct/5
         [HttpGet("cct/{cctId}")]
-        public async Task<ActionResult<IEnumerable<HistoriqueCCT>>> GetByCCT(int cctId)
+        public async Task<ActionResult<IEnumerable<HistoriqueCCTDto>>> GetHistoriquesByCCT(int cctId)
         {
-            var historiques = await _context.HistoriqueCCTs
-                .Include(h => h.Reseau)
-                .Where(h => h.CCTId == cctId)
-                .OrderByDescending(h => h.DateDebut)
-                .ToListAsync();
-            return Ok(historiques);
+            try
+            {
+                var historiques = await _historiqueService.GetByCCTIdAsync(cctId);
+                return Ok(historiques);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
+            }
         }
 
         // POST: api/HistoriqueCCTs
         [HttpPost]
-        public async Task<ActionResult<HistoriqueCCT>> Create(HistoriqueCCT historique)
+        public async Task<ActionResult<HistoriqueCCTDto>> CreateHistorique(HistoriqueCCTDto historiqueDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            _context.HistoriqueCCTs.Add(historique);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetByCCT), new { cctId = historique.CCTId }, historique);
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var createdHistorique = await _historiqueService.CreateAsync(historiqueDto);
+                return CreatedAtAction(nameof(GetHistorique), new { id = createdHistorique.Id }, createdHistorique);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
+            }
         }
 
         // PUT: api/HistoriqueCCTs/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, HistoriqueCCT historique)
+        public async Task<IActionResult> UpdateHistorique(int id, HistoriqueCCTDto historiqueDto)
         {
-            if (id != historique.Id)
-                return BadRequest();
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            _context.Entry(historique).State = EntityState.Modified;
             try
             {
-                await _context.SaveChangesAsync();
+                if (id != historiqueDto.Id)
+                {
+                    return BadRequest("L'ID dans l'URL ne correspond pas à l'ID dans le corps de la requête");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var updatedHistorique = await _historiqueService.UpdateAsync(id, historiqueDto);
+                if (updatedHistorique == null)
+                {
+                    return NotFound($"Historique avec l'ID {id} non trouvé");
+                }
+
+                return Ok(updatedHistorique);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!_context.HistoriqueCCTs.Any(e => e.Id == id))
-                    return NotFound();
-                else
-                    throw;
+                return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
             }
-            return NoContent();
         }
 
         // DELETE: api/HistoriqueCCTs/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteHistorique(int id)
         {
-            var historique = await _context.HistoriqueCCTs.FindAsync(id);
-            if (historique == null)
-                return NotFound();
-            _context.HistoriqueCCTs.Remove(historique);
-            await _context.SaveChangesAsync();
-            return NoContent();
+            try
+            {
+                var result = await _historiqueService.DeleteAsync(id);
+                if (!result)
+                {
+                    return NotFound($"Historique avec l'ID {id} non trouvé");
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
+            }
         }
     }
 } 

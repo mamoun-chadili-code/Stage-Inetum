@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -43,8 +43,31 @@ import {
   CheckCircle as CheckCircleIcon,
   Warning as WarningIcon
 } from '@mui/icons-material';
+import { categorieLignesService } from '../../services/categorieLignesService';
 
 export default function CCTDetailsModal({ open, onClose, cct, details, tab = 0, onTabChange, onEdit }) {
+  const [categoriesLignes, setCategoriesLignes] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+
+  // Charger les catégories de lignes
+  useEffect(() => {
+    const loadCategories = async () => {
+      if (open && details?.lignes?.length > 0) {
+        setLoadingCategories(true);
+        try {
+          const categories = await categorieLignesService.getAll();
+          setCategoriesLignes(categories);
+        } catch (error) {
+          console.error('Erreur lors du chargement des catégories:', error);
+        } finally {
+          setLoadingCategories(false);
+        }
+      }
+    };
+
+    loadCategories();
+  }, [open, details?.lignes]);
+
   if (!cct) return null;
 
   const formatDate = (dateString) => {
@@ -65,6 +88,36 @@ export default function CCTDetailsModal({ open, onClose, cct, details, tab = 0, 
     if (statut.includes('suspendu')) return '#ff9800';
     if (statut.includes('fermer') || statut.includes('fermé')) return '#9e9e9e';
     return '#757575';
+  };
+
+  // Récupérer le nom de la catégorie par ID
+  const getCategorieName = (categorieId) => {
+    const categorie = categoriesLignes.find(cat => cat.id === categorieId);
+    return categorie ? categorie.libelle : 'N/A';
+  };
+
+  // Récupérer les agents assignés au CCT
+  const getAgentsForCCT = () => {
+    console.log('🔍 Debug - Structure complète de details:', details);
+    console.log('🔍 Debug - Agents disponibles:', details?.agents);
+    
+    // Log détaillé de chaque agent
+    if (details?.agents) {
+      details.agents.forEach((agent, index) => {
+        console.log(`🔍 Agent ${index + 1}:`, {
+          id: agent.id,
+          nom: agent.nom,
+          prenom: agent.prenom,
+          cin: agent.cin,
+          numeroCAP: agent.numeroCAP,
+          dateCAP: agent.dateCAP,
+          tel: agent.tel,
+          toutesProprietes: Object.keys(agent)
+        });
+      });
+    }
+    
+    return details?.agents || [];
   };
 
   return (
@@ -350,22 +403,55 @@ export default function CCTDetailsModal({ open, onClose, cct, details, tab = 0, 
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {details.lignes.map((ligne, index) => (
-                        <TableRow key={index} hover>
-                          <TableCell>{ligne.numeroLigne || index + 1}</TableCell>
-                          <TableCell>
-                            <Chip 
-                              label={ligne.categorie || 'N/A'} 
-                              size="small" 
-                              color="primary" 
-                              variant="outlined"
-                            />
-                          </TableCell>
-                          <TableCell>{ligne.nomAgent || '-'}</TableCell>
-                          <TableCell>{ligne.cin || '-'}</TableCell>
-                          <TableCell>{ligne.cap || '-'}</TableCell>
-                        </TableRow>
-                      ))}
+                                            {details.lignes.map((ligne, index) => {
+                        const agents = getAgentsForCCT();
+                        return (
+                          <TableRow key={index} hover>
+                            <TableCell>{ligne.numeroLigne || index + 1}</TableCell>
+                            <TableCell>
+                              <Chip 
+                                label={getCategorieName(ligne.categorieId)} 
+                                size="small" 
+                                color="primary" 
+                                variant="outlined"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              {agents.length > 0 ? (
+                                <Box>
+                                  {agents.map((agent, agentIndex) => (
+                                    <Typography key={agentIndex} variant="body2">
+                                      {agent.prenom} {agent.nom}
+                                    </Typography>
+                                  ))}
+                                </Box>
+                              ) : '-'}
+                            </TableCell>
+                            <TableCell>
+                              {agents.length > 0 ? (
+                                <Box>
+                                  {agents.map((agent, agentIndex) => (
+                                    <Typography key={agentIndex} variant="body2">
+                                      {agent.cin || '-'}
+                                    </Typography>
+                                  ))}
+                                </Box>
+                              ) : '-'}
+                            </TableCell>
+                                                         <TableCell>
+                               {agents.length > 0 ? (
+                                 <Box>
+                                   {agents.map((agent, agentIndex) => (
+                                     <Typography key={agentIndex} variant="body2">
+                                       {agent.numeroCAP || agent['numeroCAP'] || 'N/A'}
+                                     </Typography>
+                                   ))}
+                                 </Box>
+                               ) : '-'}
+                             </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 ) : (
@@ -405,10 +491,10 @@ export default function CCTDetailsModal({ open, onClose, cct, details, tab = 0, 
                     <TableBody>
                       {details.historique.map((hist, index) => (
                         <TableRow key={index} hover>
-                          <TableCell>{hist.cct || cct.nom}</TableCell>
-                          <TableCell>{hist.reseau || '-'}</TableCell>
-                          <TableCell>{formatDate(hist.dateRalliement) || '-'}</TableCell>
-                          <TableCell>{formatDate(hist.dateFinRalliement) || '-'}</TableCell>
+                          <TableCell>{hist.cctNom || cct.nom}</TableCell>
+                          <TableCell>{hist.reseauNom || '-'}</TableCell>
+                          <TableCell>{formatDate(hist.dateDebut) || '-'}</TableCell>
+                          <TableCell>{formatDate(hist.dateFin) || '-'}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

@@ -56,6 +56,7 @@ import {
 import { toast } from 'react-toastify';
 import cctService from '../../services/cctService';
 import { dropdownsService } from '../../services/dropdownsService';
+import { historiqueCCTService } from '../../services/historiqueCCTService';
 import CCTFormModal from './CCTFormModal';
 import CCTDetailsModal from './CCTDetailsModal';
 import CCTDebugModal from './CCTDebugModal';
@@ -336,11 +337,9 @@ export default function CCTs() {
 
       // Charger l'historique
       try {
-        // TODO: Implémenter l'endpoint d'historique dans le backend
-        // const historiqueResponse = await historiqueCCTService.getHistoriqueCCT(cct.id);
-        // setHistorique(historiqueResponse.data || []);
-        setHistorique([]); // Temporairement vide en attendant l'implémentation
-        console.log('ℹ️ Historique temporairement désactivé - endpoint non implémenté');
+        const historiqueResponse = await historiqueCCTService.getByCCTId(cct.id);
+        setHistorique(historiqueResponse || []);
+        console.log('✅ Historique CCT chargé avec succès:', historiqueResponse);
       } catch (error) {
         console.warn('Impossible de charger l\'historique:', error);
         setHistorique([]);
@@ -947,6 +946,9 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
         cct={selectedCCT}
         details={{
           lignes: cctDetails.lignes,
+          agents: cctDetails.agents,
+          chefsCentres: cctDetails.chefsCentres,
+          equipements: cctDetails.equipements,
           historique: historique,
         }}
         tab={detailsTab}
