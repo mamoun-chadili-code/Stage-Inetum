@@ -20,7 +20,7 @@ import {
   CheckCircle as CheckIcon,
   Error as ErrorIcon,
   Warning as WarningIcon,
-  Info as InfoIcon
+  PrivacyTip as PrivacyTipIcon
 } from '@mui/icons-material';
 import cctService from '../../services/cctService';
 
@@ -234,7 +234,7 @@ const CCTDebugModal = ({ open, onClose, formData }) => {
       case 'error': return <ErrorIcon color="error" />;
       case 'warning': return <WarningIcon color="warning" />;
       case 'success': return <CheckIcon color="success" />;
-      default: return <InfoIcon color="info" />;
+      default: return <PrivacyTipIcon color="info" />;
     }
   };
 
@@ -376,7 +376,7 @@ const CCTDebugModal = ({ open, onClose, formData }) => {
                     <>
                       <ListItem>
                         <ListItemIcon>
-                          <InfoIcon color="info" />
+                          <PrivacyTipIcon color="info" />
                         </ListItemIcon>
                         <ListItemText 
                           primary="Objets complexes trouvés" 
@@ -385,7 +385,7 @@ const CCTDebugModal = ({ open, onClose, formData }) => {
                       </ListItem>
                       <ListItem>
                         <ListItemIcon>
-                          <InfoIcon color="info" />
+                          <PrivacyTipIcon color="info" />
                         </ListItemIcon>
                         <ListItemText 
                           primary="Champs ID créés" 

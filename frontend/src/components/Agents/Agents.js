@@ -27,8 +27,8 @@ import {
   Clear as ClearIcon,
   Add as AddIcon,
   Edit as EditIcon,
-  Delete as DeleteIcon,
-  Info as InfoIcon,
+  AutoDelete as AutoDeleteIcon,
+  PrivacyTip as PrivacyTipIcon,
   History as HistoryIcon
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
@@ -701,7 +701,7 @@ export default function Agents() {
                                    '&:hover': { backgroundColor: '#bbdefb' }
                                  }}
                                >
-                                 <InfoIcon />
+                                 <PrivacyTipIcon />
                                </IconButton>
                              </Tooltip>
                              <Tooltip title="Voir l'historique">
@@ -737,7 +737,7 @@ export default function Agents() {
                                    '&:hover': { backgroundColor: '#ffcdd2' }
                                  }}
                                >
-                                 <DeleteIcon />
+                                 <AutoDeleteIcon />
                                </IconButton>
                              </Tooltip>
                            </Box>

@@ -30,8 +30,8 @@ import {
 import {
   Add as AddIcon,
   Edit as EditIcon,
-  Delete as DeleteIcon,
-  Visibility as VisibilityIcon,
+  AutoDelete as AutoDeleteIcon,
+  PrivacyTip as PrivacyTipIcon,
   Search as SearchIcon,
   Clear as ClearIcon,
   FirstPage as FirstPageIcon,
@@ -750,14 +750,14 @@ const Lignes = () => {
                         color="error"
                         onClick={() => handleDeleteLigne(ligne)}
                       >
-                        <DeleteIcon />
+                        <AutoDeleteIcon />
                       </IconButton>
                       <IconButton
                         size="small"
                         color="info"
                         onClick={() => handleViewLigne(ligne)}
                       >
-                        <VisibilityIcon />
+                        <PrivacyTipIcon />
                       </IconButton>
                     </Box>
                   </TableCell>

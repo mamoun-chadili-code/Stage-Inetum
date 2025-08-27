@@ -16,7 +16,8 @@ import {
 import {
   Visibility as ViewIcon,
   Edit as EditIcon,
-  Close as CloseIcon
+  Close as CloseIcon,
+  PrivacyTip as PrivacyTipIcon
 } from '@mui/icons-material';
 
 const LigneDetailsModal = ({ open, onClose, ligne, categories = [], onEdit }) => {
@@ -71,7 +72,7 @@ const LigneDetailsModal = ({ open, onClose, ligne, categories = [], onEdit }) =>
       <DialogTitle>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Box display="flex" alignItems="center" gap={1}>
-            <ViewIcon color="info" />
+            <PrivacyTipIcon color="info" />
             <Typography variant="h6">
               DETAILS DE LIGNE
             </Typography>
@@ -197,37 +198,7 @@ const LigneDetailsModal = ({ open, onClose, ligne, categories = [], onEdit }) =>
             </Card>
           </Grid>
 
-          {/* Informations de décision */}
-          <Grid item xs={12}>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="h6" gutterBottom color="primary">
-                  Décision et Statut
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Décision:
-                    </Typography>
-                    <Chip 
-                      label={ligne.decisionNom || 'N/A'} 
-                      color="warning" 
-                      size="small"
-                    />
-                  </Grid>
 
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Date Décision:
-                    </Typography>
-                    <Typography variant="body1">
-                      {formatDateTime(ligne.dateDecision)}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
 
 
         </Grid>

@@ -6,8 +6,8 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import InfoIcon from '@mui/icons-material/Info';
+import AutoDeleteIcon from '@mui/icons-material/AutoDelete';
+import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'; // Added for logo upload button
 import { toast } from 'react-toastify';
 import reseauxService from '../../services/reseauxService';
@@ -795,7 +795,7 @@ export default function Reseaux() {
                     onClick={() => handleDelete(r.id)}
                     disabled={loading}
                   >
-                    <DeleteIcon />
+                                            <AutoDeleteIcon />
                   </IconButton>
                   <IconButton 
                     color="info" 
@@ -803,7 +803,7 @@ export default function Reseaux() {
                     disabled={loading}
                     sx={{ background: '#e3f2fd', borderRadius: 2, ml: 1 }}
                   >
-                    <InfoIcon />
+                    <PrivacyTipIcon />
                   </IconButton>
                 </TableCell>
               </TableRow>
@@ -1261,7 +1261,7 @@ export default function Reseaux() {
       {/* Modal Détails Réseau moderne */}
       <Dialog open={openDetails} onClose={() => setOpenDetails(false)} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <InfoIcon color="info" />
+          <PrivacyTipIcon color="info" />
           <span>Détails du Réseau</span>
         </DialogTitle>
         <DialogContent>

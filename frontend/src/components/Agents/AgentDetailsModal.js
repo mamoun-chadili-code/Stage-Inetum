@@ -255,7 +255,7 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
             <Grid item xs={12} md={6}>
               <Card sx={{ height: '100%', borderRadius: 3, boxShadow: 3 }}>
                 <CardContent sx={{ p: 3 }}>
-                  <Typography variant="h4" gutterBottom sx={{ 
+                  <Typography variant="h6" gutterBottom sx={{ 
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: 1, 
@@ -305,7 +305,7 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
             <Grid item xs={12} md={6}>
               <Card sx={{ height: '100%', borderRadius: 3, boxShadow: 3 }}>
                 <CardContent sx={{ p: 3 }}>
-                  <Typography variant="h4" gutterBottom sx={{ 
+                  <Typography variant="h6" gutterBottom sx={{ 
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: 1, 
@@ -348,7 +348,7 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
             <Grid item xs={12} md={6}>
               <Card sx={{ height: '100%', borderRadius: 3, boxShadow: 3 }}>
                 <CardContent sx={{ p: 3 }}>
-                  <Typography variant="h4" gutterBottom sx={{ 
+                  <Typography variant="h6" gutterBottom sx={{ 
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: 1, 
@@ -422,7 +422,7 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
             <Grid item xs={12} md={6}>
               <Card sx={{ height: '100%', borderRadius: 3, boxShadow: 3 }}>
                 <CardContent sx={{ p: 3 }}>
-                  <Typography variant="h4" gutterBottom sx={{ 
+                  <Typography variant="h6" gutterBottom sx={{ 
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: 1, 
@@ -496,7 +496,7 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
         {activeTab === 1 && (
           <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
             <CardContent sx={{ p: 3 }}>
-              <Typography variant="h4" gutterBottom sx={{ 
+              <Typography variant="h6" gutterBottom sx={{ 
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: 1, 
@@ -549,7 +549,7 @@ export default function AgentDetailsModal({ open, onClose, agent, details, onEdi
                   backgroundColor: '#f8f9fa',
                   borderRadius: 3
                 }}>
-                  <Typography variant="h4" color="textSecondary" gutterBottom>
+                  <Typography variant="h6" color="textSecondary" gutterBottom>
                     📋 Aucun historique disponible
                   </Typography>
                   <Typography variant="body2" color="textSecondary">

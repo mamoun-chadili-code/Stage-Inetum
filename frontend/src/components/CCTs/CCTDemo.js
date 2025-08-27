@@ -14,7 +14,7 @@ import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
-  Info as InfoIcon
+  PrivacyTip as PrivacyTipIcon
 } from '@mui/icons-material';
 import CCTs from './CCTs';
 
@@ -74,7 +74,7 @@ export default function CCTDemo() {
             <Grid item>
               <Card sx={{ minWidth: 200, textAlign: 'center' }}>
                 <CardContent>
-                  <InfoIcon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
+                  <PrivacyTipIcon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
                   <Typography variant="h6" color="primary.main">Consulter</Typography>
                   <Typography variant="body2">Voir les détails complets</Typography>
                 </CardContent>

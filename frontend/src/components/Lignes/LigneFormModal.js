@@ -29,7 +29,7 @@ import {
   Add as AddIcon,
   Edit as EditIcon,
   Close as CloseIcon,
-  Info as InfoIcon,
+  PrivacyTip as PrivacyTipIcon,
   Business as BusinessIcon,
   Category as CategoryIcon,
   Schedule as ScheduleIcon,

@@ -41,7 +41,8 @@ import {
   Settings as SettingsIcon,
   CalendarToday as CalendarIcon,
   CheckCircle as CheckCircleIcon,
-  Warning as WarningIcon
+  Warning as WarningIcon,
+  PrivacyTip as PrivacyTipIcon
 } from '@mui/icons-material';
 import { categorieLignesService } from '../../services/categorieLignesService';
 
@@ -130,7 +131,7 @@ export default function CCTDetailsModal({ open, onClose, cct, details, tab = 0, 
         alignItems: 'center'
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <BusinessIcon />
+                      <PrivacyTipIcon color="info" />
           <Typography variant="h6">Détails du Centre de Contrôle Technique</Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

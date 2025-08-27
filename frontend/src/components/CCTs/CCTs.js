@@ -39,8 +39,8 @@ import {
 import {
   Add as AddIcon,
   Edit as EditIcon,
-  Delete as DeleteIcon,
-  Info as InfoIcon,
+  AutoDelete as AutoDeleteIcon,
+  PrivacyTip as PrivacyTipIcon,
   Search as SearchIcon,
   FilterList as FilterIcon,
   Clear as ClearIcon,
@@ -790,7 +790,7 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
                               onClick={() => handleDetails(cct)}
                               size="small"
                             >
-                              <InfoIcon />
+                              <PrivacyTipIcon />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Modifier">
@@ -808,7 +808,7 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
                               onClick={() => handleDelete(cct)}
                               size="small"
                             >
-                              <DeleteIcon />
+                              <AutoDeleteIcon />
                             </IconButton>
                           </Tooltip>
                         </Box>

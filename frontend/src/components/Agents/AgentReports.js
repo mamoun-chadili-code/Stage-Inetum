@@ -45,7 +45,7 @@ import {
   Warning as WarningIcon,
   CheckCircle as CheckCircleIcon,
   Error as ErrorIcon,
-  Info as InfoIcon,
+  PrivacyTip as PrivacyTipIcon,
   CalendarToday as CalendarIcon,
   Business as BusinessIcon,
   People as PeopleIcon,
@@ -470,7 +470,7 @@ export default function AgentReports({ agents, ccts, categoriesCAP, onGenerateRe
                 <Grid item xs={12} md={6} key={index}>
                   <Alert 
                     severity={alert.type} 
-                    icon={alert.type === 'warning' ? <WarningIcon /> : <InfoIcon />}
+                    icon={alert.type === 'warning' ? <WarningIcon /> : <PrivacyTipIcon />}
                     sx={{ mb: 1 }}
                   >
                     {alert.message}

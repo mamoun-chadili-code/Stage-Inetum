@@ -33,8 +33,8 @@ import {
 import {
   Add as AddIcon,
   Edit as EditIcon,
-  Delete as DeleteIcon,
-  Info as InfoIcon,
+  AutoDelete as AutoDeleteIcon,
+  PrivacyTip as PrivacyTipIcon,
   Search as SearchIcon,
   FilterList as FilterIcon,
   Clear as ClearIcon,
@@ -628,7 +628,7 @@ export default function Formations() {
                               onClick={() => handleDetails(formation)}
                               size="small"
                             >
-                              <InfoIcon />
+                              <PrivacyTipIcon />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Modifier">
@@ -646,7 +646,7 @@ export default function Formations() {
                               onClick={() => handleDelete(formation)}
                               size="small"
                             >
-                              <DeleteIcon />
+                              <AutoDeleteIcon />
                             </IconButton>
                           </Tooltip>
                         </Box>

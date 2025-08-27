@@ -6,9 +6,8 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import InfoIcon from '@mui/icons-material/Info';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import AutoDeleteIcon from '@mui/icons-material/AutoDelete';
+import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
 import { toast } from 'react-toastify';
 import equipementService from '../../services/equipementService';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
@@ -664,7 +663,7 @@ export default function Equipements() {
                         transition: 'all 0.2s ease-in-out'
                       }}
                     >
-                      <VisibilityIcon />
+                      <PrivacyTipIcon />
                     </IconButton>
               </TableCell>
             </TableRow>
@@ -948,7 +947,10 @@ export default function Equipements() {
       <Dialog open={openDetails} onClose={() => setOpenDetails(false)} maxWidth="md" fullWidth>
         <DialogTitle>
           <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography variant="h6">DÉTAILS D'ÉQUIPEMENT</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <PrivacyTipIcon color="info" />
+              <Typography variant="h6">DÉTAILS D'ÉQUIPEMENT</Typography>
+            </Box>
             <Button 
               variant="text" 
               onClick={() => setOpenDetails(false)}
@@ -1046,7 +1048,7 @@ export default function Equipements() {
               <Button 
                 variant="contained" 
                 color="error"
-                startIcon={<DeleteIcon />}
+                                        startIcon={<AutoDeleteIcon />}
                 onClick={() => {
                   if (window.confirm('Êtes-vous sûr de vouloir supprimer cet équipement ?')) {
                     handleDelete(selected);

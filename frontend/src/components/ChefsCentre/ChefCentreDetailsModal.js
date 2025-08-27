@@ -34,7 +34,8 @@ import {
   CalendarToday as CalendarIcon,
   Assignment as AssignmentIcon,
   Edit as EditIcon,
-  Close as CloseIcon
+  Close as CloseIcon,
+  PrivacyTip as PrivacyTipIcon
 } from '@mui/icons-material';
 
 export default function ChefCentreDetailsModal({ open, onClose, chefCentre, details, onEdit, dropdowns }) {
@@ -94,10 +95,10 @@ export default function ChefCentreDetailsModal({ open, onClose, chefCentre, deta
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <PersonIcon />
-          <Typography variant="h6">Détails du Chef de Centre</Typography>
-        </Box>
+                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                       <PrivacyTipIcon color="info" />
+           <Typography variant="h6">Détails du Chef de Centre</Typography>
+         </Box>
         <IconButton onClick={onClose} sx={{ color: 'white' }}>
           <CloseIcon />
         </IconButton>

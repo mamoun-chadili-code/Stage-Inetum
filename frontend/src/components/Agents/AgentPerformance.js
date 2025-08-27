@@ -41,7 +41,7 @@ import {
   CheckCircle as CheckCircleIcon,
   Warning as WarningIcon,
   Error as ErrorIcon,
-  Info as InfoIcon
+  PrivacyTip as PrivacyTipIcon
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 

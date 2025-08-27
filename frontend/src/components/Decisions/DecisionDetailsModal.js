@@ -16,7 +16,7 @@ import {
 import {
   Edit as EditIcon,
   Close as CloseIcon,
-  Info as InfoIcon
+  PrivacyTip as PrivacyTipIcon
 } from '@mui/icons-material';
 
 const DecisionDetailsModal = ({ open, decision, onClose }) => {
@@ -80,7 +80,7 @@ const DecisionDetailsModal = ({ open, decision, onClose }) => {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <InfoIcon sx={{ mr: 1 }} />
+          <PrivacyTipIcon sx={{ mr: 1 }} />
           DÉTAILS DE DÉCISION
         </Box>
         <Typography

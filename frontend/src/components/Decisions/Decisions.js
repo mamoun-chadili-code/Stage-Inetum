@@ -26,8 +26,8 @@ import {
   Clear as ClearIcon,
   Add as AddIcon,
   Edit as EditIcon,
-  Delete as DeleteIcon,
-  Visibility as ViewIcon,
+  AutoDelete as AutoDeleteIcon,
+  PrivacyTip as PrivacyTipIcon,
   FirstPage as FirstPageIcon,
   LastPage as LastPageIcon,
   ChevronLeft as ChevronLeftIcon,
@@ -574,7 +574,7 @@ const Decisions = () => {
       <Paper sx={{ p: 3, borderRadius: 2, boxShadow: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', color: '#1976d2', fontWeight: 'bold' }}>
-            <ViewIcon sx={{ mr: 1, color: '#1976d2' }} />
+            <PrivacyTipIcon sx={{ mr: 1, color: '#1976d2' }} />
             DÉCISIONS
           </Typography>
 
@@ -683,7 +683,7 @@ const Decisions = () => {
                         onClick={() => handleViewDecision(decision)}
                         title="Voir les détails"
                       >
-                        <ViewIcon />
+                        <PrivacyTipIcon />
                       </IconButton>
                       <IconButton
                         size="small"
@@ -699,7 +699,7 @@ const Decisions = () => {
                         onClick={() => handleDeleteDecision(decision)}
                         title="Supprimer"
                       >
-                        <DeleteIcon />
+                        <AutoDeleteIcon />
                       </IconButton>
                     </TableCell>
                   </TableRow>

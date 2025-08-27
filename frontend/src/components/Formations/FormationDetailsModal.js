@@ -20,7 +20,8 @@ import {
   Business as BusinessIcon,
   DateRange as DateRangeIcon,
   CheckCircle as CheckCircleIcon,
-  Cancel as CancelIcon
+  Cancel as CancelIcon,
+  PrivacyTip as PrivacyTipIcon
 } from '@mui/icons-material';
 
 export default function FormationDetailsModal({ open, onClose, formation, onEdit }) {
@@ -69,7 +70,7 @@ export default function FormationDetailsModal({ open, onClose, formation, onEdit
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <SchoolIcon color="primary" />
+          <PrivacyTipIcon color="info" />
           <Typography variant="h6">Détails de Formation</Typography>
         </Box>
       </DialogTitle>

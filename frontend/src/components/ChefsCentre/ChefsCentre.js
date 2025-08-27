@@ -35,8 +35,8 @@ import {
 import {
   Add as AddIcon,
   Edit as EditIcon,
-  Delete as DeleteIcon,
-  Info as InfoIcon,
+  AutoDelete as AutoDeleteIcon,
+  PrivacyTip as PrivacyTipIcon,
   Search as SearchIcon,
   FilterList as FilterIcon,
   Clear as ClearIcon,
@@ -593,7 +593,7 @@ export default function ChefsCentre() {
                           color="primary"
                           onClick={() => handleDetails(chefCentre)}
                         >
-                          <InfoIcon />
+                          <PrivacyTipIcon />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Modifier">
@@ -609,7 +609,7 @@ export default function ChefsCentre() {
                           color="error"
                           onClick={() => handleDelete(chefCentre)}
                         >
-                          <DeleteIcon />
+                          <AutoDeleteIcon />
                         </IconButton>
                       </Tooltip>
                     </TableCell>
