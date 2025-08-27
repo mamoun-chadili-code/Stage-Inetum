@@ -740,24 +740,21 @@ const Lignes = () => {
                     <Box display="flex" gap={1}>
                       <IconButton
                         size="small"
-                        color="primary"
                         onClick={() => handleEditLigne(ligne)}
                       >
-                        <EditIcon />
+                        <EditIcon sx={{ color: '#DF6D14' }} />
                       </IconButton>
                       <IconButton
                         size="small"
-                        color="error"
                         onClick={() => handleDeleteLigne(ligne)}
                       >
-                        <AutoDeleteIcon />
+                        <AutoDeleteIcon sx={{ color: '#EB0000' }} />
                       </IconButton>
                       <IconButton
                         size="small"
-                        color="info"
                         onClick={() => handleViewLigne(ligne)}
                       >
-                        <PrivacyTipIcon />
+                        <PrivacyTipIcon sx={{ color: '#22780F' }} />
                       </IconButton>
                     </Box>
                   </TableCell>

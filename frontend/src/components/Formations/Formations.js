@@ -624,29 +624,26 @@ export default function Formations() {
                         <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', alignItems: 'center' }}>
                           <Tooltip title="Voir les détails">
                             <IconButton
-                              color="primary"
                               onClick={() => handleDetails(formation)}
                               size="small"
                             >
-                              <PrivacyTipIcon />
+                              <PrivacyTipIcon sx={{ color: '#22780F' }} />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Modifier">
                             <IconButton
-                              color="secondary"
                               onClick={() => handleEdit(formation)}
                               size="small"
                             >
-                              <EditIcon />
+                              <EditIcon sx={{ color: '#DF6D14' }} />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Supprimer">
                             <IconButton
-                              color="error"
                               onClick={() => handleDelete(formation)}
                               size="small"
                             >
-                              <AutoDeleteIcon />
+                              <AutoDeleteIcon sx={{ color: '#EB0000' }} />
                             </IconButton>
                           </Tooltip>
                         </Box>

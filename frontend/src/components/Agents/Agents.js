@@ -694,50 +694,30 @@ export default function Agents() {
                            <Box sx={{ display: 'flex', gap: 1 }}>
                              <Tooltip title="Voir les détails">
                                <IconButton
-                                 color="primary"
                                  onClick={() => handleDetails(agent)}
-                                 sx={{ 
-                                   backgroundColor: '#e3f2fd',
-                                   '&:hover': { backgroundColor: '#bbdefb' }
-                                 }}
                                >
-                                 <PrivacyTipIcon />
+                                 <PrivacyTipIcon sx={{ color: '#22780F' }} />
                                </IconButton>
                              </Tooltip>
                              <Tooltip title="Voir l'historique">
                                <IconButton
-                                 color="info"
                                  onClick={() => handleDetails(agent)}
-                                 sx={{ 
-                                   backgroundColor: '#e1f5fe',
-                                   '&:hover': { backgroundColor: '#b3e5fc' }
-                                 }}
                                >
-                                 <HistoryIcon />
+                                 <HistoryIcon sx={{ color: '#0F9DE8' }} />
                                </IconButton>
                              </Tooltip>
                              <Tooltip title="Modifier">
                                <IconButton
-                                 color="secondary"
                                  onClick={() => handleEdit(agent)}
-                                 sx={{ 
-                                   backgroundColor: '#f3e5f5',
-                                   '&:hover': { backgroundColor: '#e1bee7' }
-                                 }}
                                >
-                                 <EditIcon />
+                                 <EditIcon sx={{ color: '#DF6D14' }} />
                                </IconButton>
                              </Tooltip>
                              <Tooltip title="Supprimer">
                                <IconButton
-                                 color="error"
                                  onClick={() => handleDelete(agent)}
-                                 sx={{ 
-                                   backgroundColor: '#ffebee',
-                                   '&:hover': { backgroundColor: '#ffcdd2' }
-                                 }}
                                >
-                                 <AutoDeleteIcon />
+                                 <AutoDeleteIcon sx={{ color: '#EB0000' }} />
                                </IconButton>
                              </Tooltip>
                            </Box>

@@ -657,13 +657,12 @@ export default function Equipements() {
                       title="Voir les détails"
                       sx={{
                         '&:hover': {
-                          backgroundColor: 'primary.light',
                           transform: 'scale(1.1)'
                         },
                         transition: 'all 0.2s ease-in-out'
                       }}
                     >
-                      <PrivacyTipIcon />
+                      <PrivacyTipIcon sx={{ color: '#22780F' }} />
                     </IconButton>
               </TableCell>
             </TableRow>
@@ -948,7 +947,7 @@ export default function Equipements() {
         <DialogTitle>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <PrivacyTipIcon color="info" />
+              <PrivacyTipIcon sx={{ color: '#22780F' }} />
               <Typography variant="h6">DÉTAILS D'ÉQUIPEMENT</Typography>
             </Box>
             <Button 
@@ -1048,7 +1047,7 @@ export default function Equipements() {
               <Button 
                 variant="contained" 
                 color="error"
-                                        startIcon={<AutoDeleteIcon />}
+                                        startIcon={<AutoDeleteIcon sx={{ color: 'white' }} />}
                 onClick={() => {
                   if (window.confirm('Êtes-vous sûr de vouloir supprimer cet équipement ?')) {
                     handleDelete(selected);
@@ -1069,7 +1068,7 @@ export default function Equipements() {
             <Box display="flex" gap={1}>
               <Button 
                 variant="contained" 
-                startIcon={<EditIcon />}
+                startIcon={<EditIcon sx={{ color: 'white' }} />}
                 onClick={() => {
                   setOpenDetails(false);
                   handleOpenForm(selected);

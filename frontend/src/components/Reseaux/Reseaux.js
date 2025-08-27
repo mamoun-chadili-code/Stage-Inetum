@@ -784,26 +784,23 @@ export default function Reseaux() {
                 </TableCell>
                 <TableCell>
                   <IconButton 
-                    color="primary" 
                     onClick={() => handleOpenForm(r)}
                     disabled={loading}
                   >
-                    <EditIcon />
+                    <EditIcon sx={{ color: '#DF6D14' }} />
                   </IconButton>
                   <IconButton 
-                    color="error" 
                     onClick={() => handleDelete(r.id)}
                     disabled={loading}
                   >
-                                            <AutoDeleteIcon />
+                    <AutoDeleteIcon sx={{ color: '#EB0000' }} />
                   </IconButton>
                   <IconButton 
-                    color="info" 
                     onClick={() => { setOpenDetails(true); setSelected(r); }}
                     disabled={loading}
-                    sx={{ background: '#e3f2fd', borderRadius: 2, ml: 1 }}
+                    sx={{ borderRadius: 2, ml: 1 }}
                   >
-                    <PrivacyTipIcon />
+                    <PrivacyTipIcon sx={{ color: '#22780F' }} />
                   </IconButton>
                 </TableCell>
               </TableRow>

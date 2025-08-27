@@ -679,27 +679,24 @@ const Decisions = () => {
                     <TableCell align="center">
                       <IconButton
                         size="small"
-                        color="primary"
                         onClick={() => handleViewDecision(decision)}
                         title="Voir les détails"
                       >
-                        <PrivacyTipIcon />
+                        <PrivacyTipIcon sx={{ color: '#22780F' }} />
                       </IconButton>
                       <IconButton
                         size="small"
-                        color="success"
                         onClick={() => handleEditDecision(decision)}
                         title="Modifier"
                       >
-                        <EditIcon />
+                        <EditIcon sx={{ color: '#DF6D14' }} />
                       </IconButton>
                       <IconButton
                         size="small"
-                        color="error"
                         onClick={() => handleDeleteDecision(decision)}
                         title="Supprimer"
                       >
-                        <AutoDeleteIcon />
+                        <AutoDeleteIcon sx={{ color: '#EB0000' }} />
                       </IconButton>
                     </TableCell>
                   </TableRow>

@@ -590,26 +590,23 @@ export default function ChefsCentre() {
                     <TableCell>
                       <Tooltip title="Voir les détails">
                         <IconButton
-                          color="primary"
                           onClick={() => handleDetails(chefCentre)}
                         >
-                          <PrivacyTipIcon />
+                          <PrivacyTipIcon sx={{ color: '#22780F' }} />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Modifier">
                         <IconButton
-                          color="secondary"
                           onClick={() => handleEdit(chefCentre)}
                         >
-                          <EditIcon />
+                          <EditIcon sx={{ color: '#DF6D14' }} />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Supprimer">
                         <IconButton
-                          color="error"
                           onClick={() => handleDelete(chefCentre)}
                         >
-                          <AutoDeleteIcon />
+                          <AutoDeleteIcon sx={{ color: '#EB0000' }} />
                         </IconButton>
                       </Tooltip>
                     </TableCell>

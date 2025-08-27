@@ -786,29 +786,26 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
                         <Box sx={{ display: 'flex', gap: 1 }}>
                           <Tooltip title="Voir les détails">
                             <IconButton
-                              color="primary"
                               onClick={() => handleDetails(cct)}
                               size="small"
                             >
-                              <PrivacyTipIcon />
+                              <PrivacyTipIcon sx={{ color: '#22780F' }} />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Modifier">
                             <IconButton
-                              color="secondary"
                               onClick={() => handleEdit(cct)}
                               size="small"
                             >
-                              <EditIcon />
+                              <EditIcon sx={{ color: '#DF6D14' }} />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Supprimer">
                             <IconButton
-                              color="error"
                               onClick={() => handleDelete(cct)}
                               size="small"
                             >
-                              <AutoDeleteIcon />
+                              <AutoDeleteIcon sx={{ color: '#EB0000' }} />
                             </IconButton>
                           </Tooltip>
                         </Box>
