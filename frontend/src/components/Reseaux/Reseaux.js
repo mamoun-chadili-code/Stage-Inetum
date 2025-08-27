@@ -4,6 +4,7 @@ import {
   Table, TableHead, TableRow, TableCell, TableBody, IconButton, Select, MenuItem, InputLabel, FormControl, Pagination, CircularProgress,
   Typography, Divider, Box, Avatar, Chip, Autocomplete, FormHelperText
 } from '@mui/material';
+import SectionTitle from '../common/SectionTitle';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import AutoDeleteIcon from '@mui/icons-material/AutoDelete';
@@ -549,18 +550,10 @@ export default function Reseaux() {
         borderRadius: 2,
         border: '1px solid #e0e0e0'
       }}>
-        <Typography 
-          variant="h4" 
-          component="h1" 
-          sx={{ 
-            color: '#1976d2', 
-            fontWeight: 'bold',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px'
-          }}
-        >
-          Gestion des Réseaux
-        </Typography>
+        <SectionTitle 
+          title="GESTION DES RÉSEAUX" 
+          variant="section"
+        />
 
       </Box>
 

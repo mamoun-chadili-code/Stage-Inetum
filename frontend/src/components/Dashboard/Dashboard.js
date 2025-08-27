@@ -73,32 +73,32 @@ export default function Dashboard() {
     {
       title: "Gestion des CCTs",
       description: "Centres de Contrôle Technique - Gestion complète des centres, autorisations et quotas",
-      icon: <BusinessIcon sx={{ fontSize: 40, color: '#1976d2' }} />,
-      color: '#1976d2'
+      icon: <BusinessIcon sx={{ fontSize: 40, color: '#3C6F71' }} />,
+      color: '#3C6F71'
     },
     {
       title: "Gestion des Agents",
       description: "Suivi des agents, CAP, affectations et performances",
-      icon: <PeopleIcon sx={{ fontSize: 40, color: '#4caf50' }} />,
-      color: '#4caf50'
+      icon: <PeopleIcon sx={{ fontSize: 40, color: '#284D63' }} />,
+      color: '#284D63'
     },
     {
       title: "Gestion des Chefs de Centre",
       description: "Administration des responsables et affectations",
-      icon: <PersonIcon sx={{ fontSize: 40, color: '#ff9800' }} />,
-      color: '#ff9800'
+      icon: <PersonIcon sx={{ fontSize: 40, color: '#709CA7' }} />,
+      color: '#709CA7'
     },
     {
       title: "Gestion des Lignes",
       description: "Contrôle des lignes de contrôle technique",
-      icon: <DirectionsCarIcon sx={{ fontSize: 40, color: '#9c27b0' }} />,
-      color: '#9c27b0'
+      icon: <DirectionsCarIcon sx={{ fontSize: 40, color: '#B8CBD0' }} />,
+      color: '#B8CBD0'
     },
     {
       title: "Gestion des Formations",
       description: "Programmes de formation et certifications",
-      icon: <SchoolIcon sx={{ fontSize: 40, color: '#00bcd4' }} />,
-      color: '#00bcd4'
+      icon: <SchoolIcon sx={{ fontSize: 40, color: '#7A90A4' }} />,
+      color: '#7A90A4'
     },
     {
       title: "Gestion des Équipements",

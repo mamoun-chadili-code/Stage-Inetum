@@ -421,8 +421,8 @@ export default function Equipements() {
             letterSpacing: '0.5px'
           }}
         >
-          Gestion des Équipements
-        </Typography>
+        Gestion des Équipements
+      </Typography>
       </Box>
       
       {/* Section Recherche */}
@@ -430,24 +430,24 @@ export default function Equipements() {
         <Typography variant="h6" gutterBottom>
           Section Recherche
         </Typography>
-          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2, mb: 2 }}>
-            <FormControl size="small">
-              <InputLabel>CCT</InputLabel>
-              <Select
-                value={search.cct}
-                onChange={(e) => setSearch(prev => ({ ...prev, cct: e.target.value }))}
-                label="CCT"
-              >
+        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2, mb: 2 }}>
+          <FormControl size="small">
+            <InputLabel>CCT</InputLabel>
+            <Select
+              value={search.cct}
+              onChange={(e) => setSearch(prev => ({ ...prev, cct: e.target.value }))}
+              label="CCT"
+            >
                 <MenuItem value="">Tous les CCTs</MenuItem>
-                {dropdowns.ccts?.map(cct => (
-                  <MenuItem key={cct?.id} value={cct?.id}>{cct?.nom || 'CCT inconnu'}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+              {dropdowns.ccts?.map(cct => (
+                <MenuItem key={cct?.id} value={cct?.id}>{cct?.nom || 'CCT inconnu'}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-            <FormControl size="small">
+          <FormControl size="small">
               <InputLabel>Ligne</InputLabel>
-              <Select
+            <Select
                 value={search.ligne}
                 onChange={(e) => setSearch(prev => ({ ...prev, ligne: e.target.value }))}
                 label="Ligne"
@@ -455,9 +455,9 @@ export default function Equipements() {
                 <MenuItem value="">Toutes les lignes</MenuItem>
                 {dropdowns.lignes?.map(ligne => (
                   <MenuItem key={ligne?.id} value={ligne?.id}>{`Ligne ${ligne?.numeroLigne || 'N/A'}`}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+              ))}
+            </Select>
+          </FormControl>
 
             <FormControl size="small">
               <InputLabel>Type d'équipement</InputLabel>
@@ -560,13 +560,13 @@ export default function Equipements() {
             </FormControl>
           </Box>
 
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => handleOpenForm()}
-          >
-            Ajouter un équipement
-          </Button>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => handleOpenForm()}
+        >
+          Ajouter un équipement
+        </Button>
         </Box>
       </Box>
 
@@ -779,8 +779,8 @@ export default function Equipements() {
             >
               <LastPageIcon />
             </IconButton>
-          </Box>
-        )}
+        </Box>
+      )}
 
         {/* Informations d'affichage en dessous */}
         <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>

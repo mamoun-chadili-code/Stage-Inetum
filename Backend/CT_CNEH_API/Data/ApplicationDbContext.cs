@@ -43,7 +43,7 @@ namespace CT_CNEH_API.Data
         public DbSet<HistoriqueCCT> HistoriqueCCTs { get; set; } = null!;
         public DbSet<HistoriqueAffectation> HistoriqueAffectations { get; set; } = null!;
         public DbSet<HistoriqueAgent> HistoriqueAgents { get; set; } = null!;
-        public DbSet<HistoriqueChefCentre> HistoriqueChefCentres { get; set; } = null!;
+        public DbSet<HistoriqueChefCentre> HistoriqueChefCentre { get; set; } = null!;
         public DbSet<Logo> Logos { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -211,6 +211,13 @@ namespace CT_CNEH_API.Data
                 .HasForeignKey(h => h.CCTId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<HistoriqueChefCentre>()
+                .HasOne(h => h.ChefCentre)
+                .WithMany()
+                .HasForeignKey(h => h.ChefCentreId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configuration pour HistoriqueChefCentre
             modelBuilder.Entity<HistoriqueChefCentre>()
                 .HasOne(h => h.ChefCentre)
                 .WithMany()

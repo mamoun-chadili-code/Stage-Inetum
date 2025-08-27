@@ -1,51 +1,51 @@
-// Couleurs cohérentes pour toutes les actions de l'application
+// Couleurs cohérentes pour toutes les actions de l'application - Utilise la nouvelle palette du thème
 export const ACTION_COLORS = {
-  // Détails/Consulter - Vert
+  // Détails/Consulter - Vert-bleu principal
   DETAILS: {
-    primary: '#22780F',
-    hover: '#1a5f0c',
+    primary: '#3C6F71',
+    hover: '#284D63',
     text: 'white'
   },
   
-  // Modification/Édition - Orange
+  // Modification/Édition - Bleu-gris accent
   EDIT: {
-    primary: '#DF6D14',
-    hover: '#c55a0f',
+    primary: '#709CA7',
+    hover: '#7A90A4',
     text: 'white'
   },
   
-  // Suppression - Rouge
+  // Suppression - Rouge sémantique
   DELETE: {
-    primary: '#EB0000',
-    hover: '#c40000',
+    primary: '#f44336',
+    hover: '#d32f2f',
     text: 'white'
   },
   
-  // Historique - Bleu
+  // Historique - Bleu très clair
   HISTORY: {
-    primary: '#0F9DE8',
-    hover: '#0d7bc7',
-    text: 'white'
+    primary: '#B8CBD0',
+    hover: '#7A90A4',
+    text: '#353535'
   },
   
-  // Ajout - Vert clair
+  // Ajout - Bleu clair
   ADD: {
-    primary: '#4CAF50',
-    hover: '#45a049',
+    primary: '#7A90A4',
+    hover: '#709CA7',
     text: 'white'
   },
   
-  // Validation - Vert foncé
+  // Validation - Vert-bleu principal
   VALIDATE: {
-    primary: '#2E7D32',
-    hover: '#1b5e20',
+    primary: '#3C6F71',
+    hover: '#284D63',
     text: 'white'
   },
   
-  // Annulation - Gris
+  // Annulation - Gris foncé
   CANCEL: {
-    primary: '#757575',
-    hover: '#616161',
+    primary: '#353535',
+    hover: '#212E53',
     text: 'white'
   }
 };

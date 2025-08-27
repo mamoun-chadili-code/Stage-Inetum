@@ -1,4 +1,4 @@
-abusing Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -74,7 +74,7 @@ builder.Services.AddScoped<ChefCentreService>();
 builder.Services.AddScoped<LigneService>();
 builder.Services.AddScoped<IDecisionService, DecisionService>();
 builder.Services.AddScoped<IEquipementService, EquipementService>();
-builder.Services.AddScoped<CCTService>();
+// CCTService supprimé car fichier vide
 builder.Services.AddScoped<AgentService>();
 builder.Services.AddScoped<IHistoriqueCCTService, HistoriqueCCTService>();
 builder.Services.AddScoped<IHistoriqueAgentService, HistoriqueAgentService>();

@@ -1,0 +1,286 @@
+/* Styles globaux avec la palette de couleurs du thème */
+
+:root {
+  /* Couleurs principales */
+  --primary-color: #3C6F71;
+  --secondary-color: #284D63;
+  --accent-color: #709CA7;
+  
+  /* Couleurs neutres */
+  --dark-color: #353535;
+  --dark-blue: #212E53;
+  --medium-blue: #344D59;
+  --light-blue: #7A90A4;
+  --very-light-blue: #B8CBD0;
+  --light-gray: #D9D9D9;
+  --white: #FFFFFF;
+  
+  /* Couleurs sémantiques */
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --error-color: #f44336;
+  --info-color: #2196f3;
+}
+
+/* Styles pour les éléments personnalisés */
+.custom-card {
+  background-color: var(--white);
+  border: 1px solid var(--light-gray);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.custom-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: var(--white);
+}
+
+.custom-section-title {
+  color: var(--primary-color);
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.custom-module-title {
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.custom-subsection-title {
+  color: var(--secondary-color);
+  font-weight: 500;
+  font-size: 1.125rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.25rem;
+}
+
+.custom-page-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: var(--white);
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(60, 111, 113, 0.3);
+}
+
+.custom-page-header h1 {
+  color: var(--white);
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.custom-page-header p {
+  color: var(--very-light-blue);
+  margin: 0.5rem 0 0 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.custom-button-primary {
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.custom-button-primary:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(60, 111, 113, 0.3);
+}
+
+.custom-button-secondary {
+  background-color: var(--accent-color);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.custom-button-secondary:hover {
+  background-color: var(--light-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(112, 156, 167, 0.3);
+}
+
+.custom-input {
+  border: 2px solid var(--light-gray);
+  border-radius: 8px;
+  padding: 12px 16px;
+  transition: all 0.3s ease;
+}
+
+.custom-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(60, 111, 113, 0.1);
+  outline: none;
+}
+
+.custom-table-header {
+  background-color: var(--very-light-blue);
+  color: var(--dark-blue);
+  font-weight: 600;
+}
+
+.custom-table-row:hover {
+  background-color: var(--very-light-blue);
+}
+
+.custom-badge {
+  background-color: var(--accent-color);
+  color: var(--white);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.custom-badge-success {
+  background-color: var(--success-color);
+}
+
+.custom-badge-warning {
+  background-color: var(--warning-color);
+}
+
+.custom-badge-error {
+  background-color: var(--error-color);
+}
+
+.custom-badge-info {
+  background-color: var(--info-color);
+}
+
+/* Styles pour les modales */
+.custom-modal-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: var(--white);
+  border-radius: 12px 12px 0 0;
+}
+
+.custom-modal-content {
+  background-color: var(--white);
+  border-radius: 0 0 12px 12px;
+}
+
+/* Styles pour les notifications */
+.custom-notification {
+  background-color: var(--white);
+  border-left: 4px solid var(--primary-color);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 4px;
+}
+
+.custom-notification-success {
+  border-left-color: var(--success-color);
+}
+
+.custom-notification-warning {
+  border-left-color: var(--warning-color);
+}
+
+.custom-notification-error {
+  border-left-color: var(--error-color);
+}
+
+.custom-notification-info {
+  border-left-color: var(--info-color);
+}
+
+/* Styles pour les cartes de statistiques */
+.custom-stats-card {
+  background: linear-gradient(135deg, var(--very-light-blue) 0%, var(--light-blue) 100%);
+  border: 1px solid var(--light-gray);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+.custom-stats-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--dark-blue);
+}
+
+.custom-stats-label {
+  color: var(--medium-blue);
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+/* Styles pour les séparateurs */
+.custom-separator {
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--primary-color) 50%, transparent 100%);
+  margin: 16px 0;
+}
+
+/* Styles pour les icônes personnalisées */
+.custom-icon-primary {
+  color: var(--primary-color);
+}
+
+.custom-icon-secondary {
+  color: var(--secondary-color);
+}
+
+.custom-icon-accent {
+  color: var(--accent-color);
+}
+
+/* Styles pour les liens */
+.custom-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.custom-link:hover {
+  color: var(--secondary-color);
+  text-decoration: underline;
+}
+
+/* Styles pour les tooltips */
+.custom-tooltip {
+  background-color: var(--dark-blue);
+  color: var(--white);
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .custom-button-primary,
+  .custom-button-secondary {
+    padding: 10px 20px;
+    font-size: 0.875rem;
+  }
+  
+  .custom-stats-number {
+    font-size: 1.5rem;
+  }
+  
+  .custom-section-title {
+    font-size: 1.25rem;
+  }
+}

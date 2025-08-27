@@ -77,7 +77,7 @@ namespace CT_CNEH_API.Controllers
                 CNSS = c.CNSS,
                 Sexe = c.Sexe,
                 DateNaissance = c.DateNaissance,
-                NiveauFormationInitialId = c.NiveauFormationInitialId ?? 0,
+                NiveauFormationInitialId = c.NiveauFormationInitialId.GetValueOrDefault(0),
                 NiveauFormationInitialNom = c.NiveauFormationInitial?.Libelle ?? string.Empty,
                 CCTId = c.CCTId ?? 0,
                 CCTNom = c.CCT?.Nom ?? string.Empty,
@@ -170,12 +170,12 @@ namespace CT_CNEH_API.Controllers
                 CCTId = createDto.CCTId,
                 DateAffectationCCT = createDto.DateAffectationCCT,
                 ReferenceApprobationCNEH = createDto.ReferenceApprobationCNEH,
-                AnneeAutorisation = createDto.AnneeAutorisation,
+                AnneeAutorisation = createDto.AnneeAutorisation ?? DateTime.Now.Year,
                 DateApprobationCNEH = createDto.DateApprobationCNEH,
                 Tel = createDto.Tel,
                 Mail = createDto.Mail,
                 CNSS = createDto.CNSS,
-                Sexe = createDto.Sexe,
+                Sexe = createDto.Sexe ?? false,
                 DateNaissance = createDto.DateNaissance,
                 NiveauFormationInitialId = createDto.NiveauFormationInitialId
             };
@@ -232,21 +232,4 @@ namespace CT_CNEH_API.Controllers
             return NoContent();
         }
     }
-} 
-
-        // GET: api/ChefsCentre/5/historique
-        [HttpGet("{id}/historique")]
-        public async Task<ActionResult<IEnumerable<object>>> GetChefCentreHistorique(int id)
-        {
-            // Pour l'instant, retourner un historique vide
-            // À implémenter selon vos besoins
-            await Task.CompletedTask; // Pour éviter l'avertissement CS1998
-            return Ok(new List<object>());
-        }
-
-        private bool ChefCentreExists(int id)
-        {
-            return _context.ChefCentres.Any(e => e.Id == id);
-        }
-    }
-} 
+}

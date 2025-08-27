@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Sidebar from './components/Sidebar';
 import Login from './components/Auth/Login';
@@ -15,6 +15,8 @@ import Equipements from './components/Equipements/Equipements';
 import Decisions from './components/Decisions/Decisions';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import customTheme from './theme/customTheme';
+import './theme/globalStyles.css';
 
 
 // Composant qui utilise le contexte d'authentification
@@ -64,21 +66,8 @@ function AppContent() {
 }
 
 function App() {
-  const theme = useMemo(() => createTheme({
-    palette: { mode: 'light' },
-    components: {
-      MuiFormLabel: {
-        styleOverrides: {
-          asterisk: {
-            color: 'red',
-          },
-        },
-      },
-    },
-  }), []);
-
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={customTheme}>
       <CssBaseline />
       <AuthProvider>
         <AppContent />
