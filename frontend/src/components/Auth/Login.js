@@ -4,12 +4,13 @@ import { toast } from 'react-toastify';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
-import authService from '../../services/authService';
+import { useAuth } from '../../contexts/AuthContext';
 
-export default function Login({ onLogin }) {
+export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,11 +21,10 @@ export default function Login({ onLogin }) {
     }
 
     try {
-      const result = await authService.login(username, password);
+      const result = await login(username, password);
       
       if (result.success) {
         toast.success('Connexion réussie !');
-        onLogin();
         navigate('/dashboard');
       } else {
         toast.error(result.message || 'Identifiants invalides');

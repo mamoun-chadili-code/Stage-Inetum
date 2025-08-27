@@ -12,10 +12,10 @@ import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import DevicesIcon from '@mui/icons-material/Devices';
 import GavelIcon from '@mui/icons-material/Gavel';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Box, keyframes } from '@mui/material';
+import { Box, keyframes, Typography } from '@mui/material';
 
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import authService from '../services/authService';
+import { useAuth } from '../contexts/AuthContext';
 
 // Animations personnalisées avancées
 const pulse = keyframes`
@@ -54,14 +54,34 @@ export default function Sidebar() {
   const location = useLocation();
   const [activeItem, setActiveItem] = useState(location.pathname);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const { logout, user } = useAuth();
 
   useEffect(() => {
     setActiveItem(location.pathname);
   }, [location.pathname]);
 
   const handleLogout = () => {
-    authService.logout();
-    navigate('/login');
+    // Confirmation de déconnexion
+    if (window.confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+      try {
+        // Déconnexion via le contexte
+        const result = logout();
+        
+        if (result.success) {
+          // Redirection vers la page de connexion
+          navigate('/login');
+          console.log('Déconnexion réussie');
+        } else {
+          console.error('Erreur lors de la déconnexion:', result.message);
+          // En cas d'erreur, forcer la redirection
+          navigate('/login');
+        }
+      } catch (error) {
+        console.error('Erreur lors de la déconnexion:', error);
+        // En cas d'erreur, forcer la redirection
+        navigate('/login');
+      }
+    }
   };
 
   const getActiveItem = () => {
@@ -261,42 +281,48 @@ export default function Sidebar() {
           );
         })}
         
-        {/* Séparateur */}
+        {/* Séparateur élégant */}
         <Box sx={{ 
-          height: 1, 
-          background: 'linear-gradient(90deg, transparent 0%, #e0e0e0 50%, transparent 100%)',
+          height: 2, 
+          background: 'linear-gradient(90deg, transparent 0%, #e0e0e0 30%, #e0e0e0 70%, transparent 100%)',
           mx: 2, 
-          my: 2 
+          my: 3 
         }} />
         
-        {/* Bouton de déconnexion */}
-        <ListItem 
-          onClick={handleLogout} 
-          sx={{ 
-            mx: 1,
-            borderRadius: 2,
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            '&:hover': {
-              backgroundColor: 'rgba(244, 67, 54, 0.1)',
-              transform: 'scale(1.02)',
-              boxShadow: '0 2px 8px rgba(244, 67, 54, 0.2)'
-            }
-          }}
-        >
-          <ListItemIcon sx={{ color: '#f44336' }}>
-            <LogoutIcon />
-          </ListItemIcon>
-          <ListItemText 
-            primary="Déconnexion" 
-            sx={{
-              '& .MuiTypography-root': {
-                color: '#f44336',
-                fontWeight: 'medium'
+                {/* Section de déconnexion simplifiée */}
+        <Box sx={{ p: 2 }}>
+          {/* Bouton de déconnexion simplifié */}
+          <ListItem 
+            onClick={handleLogout} 
+            sx={{ 
+              borderRadius: 2,
+              cursor: 'pointer',
+              border: '1px solid #f44336',
+              color: '#f44336',
+              background: 'transparent',
+              transition: 'all 0.2s ease',
+              '&:hover': {
+                backgroundColor: '#f44336',
+                color: 'white',
+                transform: 'scale(1.02)'
               }
             }}
+          >
+            <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText 
+              primary="Se déconnecter" 
+              sx={{
+                '& .MuiTypography-root': {
+                  color: 'inherit',
+                  fontWeight: 'medium',
+                  fontSize: '0.9rem'
+                }
+              }}
           />
-        </ListItem>
+          </ListItem>
+        </Box>
       </List>
     </Drawer>
   );
