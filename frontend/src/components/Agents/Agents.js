@@ -34,11 +34,14 @@ import {
 import { toast } from 'react-toastify';
 import agentService from '../../services/agentService';
 import dropdownsService from '../../services/dropdownsService';
-
 import AgentFormModal from './AgentFormModal';
 import AgentDetailsModal from './AgentDetailsModal';
 
 import SearchableSelect from '../common/SearchableSelect';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import LastPageIcon from '@mui/icons-material/LastPage';
 
 export default function Agents() {
   // États
@@ -51,8 +54,8 @@ export default function Agents() {
   const [selectedAgent, setSelectedAgent] = useState(null);
   const [agentDetails, setAgentDetails] = useState(null);
   const [dropdowns, setDropdowns] = useState({});
-  const [activeTab, setActiveTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState(0);
 
   // États pour les filtres
   const [filters, setFilters] = useState({
@@ -264,32 +267,12 @@ export default function Agents() {
   const handleDetails = async (agent) => {
     try {
       setSelectedAgent(agent);
-      
-      // Charger les détails de l'agent (inclut déjà l'historique)
       const response = await agentService.getAgentDetails(agent.id);
       setAgentDetails(response.data);
       setOpenDetailsModal(true);
     } catch (error) {
       toast.error('Erreur lors du chargement des détails de l\'agent');
       console.error('Erreur handleDetails:', error);
-    }
-  };
-
-  // Gérer l'affichage direct de l'historique
-  const handleHistorique = async (agent) => {
-    try {
-      setSelectedAgent(agent);
-      
-      // Charger les détails de l'agent (inclut déjà l'historique)
-      const response = await agentService.getAgentDetails(agent.id);
-      setAgentDetails(response.data);
-      setOpenDetailsModal(true);
-      
-      // Ouvrir directement l'onglet historique (index 1)
-      setActiveTab(1);
-    } catch (error) {
-      toast.error('Erreur lors du chargement de l\'historique de l\'agent');
-      console.error('Erreur handleHistorique:', error);
     }
   };
 
@@ -344,9 +327,29 @@ export default function Agents() {
 
   return (
     <Box sx={{ p: 3, pt: 3 }}>
-      <Typography variant="h4" gutterBottom sx={{ mb: 3, color: '#1976d2', fontWeight: 'bold' }}>
-        Gestion des Agents
-      </Typography>
+      {/* Titre principal centré */}
+      <Box sx={{ 
+        textAlign: 'center', 
+        mb: 4, 
+        pt: 2,
+        pb: 3,
+        backgroundColor: '#f8f9fa',
+        borderRadius: 2,
+        border: '1px solid #e0e0e0'
+      }}>
+        <Typography 
+          variant="h4" 
+          component="h1" 
+          sx={{ 
+            color: '#1976d2', 
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}
+        >
+          Gestion des Agents
+        </Typography>
+      </Box>
 
       {/* Section Recherche */}
       <Paper sx={{ p: 3, mb: 3, borderRadius: 2, boxShadow: 2 }}>
@@ -584,7 +587,26 @@ export default function Agents() {
           <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold' }}>
             Agents
           </Typography>
-          <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            {/* Sélecteur d'éléments par page */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="body2" sx={{ color: '#666' }}>
+                Éléments par page :
+              </Typography>
+              <FormControl size="small" sx={{ minWidth: 120 }}>
+                <Select
+                  value={pagination.pageSize}
+                  onChange={(e) => setPagination(prev => ({ ...prev, pageSize: e.target.value, currentPage: 1 }))}
+                  label="Éléments par page"
+                >
+                  <MenuItem value={5}>5</MenuItem>
+                  <MenuItem value={10}>10</MenuItem>
+                  <MenuItem value={25}>25</MenuItem>
+                  <MenuItem value={50}>50</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+
             <Button
               variant="contained"
               startIcon={<AddIcon />}
@@ -595,9 +617,9 @@ export default function Agents() {
                 fontWeight: 'bold',
                 px: 3
               }}
-                          >
-                Ajouter Agent
-              </Button>
+            >
+              Ajouter Agent
+            </Button>
           </Box>
         </Box>
 
@@ -608,19 +630,19 @@ export default function Agents() {
         ) : (
           <>
             <TableContainer sx={{ borderRadius: 1, border: '1px solid #e0e0e0' }}>
-              <Table>
+              <Table sx={{ border: '2px solid #e0e0e0', borderRadius: 1 }}>
                 <TableHead>
-                  <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Nom agent</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Prénom agent</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>CCT</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Statut administratif</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>CAP</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Date CAP</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Année Autorisation</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Date affectation</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Actions</TableCell>
-                  </TableRow>
+                              <TableRow sx={{ backgroundColor: '#F2F2F5' }}>
+              <TableCell sx={{ fontWeight: 'bold' }}>Nom agent</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Prénom agent</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>CCT</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Statut administratif</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>CAP</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Date CAP</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Année Autorisation</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Date affectation</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}></TableCell>
+            </TableRow>
                 </TableHead>
                 <TableBody>
                                                         {filteredAgents.length > 0 ? (
@@ -685,7 +707,7 @@ export default function Agents() {
                              <Tooltip title="Voir l'historique">
                                <IconButton
                                  color="info"
-                                 onClick={() => handleHistorique(agent)}
+                                 onClick={() => handleDetails(agent)}
                                  sx={{ 
                                    backgroundColor: '#e1f5fe',
                                    '&:hover': { backgroundColor: '#b3e5fc' }
@@ -747,41 +769,118 @@ export default function Agents() {
               </Table>
             </TableContainer>
 
-            {/* Pagination */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, mt: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Typography variant="body2" sx={{ color: '#666' }}>
-                  Affichage de {((pagination.currentPage - 1) * pagination.pageSize) + 1} à {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalCount)} sur {pagination.totalCount} agents
-                </Typography>
-                <FormControl size="small" sx={{ minWidth: 120 }}>
-                  <InputLabel>Éléments par page</InputLabel>
-                  <Select
-                    value={pagination.pageSize}
-                    onChange={(e) => setPagination(prev => ({ ...prev, pageSize: e.target.value, currentPage: 1 }))}
-                    label="Éléments par page"
-                  >
-                    <MenuItem value={5}>5</MenuItem>
-                    <MenuItem value={10}>10</MenuItem>
-                    <MenuItem value={25}>25</MenuItem>
-                    <MenuItem value={50}>50</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
+            {/* Pagination avec style personnalisé */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column',
+              alignItems: 'center', 
+              mt: 3,
+              p: 2,
+              backgroundColor: '#f8f9fa',
+              borderRadius: 2,
+              border: '1px solid #e0e0e0'
+            }}>
+              {/* Navigation de pagination personnalisée centrée */}
               {pagination.pageCount > 1 && (
-                <Pagination
-                  count={pagination.pageCount}
-                  page={pagination.currentPage}
-                  onChange={handlePageChange}
-                  color="primary"
-                  showFirstButton
-                  showLastButton
-                  sx={{
-                    '& .MuiPaginationItem-root': {
-                      borderRadius: 1
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                  {/* Bouton première page */}
+                  <IconButton
+                    onClick={() => handlePageChange(null, 1)}
+                    disabled={pagination.currentPage === 1}
+                    sx={{
+                      color: pagination.currentPage === 1 ? '#bdbdbd' : '#1976d2',
+                      '&:hover': {
+                        backgroundColor: pagination.currentPage === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                      }
+                    }}
+                  >
+                    <FirstPageIcon />
+                  </IconButton>
+
+                  {/* Bouton page précédente */}
+                  <IconButton
+                    onClick={() => handlePageChange(null, pagination.currentPage - 1)}
+                    disabled={pagination.currentPage === 1}
+                    sx={{
+                      color: pagination.currentPage === 1 ? '#bdbdbd' : '#1976d2',
+                      '&:hover': {
+                        backgroundColor: pagination.currentPage === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                      }
+                    }}
+                  >
+                    <ChevronLeftIcon />
+                  </IconButton>
+
+                  {/* Numéros de page */}
+                  {Array.from({ length: Math.min(3, pagination.pageCount) }, (_, i) => {
+                    let pageNum;
+                    if (pagination.pageCount <= 3) {
+                      pageNum = i + 1;
+                    } else if (pagination.currentPage <= 2) {
+                      pageNum = i + 1;
+                    } else if (pagination.currentPage >= pagination.pageCount - 1) {
+                      pageNum = pagination.pageCount - 2 + i;
+                    } else {
+                      pageNum = pagination.currentPage - 1 + i;
                     }
-                  }}
-                />
+
+                    if (pageNum > 0 && pageNum <= pagination.pageCount) {
+                      return (
+                        <IconButton
+                          key={pageNum}
+                          onClick={() => handlePageChange(null, pageNum)}
+                          sx={{
+                            backgroundColor: pagination.currentPage === pageNum ? '#1976d2' : 'transparent',
+                            color: pagination.currentPage === pageNum ? 'white' : '#424242',
+                            minWidth: 36,
+                            height: 36,
+                            fontSize: '0.875rem',
+                            '&:hover': {
+                              backgroundColor: pagination.currentPage === pageNum ? '#1976d2' : 'rgba(25, 118, 210, 0.1)'
+                            }
+                          }}
+                        >
+                          {pageNum}
+                        </IconButton>
+                      );
+                    }
+                    return null;
+                  })}
+
+                  {/* Bouton page suivante */}
+                  <IconButton
+                    onClick={() => handlePageChange(null, pagination.currentPage + 1)}
+                    disabled={pagination.currentPage >= pagination.pageCount}
+                    sx={{
+                      color: pagination.currentPage >= pagination.pageCount ? '#bdbdbd' : '#1976d2',
+                      '&:hover': {
+                        backgroundColor: pagination.currentPage >= pagination.pageCount ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                      }
+                    }}
+                  >
+                    <ChevronRightIcon />
+                  </IconButton>
+
+                  {/* Bouton dernière page */}
+                  <IconButton
+                    onClick={() => handlePageChange(null, pagination.pageCount)}
+                    disabled={pagination.currentPage >= pagination.pageCount}
+                    sx={{
+                      color: pagination.currentPage >= pagination.pageCount ? '#bdbdbd' : '#1976d2',
+                      '&:hover': {
+                        backgroundColor: pagination.currentPage >= pagination.pageCount ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                      }
+                    }}
+                  >
+                    <LastPageIcon />
+                  </IconButton>
+                </Box>
               )}
+
+              {/* Informations d'affichage en dessous */}
+              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                Affichage de {((pagination.currentPage - 1) * pagination.pageSize) + 1} à {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalCount)} sur {pagination.totalCount} agents
+              </Typography>
             </Box>
           </>
         )}

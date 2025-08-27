@@ -11,6 +11,10 @@ import InfoIcon from '@mui/icons-material/Info';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { toast } from 'react-toastify';
 import equipementService from '../../services/equipementService';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import LastPageIcon from '@mui/icons-material/LastPage';
 
 const REQUIRED_FIELDS = ['marque', 'modele', 'typeEquipement', 'protocole', 'referenceHomologation'];
 
@@ -36,10 +40,12 @@ export default function Equipements() {
   const [dropdownsLoading, setDropdownsLoading] = useState(true);
 
   // États pour la pagination
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [totalCount, setTotalCount] = useState(0);
-  const [pageCount, setPageCount] = useState(0);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    pageSize: 5,
+    totalCount: 0,
+    pageCount: 0
+  });
 
   // États pour la recherche
   const [search, setSearch] = useState({
@@ -68,7 +74,7 @@ export default function Equipements() {
     if (dropdowns.types.length > 0) {
       loadEquipements();
     }
-  }, [page, rowsPerPage, search]);
+  }, [pagination.currentPage, pagination.pageSize, search]);
 
   const loadDropdowns = async () => {
     try {
@@ -145,8 +151,8 @@ export default function Equipements() {
       
       // Charger les équipements avec pagination et filtres
       const response = await equipementService.getEquipements({
-        page,
-        pageSize: rowsPerPage,
+        page: pagination.currentPage,
+        pageSize: pagination.pageSize,
         cct: search.cct || undefined,
         ligne: search.ligne || undefined,
         type: search.type || undefined,
@@ -163,18 +169,15 @@ export default function Equipements() {
         const pageCount = parseInt(response.headers?.['x-page-count'] || '1');
         
         if (totalCount > 0) {
-        setTotalCount(totalCount);
-        setPageCount(pageCount);
+        setPagination(prev => ({ ...prev, totalCount: totalCount, pageCount: pageCount }));
         } else {
           // Fallback si les headers ne sont pas disponibles
-          setTotalCount(response.data.length);
-          setPageCount(Math.ceil(response.data.length / rowsPerPage));
+          setPagination(prev => ({ ...prev, totalCount: response.data.length, pageCount: Math.ceil(response.data.length / pagination.pageSize) }));
         }
       } else {
         console.warn('Réponse invalide du service équipements:', response);
         setEquipements([]);
-        setTotalCount(0);
-        setPageCount(1);
+        setPagination(prev => ({ ...prev, totalCount: 0, pageCount: 1 }));
       }
     } catch (error) {
       console.error('Erreur lors du chargement des équipements:', error);
@@ -197,20 +200,19 @@ export default function Equipements() {
         localisation: `Localisation ${i + 1}`
       }));
 
-      const startIndex = (page - 1) * rowsPerPage;
-      const endIndex = startIndex + rowsPerPage;
+      const startIndex = (pagination.currentPage - 1) * pagination.pageSize;
+      const endIndex = startIndex + pagination.pageSize;
       const paginatedEquipements = mockEquipements.slice(startIndex, endIndex);
 
       setEquipements(paginatedEquipements);
-      setTotalCount(mockEquipements.length);
-      setPageCount(Math.ceil(mockEquipements.length / rowsPerPage));
+      setPagination(prev => ({ ...prev, totalCount: mockEquipements.length, pageCount: Math.ceil(mockEquipements.length / pagination.pageSize) }));
     } finally {
       setLoading(false);
     }
   };
 
   const handleSearch = () => {
-    setPage(1);
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
     // loadEquipements() sera automatiquement appelé par useEffect
   };
 
@@ -221,7 +223,7 @@ export default function Equipements() {
       type: '',
       dateEtalonnage: ''
     });
-    setPage(1);
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
     // loadEquipements() sera automatiquement appelé par useEffect
   };
 
@@ -400,9 +402,29 @@ export default function Equipements() {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Gestion des Équipements
-      </Typography>
+      {/* Titre principal centré */}
+      <Box sx={{ 
+        textAlign: 'center', 
+        mb: 4, 
+        pt: 2,
+        pb: 3,
+        backgroundColor: '#f8f9fa',
+        borderRadius: 2,
+        border: '1px solid #e0e0e0'
+      }}>
+        <Typography 
+          variant="h4" 
+          component="h1" 
+          sx={{ 
+            color: '#1976d2', 
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}
+        >
+          Gestion des Équipements
+        </Typography>
+      </Box>
       
       {/* Section Recherche */}
       <Box sx={{ mb: 3, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
@@ -513,22 +535,47 @@ export default function Equipements() {
         </Box>
       </Box>
 
-      {/* Bouton d'ajout */}
-      <Box sx={{ mb: 2 }}>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => handleOpenForm()}
-        >
-          Ajouter un équipement
-        </Button>
+      {/* Section d'en-tête avec sélecteur et bouton d'ajout */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 'bold' }}>
+          ÉQUIPEMENTS
+        </Typography>
+        
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          {/* Sélecteur d'éléments par page */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="body2" sx={{ color: '#666' }}>
+              Éléments par page :
+            </Typography>
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <Select
+                value={pagination.pageSize}
+                onChange={(e) => setPagination(prev => ({ ...prev, pageSize: e.target.value, currentPage: 1 }))}
+                label="Éléments par page"
+              >
+                <MenuItem value={5}>5</MenuItem>
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={25}>25</MenuItem>
+                <MenuItem value={50}>50</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => handleOpenForm()}
+          >
+            Ajouter un équipement
+          </Button>
+        </Box>
       </Box>
 
       {/* Table des équipements */}
       <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 1, overflow: 'hidden' }}>
-      <Table>
+              <Table sx={{ border: '2px solid #e0e0e0', borderRadius: 1 }}>
         <TableHead>
-            <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+            <TableRow sx={{ backgroundColor: '#F2F2F5' }}>
               <TableCell sx={{ fontWeight: 'bold' }}>Marque</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Modèle</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Ligne</TableCell>
@@ -627,40 +674,121 @@ export default function Equipements() {
       </Table>
       </Box>
 
-      {/* Pagination */}
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 3, gap: 2 }}>
-          <Typography variant="body2" color="text.secondary">
-            {equipements.length > 0 
-              ? `Affichage de ${((page - 1) * rowsPerPage) + 1} à ${Math.min(page * rowsPerPage, totalCount)} sur ${totalCount} équipements`
-              : `Aucun équipement trouvé - Page ${page} sur ${pageCount}`
-            }
-          </Typography>
-      {pageCount > 1 && (
-          <Pagination
-            count={pageCount}
-            page={page}
-              onChange={(event, newPage) => setPage(newPage)}
-            color="primary"
-              showFirstButton
-              showLastButton
-              size="large"
-            />
-          )}
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <Select
-              value={rowsPerPage}
-              onChange={(e) => {
-                setRowsPerPage(e.target.value);
-                setPage(1);
+      {/* Pagination avec style personnalisé */}
+      <Box sx={{ 
+        display: 'flex', 
+        flexDirection: 'column',
+        alignItems: 'center', 
+        mt: 3,
+        p: 2,
+        backgroundColor: '#f8f9fa',
+        borderRadius: 2,
+        border: '1px solid #e0e0e0'
+      }}>
+
+
+        {/* Navigation de pagination personnalisée centrée */}
+        {pagination.pageCount > 1 && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            {/* Bouton première page */}
+            <IconButton
+              onClick={() => setPagination(prev => ({ ...prev, currentPage: 1 }))}
+              disabled={pagination.currentPage === 1}
+              sx={{
+                color: pagination.currentPage === 1 ? '#bdbdbd' : '#1976d2',
+                '&:hover': {
+                  backgroundColor: pagination.currentPage === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                }
               }}
             >
-              <MenuItem value={5}>5 par page</MenuItem>
-              <MenuItem value={10}>10 par page</MenuItem>
-              <MenuItem value={25}>25 par page</MenuItem>
-              <MenuItem value={50}>50 par page</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
+              <FirstPageIcon />
+            </IconButton>
+
+            {/* Bouton page précédente */}
+            <IconButton
+              onClick={() => setPagination(prev => ({ ...prev, currentPage: Math.max(1, pagination.currentPage - 1) }))}
+              disabled={pagination.currentPage === 1}
+              sx={{
+                color: pagination.currentPage === 1 ? '#bdbdbd' : '#1976d2',
+                '&:hover': {
+                  backgroundColor: pagination.currentPage === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                }
+              }}
+            >
+              <ChevronLeftIcon />
+            </IconButton>
+
+            {/* Numéros de page */}
+            {Array.from({ length: Math.min(3, pagination.pageCount) }, (_, i) => {
+              let pageNum;
+              if (pagination.pageCount <= 3) {
+                pageNum = i + 1;
+              } else if (pagination.currentPage <= 2) {
+                pageNum = i + 1;
+              } else if (pagination.currentPage >= pagination.pageCount - 1) {
+                pageNum = pagination.pageCount - 2 + i;
+              } else {
+                pageNum = pagination.currentPage - 1 + i;
+              }
+
+              if (pageNum > 0 && pageNum <= pagination.pageCount) {
+                return (
+                  <IconButton
+                    key={pageNum}
+                    onClick={() => setPagination(prev => ({ ...prev, currentPage: pageNum }))}
+                    sx={{
+                      backgroundColor: pagination.currentPage === pageNum ? '#1976d2' : 'transparent',
+                      color: pagination.currentPage === pageNum ? 'white' : '#424242',
+                      minWidth: 36,
+                      height: 36,
+                      fontSize: '0.875rem',
+                      '&:hover': {
+                        backgroundColor: pagination.currentPage === pageNum ? '#1976d2' : 'rgba(25, 118, 210, 0.1)'
+                      }
+                    }}
+                  >
+                    {pageNum}
+                  </IconButton>
+                );
+              }
+              return null;
+            })}
+
+            {/* Bouton page suivante */}
+            <IconButton
+              onClick={() => setPagination(prev => ({ ...prev, currentPage: Math.min(pagination.pageCount, pagination.currentPage + 1) }))}
+              disabled={pagination.currentPage >= pagination.pageCount}
+              sx={{
+                color: pagination.currentPage >= pagination.pageCount ? '#bdbdbd' : '#1976d2',
+                '&:hover': {
+                  backgroundColor: pagination.currentPage >= pagination.pageCount ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                }
+              }}
+            >
+              <ChevronRightIcon />
+            </IconButton>
+
+            {/* Bouton dernière page */}
+            <IconButton
+              onClick={() => setPagination(prev => ({ ...prev, currentPage: pagination.pageCount }))}
+              disabled={pagination.currentPage >= pagination.pageCount}
+              sx={{
+                color: pagination.currentPage >= pagination.pageCount ? '#bdbdbd' : '#1976d2',
+                '&:hover': {
+                  backgroundColor: pagination.currentPage >= pagination.pageCount ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                }
+              }}
+            >
+              <LastPageIcon />
+            </IconButton>
+          </Box>
+        )}
+
+        {/* Informations d'affichage en dessous */}
+        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+          Affichage de {((pagination.currentPage - 1) * pagination.pageSize) + 1} à {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalCount)} sur {pagination.totalCount} équipements
+        </Typography>
+      </Box>
 
       {/* Modal de formulaire */}
       <Dialog open={openForm} onClose={handleCloseForm} maxWidth="md" fullWidth>

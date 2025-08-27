@@ -391,7 +391,7 @@ export default function CCTDetailsModal({ open, onClose, cct, details, tab = 0, 
                   LIGNES / AGENTS CCT
                 </Typography>
                 
-                {details.lignes && details.lignes.length > 0 ? (
+                {details?.lignes && details.lignes.length > 0 ? (
                   <Table>
                     <TableHead>
                       <TableRow sx={{ bgcolor: '#f5f5f5' }}>
@@ -403,7 +403,7 @@ export default function CCTDetailsModal({ open, onClose, cct, details, tab = 0, 
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                                            {details.lignes.map((ligne, index) => {
+                      {details.lignes.map((ligne, index) => {
                         const agents = getAgentsForCCT();
                         return (
                           <TableRow key={index} hover>
@@ -438,17 +438,17 @@ export default function CCTDetailsModal({ open, onClose, cct, details, tab = 0, 
                                 </Box>
                               ) : '-'}
                             </TableCell>
-                                                         <TableCell>
-                               {agents.length > 0 ? (
-                                 <Box>
-                                   {agents.map((agent, agentIndex) => (
-                                     <Typography key={agentIndex} variant="body2">
-                                       {agent.numeroCAP || agent['numeroCAP'] || 'N/A'}
-                                     </Typography>
-                                   ))}
-                                 </Box>
-                               ) : '-'}
-                             </TableCell>
+                            <TableCell>
+                              {agents.length > 0 ? (
+                                <Box>
+                                  {agents.map((agent, agentIndex) => (
+                                    <Typography key={agentIndex} variant="body2">
+                                      {agent.numeroCAP || agent['numeroCAP'] || 'N/A'}
+                                    </Typography>
+                                  ))}
+                                </Box>
+                              ) : '-'}
+                            </TableCell>
                           </TableRow>
                         );
                       })}
@@ -478,14 +478,14 @@ export default function CCTDetailsModal({ open, onClose, cct, details, tab = 0, 
                   HISTORIQUE CCT
                 </Typography>
                 
-                {details.historique && details.historique.length > 0 ? (
+                {details?.historique && details.historique.length > 0 ? (
                   <Table>
                     <TableHead>
                       <TableRow sx={{ bgcolor: '#f5f5f5' }}>
                         <TableCell sx={{ fontWeight: 'bold' }}>CCT</TableCell>
                         <TableCell sx={{ fontWeight: 'bold' }}>Réseau</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold' }}>Date ralliement</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold' }}>Date fin ralliement</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Date début</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Date fin</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>

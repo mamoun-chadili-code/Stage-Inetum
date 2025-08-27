@@ -350,9 +350,29 @@ const Decisions = () => {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Typography variant="h4" gutterBottom sx={{ color: '#1976d2', mb: 1, textAlign: 'center' }}>
-        Gestion des Décisions/Sanctions
-      </Typography>
+      {/* Titre principal centré */}
+      <Box sx={{ 
+        textAlign: 'center', 
+        mb: 4, 
+        pt: 2,
+        pb: 3,
+        backgroundColor: '#f8f9fa',
+        borderRadius: 2,
+        border: '1px solid #e0e0e0'
+      }}>
+        <Typography 
+          variant="h4" 
+          component="h1" 
+          sx={{ 
+            color: '#1976d2', 
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}
+        >
+          Gestion des Décisions/Sanctions
+        </Typography>
+      </Box>
 
       {/* Section Recherche */}
       <Paper sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
@@ -550,37 +570,45 @@ const Decisions = () => {
         </Box>
       </Paper>
 
-      {/* Section Décisions - Réduite */}
-      <Paper sx={{ p: 2, border: '1px solid #e0e0e0', maxWidth: '1400px', mx: 'auto' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-          <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
+      {/* Section Décisions */}
+      <Paper sx={{ p: 3, borderRadius: 2, boxShadow: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', color: '#1976d2', fontWeight: 'bold' }}>
             <ViewIcon sx={{ mr: 1, color: '#1976d2' }} />
             DÉCISIONS
           </Typography>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <FormControl size="small" sx={{ minWidth: 120 }}>
-              <InputLabel>Afficher</InputLabel>
-              <Select
-                value={rowsPerPage}
-                onChange={handleChangeRowsPerPage}
-                label="Afficher"
-              >
-                <MenuItem value={5}>5</MenuItem>
-                <MenuItem value={10}>10</MenuItem>
-                <MenuItem value={25}>25</MenuItem>
-                <MenuItem value={50}>50</MenuItem>
-              </Select>
-            </FormControl>
-            <Typography variant="body2" color="text.secondary">
-              éléments
-            </Typography>
+            {/* Sélecteur d'éléments par page */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="body2" sx={{ color: '#666' }}>
+                Éléments par page :
+              </Typography>
+              <FormControl size="small" sx={{ minWidth: 120 }}>
+                <Select
+                  value={rowsPerPage}
+                  onChange={handleChangeRowsPerPage}
+                  label="Éléments par page"
+                >
+                  <MenuItem value={5}>5</MenuItem>
+                  <MenuItem value={10}>10</MenuItem>
+                  <MenuItem value={25}>25</MenuItem>
+                  <MenuItem value={50}>50</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
 
             <Button
               variant="contained"
               startIcon={<AddIcon />}
               onClick={handleAddDecision}
-              sx={{ bgcolor: '#1976d2' }}
+              sx={{ 
+                bgcolor: '#1976d2',
+                borderRadius: 2,
+                textTransform: 'none',
+                fontWeight: 'bold',
+                px: 3
+              }}
             >
               Ajouter Décision
             </Button>
@@ -596,18 +624,18 @@ const Decisions = () => {
 
         {/* Table des décisions */}
         <TableContainer>
-          <Table>
+          <Table sx={{ border: '2px solid #e0e0e0', borderRadius: 1 }}>
             <TableHead>
-              <TableRow sx={{ bgcolor: '#f5f5f5' }}>
-                <TableCell>Type de Décision</TableCell>
-                <TableCell>Entité concernée</TableCell>
-                <TableCell>Date Décision</TableCell>
-                <TableCell>CCT</TableCell>
-                <TableCell>Réseau</TableCell>
-                <TableCell>Chef de centre</TableCell>
-                <TableCell>Ligne</TableCell>
-                <TableCell align="center">Actions</TableCell>
-              </TableRow>
+                          <TableRow sx={{ backgroundColor: '#F2F2F5' }}>
+              <TableCell sx={{ fontWeight: 'bold' }}>Type de Décision</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Entité concernée</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Date Décision</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>CCT</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Réseau</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Chef de centre</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Ligne</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }} align="center"></TableCell>
+            </TableRow>
             </TableHead>
             <TableBody>
               {loading ? (
@@ -684,7 +712,7 @@ const Decisions = () => {
         {/* Pagination avec style personnalisé */}
         <Box sx={{ 
           display: 'flex', 
-          justifyContent: 'space-between', 
+          flexDirection: 'column',
           alignItems: 'center', 
           mt: 3,
           p: 2,
@@ -692,14 +720,9 @@ const Decisions = () => {
           borderRadius: 2,
           border: '1px solid #e0e0e0'
         }}>
-          <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-            Affichage de {page * rowsPerPage + 1} à {Math.min((page + 1) * rowsPerPage, totalCount)} sur {totalCount} décisions
-          </Typography>
-          
-          
-
-          {/* Navigation de pagination personnalisée */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {/* Navigation de pagination personnalisée centrée */}
+          {totalPages > 1 && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
             {/* Bouton première page */}
             <IconButton
               onClick={() => handleChangePage(null, 0)}
@@ -782,8 +805,14 @@ const Decisions = () => {
               <LastPageIcon />
             </IconButton>
           </Box>
-        </Box>
-      </Paper>
+        )}
+
+        {/* Informations d'affichage en dessous */}
+        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+          Affichage de {page * rowsPerPage + 1} à {Math.min((page + 1) * rowsPerPage, totalCount)} sur {totalCount} décisions
+        </Typography>
+      </Box>
+    </Paper>
 
       {/* Modales */}
       <DecisionFormModal

@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+abusing Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -74,9 +74,11 @@ builder.Services.AddScoped<ChefCentreService>();
 builder.Services.AddScoped<LigneService>();
 builder.Services.AddScoped<IDecisionService, DecisionService>();
 builder.Services.AddScoped<IEquipementService, EquipementService>();
+builder.Services.AddScoped<CCTService>();
+builder.Services.AddScoped<AgentService>();
 builder.Services.AddScoped<IHistoriqueCCTService, HistoriqueCCTService>();
-builder.Services.AddScoped<IHistoriqueAffectationsService, HistoriqueAffectationsService>();
 builder.Services.AddScoped<IHistoriqueAgentService, HistoriqueAgentService>();
+builder.Services.AddScoped<IHistoriqueChefCentreService, HistoriqueChefCentreService>();
 
 // Configuration d'AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));

@@ -57,19 +57,19 @@ namespace CT_CNEH_API.Services
 
             if (historique == null) return null;
 
-            return new HistoriqueAgentDto
-            {
-                Id = historique.Id,
-                AgentId = historique.AgentId,
-                AgentNom = historique.Agent != null ? $"{historique.Agent.Prenom} {historique.Agent.Nom}" : "Agent inconnu",
-                CCTId = historique.CCTId,
-                CCTNom = historique.CCT?.Nom ?? "CCT inconnu",
-                DateDebutAffectation = historique.DateDebutAffectation,
-                DateFinAffectation = historique.DateFinAffectation,
-                DateMiseAJour = historique.DateMiseAJour,
-                IsActive = historique.IsActive,
-                DateCreation = historique.DateCreation
-            };
+                                return new HistoriqueAgentDto
+                    {
+                        Id = historique.Id,
+                        AgentId = historique.AgentId,
+                        AgentNom = historique.Agent != null ? $"{historique.Agent.Prenom} {historique.Agent.Nom}" : "Agent inconnu",
+                        CCTId = historique.CCTId,
+                        CCTNom = historique.CCT?.Nom ?? "CCT inconnu",
+                        DateDebutAffectation = historique.DateDebutAffectation,
+                        DateFinAffectation = historique.DateFinAffectation,
+                        DateMiseAJour = historique.DateMiseAJour,
+                        IsActive = historique.IsActive,
+                        DateCreation = historique.DateCreation
+                    };
         }
 
         public async Task<IEnumerable<HistoriqueAgentDto>> GetByAgentIdAsync(int agentId)

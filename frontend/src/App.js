@@ -18,9 +18,8 @@ import ProtectedRoute from './components/Auth/ProtectedRoute';
 
 
 function App() {
-  const [darkMode, setDarkMode] = useState(false);
   const theme = useMemo(() => createTheme({
-    palette: { mode: darkMode ? 'dark' : 'light' },
+    palette: { mode: 'light' },
     components: {
       MuiFormLabel: {
         styleOverrides: {
@@ -30,7 +29,7 @@ function App() {
         },
       },
     },
-  }), [darkMode]);
+  }), []);
 
   // Simuler l'authentification (à remplacer par vrai contexte)
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -39,11 +38,8 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        {isAuthenticated && <Sidebar onThemeToggle={() => setDarkMode(m => !m)} darkMode={darkMode} />}
+        {isAuthenticated && <Sidebar />}
         <div style={{ marginLeft: isAuthenticated ? 220 : 0, padding: 24 }}>
-          <Button onClick={() => setDarkMode(m => !m)} variant="outlined" style={{ float: 'right' }}>
-            {darkMode ? 'Mode clair' : 'Mode sombre'}
-          </Button>
           <Routes>
             <Route path="/login" element={<Login onLogin={() => setIsAuthenticated(true)} />} />
             <Route path="/dashboard" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Dashboard /></ProtectedRoute>} />

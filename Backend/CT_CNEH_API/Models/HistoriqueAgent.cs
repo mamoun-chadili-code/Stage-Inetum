@@ -42,3 +42,9 @@ namespace CT_CNEH_API.Models
         public virtual CCT CCT { get; set; }
     }
 }
+
+
+
+
+
+

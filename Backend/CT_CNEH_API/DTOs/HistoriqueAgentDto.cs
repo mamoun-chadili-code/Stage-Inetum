@@ -16,3 +16,9 @@ namespace CT_CNEH_API.DTOs
         public DateTime DateCreation { get; set; }
     }
 }
+
+
+
+
+
+

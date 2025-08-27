@@ -189,15 +189,15 @@ const HistoriqueCCT = () => {
       {/* Table des historiques */}
       <Paper sx={{ border: '1px solid #e0e0e0' }}>
         <TableContainer>
-          <Table>
+          <Table sx={{ border: '2px solid #e0e0e0', borderRadius: 1 }}>
             <TableHead>
-              <TableRow>
-                <TableCell>CCT</TableCell>
-                <TableCell>Réseau</TableCell>
-                <TableCell>Date Début</TableCell>
-                <TableCell>Date Fin</TableCell>
-                <TableCell align="center">Actions</TableCell>
-              </TableRow>
+                          <TableRow sx={{ backgroundColor: '#F2F2F5' }}>
+              <TableCell sx={{ fontWeight: 'bold' }}>CCT</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Réseau</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Date Début</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Date Fin</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }} align="center">Actions</TableCell>
+            </TableRow>
             </TableHead>
             <TableBody>
               {loading ? (

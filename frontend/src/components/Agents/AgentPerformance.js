@@ -403,7 +403,7 @@ export default function AgentPerformance({ agents = [] }) {
                 <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Évaluateur</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Score moyen</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Appréciation</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}>Actions</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#1976d2' }}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

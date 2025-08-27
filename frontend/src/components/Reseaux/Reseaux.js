@@ -12,6 +12,10 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload'; // Added for logo
 import { toast } from 'react-toastify';
 import reseauxService from '../../services/reseauxService';
 import dropdownsService from '../../services/dropdownsService';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import LastPageIcon from '@mui/icons-material/LastPage';
 
 /**
  * COMPOSANT RÉSEAUX AVEC AUTOCOMPLETE
@@ -535,6 +539,31 @@ export default function Reseaux() {
 
   return (
     <div>
+      {/* Titre principal centré */}
+      <Box sx={{ 
+        textAlign: 'center', 
+        mb: 4, 
+        pt: 2,
+        pb: 3,
+        backgroundColor: '#f8f9fa',
+        borderRadius: 2,
+        border: '1px solid #e0e0e0'
+      }}>
+        <Typography 
+          variant="h4" 
+          component="h1" 
+          sx={{ 
+            color: '#1976d2', 
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}
+        >
+          Gestion des Réseaux
+        </Typography>
+
+      </Box>
+
       {/* Section Recherche avancée */}
       <div style={{ background: '#f5f7fa', padding: 16, borderRadius: 8, marginBottom: 24 }}>
         <h3>Recherche</h3>
@@ -664,46 +693,48 @@ export default function Reseaux() {
       {/* Section Réseaux */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <h3>RÉSEAUX</h3>
-        <Button 
-          variant="contained" 
-          startIcon={<AddIcon />} 
-          onClick={() => handleOpenForm(null)}
-          disabled={loading}
-        >
-          Ajouter Réseau
-        </Button>
-      </div>
-      
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <div>
-          Afficher
-          <Select 
-            value={rowsPerPage} 
-            onChange={e => { setRowsPerPage(Number(e.target.value)); setPage(1); }} 
-            size="small" 
-            style={{ margin: '0 8px' }}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          {/* Sélecteur d'éléments par page */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ color: '#666', fontSize: '14px' }}>
+              Éléments par page :
+            </span>
+            <Select 
+              value={rowsPerPage} 
+              onChange={e => { setRowsPerPage(Number(e.target.value)); setPage(1); }} 
+              size="small" 
+              style={{ minWidth: 120 }}
+              disabled={loading}
+            >
+              {[5, 10, 20].map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)}
+            </Select>
+          </div>
+
+          <Button 
+            variant="contained" 
+            startIcon={<AddIcon />} 
+            onClick={() => handleOpenForm(null)}
             disabled={loading}
           >
-            {[5, 10, 20].map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)}
-          </Select>
-          éléments
+            Ajouter Réseau
+          </Button>
         </div>
       </div>
 
       {/* Tableau des réseaux */}
-      <Table size="small">
+              <Table size="small" sx={{ border: '2px solid #e0e0e0', borderRadius: 1 }}>
         <TableHead>
-          <TableRow>
-            <TableCell>Logo</TableCell>
-            <TableCell>Réseau</TableCell>
-            <TableCell>Agrément</TableCell>
-            <TableCell>Date agrément</TableCell>
-            <TableCell>Date statut</TableCell>
-            <TableCell>Adr. Siège</TableCell>
-            <TableCell>Ville</TableCell>
-            <TableCell>Statut</TableCell>
-            <TableCell>Actions</TableCell>
-          </TableRow>
+                      <TableRow sx={{ backgroundColor: '#F2F2F5' }}>
+              <TableCell sx={{ fontWeight: 'bold' }}>Logo</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Réseau</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Agrément</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Date agrément</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Date statut</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Adr. Siège</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Ville</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Statut</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}></TableCell>
+            </TableRow>
         </TableHead>
         <TableBody>
           {loading ? (
@@ -781,16 +812,117 @@ export default function Reseaux() {
         </TableBody>
       </Table>
 
-      {/* Pagination */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
-        <Pagination 
-          count={pageCount} 
-          page={page} 
-          onChange={(_, v) => setPage(v)} 
-          color="primary" 
-          disabled={loading}
-        />
-      </div>
+      {/* Pagination avec style personnalisé */}
+      <Box sx={{ 
+        display: 'flex', 
+        flexDirection: 'column',
+        alignItems: 'center', 
+        mt: 3,
+        p: 2,
+        backgroundColor: '#f8f9fa',
+        borderRadius: 2,
+        border: '1px solid #e0e0e0'
+      }}>
+        {/* Navigation de pagination personnalisée centrée */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+          {/* Bouton première page */}
+          <IconButton
+            onClick={() => setPage(1)}
+            disabled={page === 1}
+            sx={{
+              color: page === 1 ? '#bdbdbd' : '#1976d2',
+              '&:hover': {
+                backgroundColor: page === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+              }
+            }}
+          >
+            <FirstPageIcon />
+          </IconButton>
+
+          {/* Bouton page précédente */}
+          <IconButton
+            onClick={() => setPage(page - 1)}
+            disabled={page === 1}
+            sx={{
+              color: page === 1 ? '#bdbdbd' : '#1976d2',
+              '&:hover': {
+                backgroundColor: page === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+              }
+            }}
+          >
+            <ChevronLeftIcon />
+          </IconButton>
+
+          {/* Numéros de page */}
+          {Array.from({ length: Math.min(3, pageCount) }, (_, i) => {
+            let pageNum;
+            if (pageCount <= 3) {
+              pageNum = i + 1;
+            } else if (page <= 2) {
+              pageNum = i + 1;
+            } else if (page >= pageCount - 1) {
+              pageNum = pageCount - 2 + i;
+            } else {
+              pageNum = page - 1 + i;
+            }
+
+            if (pageNum > 0 && pageNum <= pageCount) {
+              return (
+                <IconButton
+                  key={pageNum}
+                  onClick={() => setPage(pageNum)}
+                  sx={{
+                    backgroundColor: page === pageNum ? '#1976d2' : 'transparent',
+                    color: page === pageNum ? 'white' : '#424242',
+                    minWidth: 36,
+                    height: 36,
+                    fontSize: '0.875rem',
+                    '&:hover': {
+                      backgroundColor: page === pageNum ? '#1976d2' : 'rgba(25, 118, 210, 0.1)'
+                    }
+                  }}
+                >
+                  {pageNum}
+                </IconButton>
+              );
+            }
+            return null;
+          })}
+
+          {/* Bouton page suivante */}
+          <IconButton
+            onClick={() => setPage(page + 1)}
+            disabled={page >= pageCount}
+            sx={{
+              color: page >= pageCount ? '#bdbdbd' : '#1976d2',
+              '&:hover': {
+                backgroundColor: page >= pageCount ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+              }
+            }}
+          >
+            <ChevronRightIcon />
+          </IconButton>
+
+          {/* Bouton dernière page */}
+          <IconButton
+            onClick={() => setPage(pageCount)}
+            disabled={page >= pageCount}
+            sx={{
+              color: page >= pageCount ? '#bdbdbd' : '#1976d2',
+              '&:hover': {
+                backgroundColor: page >= pageCount ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+              }
+            }}
+          >
+            <LastPageIcon />
+          </IconButton>
+        </Box>
+
+        {/* Informations d'affichage en dessous */}
+        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+          Affichage de {((page - 1) * rowsPerPage) + 1} à {Math.min(page * rowsPerPage, totalCount)} sur {totalCount} réseaux
+        </Typography>
+      </Box>
 
       {/* Modal Ajout/Modification Réseau */}
       <Dialog open={openForm} onClose={() => setOpenForm(false)} maxWidth="md" fullWidth>

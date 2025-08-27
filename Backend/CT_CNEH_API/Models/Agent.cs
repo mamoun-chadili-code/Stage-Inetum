@@ -53,6 +53,8 @@ namespace CT_CNEH_API.Models
         [StringLength(50)]
         public string? Adresse { get; set; }
         
+
+        
         // Navigation properties
         public virtual CCT? CCT { get; set; }
         public virtual CategorieCCT? CategorieCAP { get; set; }

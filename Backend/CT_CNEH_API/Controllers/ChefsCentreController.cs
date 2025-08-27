@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using CT_CNEH_API.Data;
 using CT_CNEH_API.Models;
+using CT_CNEH_API.DTOs;
+using CT_CNEH_API.Services;
 
 namespace CT_CNEH_API.Controllers
 {
@@ -14,45 +17,6 @@ namespace CT_CNEH_API.Controllers
         public ChefsCentreController(ApplicationDbContext context)
         {
             _context = context;
-        }
-
-        // DTOs pour les opérations
-        public class ChefCentreDto
-        {
-            public int Id { get; set; }
-            public string Nom { get; set; } = string.Empty;
-            public string Prenom { get; set; } = string.Empty;
-            public string CIN { get; set; } = string.Empty;
-            public string? CCT { get; set; }
-            public DateTime? DateNaissance { get; set; }
-            public string? NiveauFormation { get; set; }
-            public DateTime? DateAffectationCCT { get; set; }
-            public int AnneeAutorisation { get; set; }
-            public string? ReferenceApprobationCNEH { get; set; }
-            public DateTime? DateApprobationCNEH { get; set; }
-            public string Tel { get; set; } = string.Empty;
-            public string? Mail { get; set; }
-            public string CNSS { get; set; } = string.Empty;
-            public bool Sexe { get; set; }
-        }
-
-        public class ChefCentreUpdateDto
-        {
-            public int Id { get; set; }
-            public string Nom { get; set; } = string.Empty;
-            public string Prenom { get; set; } = string.Empty;
-            public string CIN { get; set; } = string.Empty;
-            public int? CCTId { get; set; }
-            public DateTime? DateAffectationCCT { get; set; }
-            public string? ReferenceApprobationCNEH { get; set; }
-            public int AnneeAutorisation { get; set; }
-            public DateTime? DateApprobationCNEH { get; set; }
-            public string Tel { get; set; } = string.Empty;
-            public string? Mail { get; set; }
-            public string CNSS { get; set; } = string.Empty;
-            public bool Sexe { get; set; }
-            public DateTime? DateNaissance { get; set; }
-            public int? NiveauFormationInitialId { get; set; }
         }
 
         // GET: api/ChefsCentre
@@ -108,17 +72,21 @@ namespace CT_CNEH_API.Controllers
                 Nom = c.Nom,
                 Prenom = c.Prenom,
                 CIN = c.CIN,
-                CCT = c.CCT?.Nom,
+                Tel = c.Tel,
+                Mail = c.Mail ?? string.Empty,
+                CNSS = c.CNSS,
+                Sexe = c.Sexe,
                 DateNaissance = c.DateNaissance,
-                NiveauFormation = c.NiveauFormationInitial?.Libelle,
+                NiveauFormationInitialId = c.NiveauFormationInitialId ?? 0,
+                NiveauFormationInitialNom = c.NiveauFormationInitial?.Libelle ?? string.Empty,
+                CCTId = c.CCTId ?? 0,
+                CCTNom = c.CCT?.Nom ?? string.Empty,
                 DateAffectationCCT = c.DateAffectationCCT,
                 AnneeAutorisation = c.AnneeAutorisation,
-                ReferenceApprobationCNEH = c.ReferenceApprobationCNEH,
+                ReferenceApprobationCNEH = c.ReferenceApprobationCNEH ?? string.Empty,
                 DateApprobationCNEH = c.DateApprobationCNEH,
-                Tel = c.Tel,
-                Mail = c.Mail,
-                CNSS = c.CNSS,
-                Sexe = c.Sexe
+                IsActive = true,
+                DateCreation = DateTime.Now
             }).ToList();
 
             return Ok(chefCentreDtos);
@@ -126,7 +94,7 @@ namespace CT_CNEH_API.Controllers
 
         // GET: api/ChefsCentre/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ChefCentre>> GetChefCentre(int id)
+        public async Task<ActionResult<ChefCentreDto>> GetChefCentre(int id)
         {
             var chefCentre = await _context.ChefCentres
                 .Include(c => c.CCT)
@@ -138,12 +106,61 @@ namespace CT_CNEH_API.Controllers
                 return NotFound();
             }
 
-            return chefCentre;
+            // Mapping vers DTO
+            var chefCentreDto = new ChefCentreDto
+            {
+                Id = chefCentre.Id,
+                Nom = chefCentre.Nom,
+                Prenom = chefCentre.Prenom,
+                CIN = chefCentre.CIN,
+                Tel = chefCentre.Tel,
+                Mail = chefCentre.Mail ?? string.Empty,
+                CNSS = chefCentre.CNSS,
+                Sexe = chefCentre.Sexe,
+                DateNaissance = chefCentre.DateNaissance,
+                NiveauFormationInitialId = chefCentre.NiveauFormationInitialId ?? 0,
+                NiveauFormationInitialNom = chefCentre.NiveauFormationInitial?.Libelle ?? string.Empty,
+                CCTId = chefCentre.CCTId ?? 0,
+                CCTNom = chefCentre.CCT?.Nom ?? string.Empty,
+                DateAffectationCCT = chefCentre.DateAffectationCCT,
+                AnneeAutorisation = chefCentre.AnneeAutorisation,
+                ReferenceApprobationCNEH = chefCentre.ReferenceApprobationCNEH ?? string.Empty,
+                DateApprobationCNEH = chefCentre.DateApprobationCNEH,
+                IsActive = true,
+                DateCreation = DateTime.Now
+            };
+
+            return Ok(chefCentreDto);
+        }
+
+        // GET: api/ChefsCentre/{id}/historique
+        [HttpGet("{id}/historique")]
+        public async Task<ActionResult<IEnumerable<HistoriqueChefCentreDto>>> GetChefCentreHistorique(int id)
+        {
+            try
+            {
+                // Vérifier que le chef de centre existe
+                var chefCentre = await _context.ChefCentres.FindAsync(id);
+                if (chefCentre == null)
+                {
+                    return NotFound($"Chef de centre avec l'ID {id} non trouvé");
+                }
+
+                // Récupérer l'historique depuis le service HistoriqueChefCentre
+                var historiqueService = HttpContext.RequestServices.GetRequiredService<IHistoriqueChefCentreService>();
+                var historiques = await historiqueService.GetByChefCentreAsync(id);
+
+                return Ok(historiques);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
+            }
         }
 
         // POST: api/ChefsCentre
         [HttpPost]
-        public async Task<ActionResult<ChefCentre>> CreateChefCentre([FromBody] ChefCentreUpdateDto createDto)
+        public async Task<ActionResult<ChefCentreDto>> CreateChefCentre([FromBody] CreateChefCentreDto createDto)
         {
             var chefCentre = new ChefCentre
             {
@@ -171,7 +188,7 @@ namespace CT_CNEH_API.Controllers
 
         // PUT: api/ChefsCentre/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateChefCentre(int id, [FromBody] ChefCentreUpdateDto updateDto)
+        public async Task<IActionResult> UpdateChefCentre(int id, [FromBody] UpdateChefCentreDto updateDto)
         {
             var chefCentre = await _context.ChefCentres.FindAsync(id);
             if (chefCentre == null)
@@ -179,20 +196,20 @@ namespace CT_CNEH_API.Controllers
                 return NotFound();
             }
 
-            chefCentre.Nom = updateDto.Nom;
-            chefCentre.Prenom = updateDto.Prenom;
-            chefCentre.CIN = updateDto.CIN;
-            chefCentre.CCTId = updateDto.CCTId;
-            chefCentre.DateAffectationCCT = updateDto.DateAffectationCCT;
-            chefCentre.ReferenceApprobationCNEH = updateDto.ReferenceApprobationCNEH;
-            chefCentre.AnneeAutorisation = updateDto.AnneeAutorisation;
-            chefCentre.DateApprobationCNEH = updateDto.DateApprobationCNEH;
-            chefCentre.Tel = updateDto.Tel;
-            chefCentre.Mail = updateDto.Mail;
-            chefCentre.CNSS = updateDto.CNSS;
-            chefCentre.Sexe = updateDto.Sexe;
-            chefCentre.DateNaissance = updateDto.DateNaissance;
-            chefCentre.NiveauFormationInitialId = updateDto.NiveauFormationInitialId;
+            if (updateDto.Nom != null) chefCentre.Nom = updateDto.Nom;
+            if (updateDto.Prenom != null) chefCentre.Prenom = updateDto.Prenom;
+            if (updateDto.CIN != null) chefCentre.CIN = updateDto.CIN;
+            if (updateDto.CCTId != null) chefCentre.CCTId = updateDto.CCTId;
+            if (updateDto.DateAffectationCCT != null) chefCentre.DateAffectationCCT = updateDto.DateAffectationCCT;
+            if (updateDto.ReferenceApprobationCNEH != null) chefCentre.ReferenceApprobationCNEH = updateDto.ReferenceApprobationCNEH;
+            if (updateDto.AnneeAutorisation != null) chefCentre.AnneeAutorisation = updateDto.AnneeAutorisation.Value;
+            if (updateDto.DateApprobationCNEH != null) chefCentre.DateApprobationCNEH = updateDto.DateApprobationCNEH;
+            if (updateDto.Tel != null) chefCentre.Tel = updateDto.Tel;
+            if (updateDto.Mail != null) chefCentre.Mail = updateDto.Mail;
+            if (updateDto.CNSS != null) chefCentre.CNSS = updateDto.CNSS;
+            if (updateDto.Sexe != null) chefCentre.Sexe = updateDto.Sexe.Value;
+            if (updateDto.DateNaissance != null) chefCentre.DateNaissance = updateDto.DateNaissance;
+            if (updateDto.NiveauFormationInitialId != null) chefCentre.NiveauFormationInitialId = updateDto.NiveauFormationInitialId;
 
             await _context.SaveChangesAsync();
 
@@ -214,6 +231,8 @@ namespace CT_CNEH_API.Controllers
 
             return NoContent();
         }
+    }
+} 
 
         // GET: api/ChefsCentre/5/historique
         [HttpGet("{id}/historique")]

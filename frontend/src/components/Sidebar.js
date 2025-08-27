@@ -29,7 +29,7 @@ const menu = [
 
 ];
 
-export default function Sidebar({ onThemeToggle, darkMode }) {
+export default function Sidebar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {

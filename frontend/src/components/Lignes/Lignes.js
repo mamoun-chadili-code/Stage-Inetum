@@ -24,7 +24,8 @@ import {
   CircularProgress,
   Select,
   MenuItem,
-  Pagination
+  Pagination,
+  FormControl
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -32,7 +33,11 @@ import {
   Delete as DeleteIcon,
   Visibility as VisibilityIcon,
   Search as SearchIcon,
-  Clear as ClearIcon
+  Clear as ClearIcon,
+  FirstPage as FirstPageIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
+  LastPage as LastPageIcon
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -467,10 +472,29 @@ const Lignes = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      {/* Titre */}
-      <Typography variant="h4" gutterBottom>
-        Gestion des Lignes
-      </Typography>
+      {/* Titre principal centré */}
+      <Box sx={{ 
+        textAlign: 'center', 
+        mb: 4, 
+        pt: 2,
+        pb: 3,
+        backgroundColor: '#f8f9fa',
+        borderRadius: 2,
+        border: '1px solid #e0e0e0'
+      }}>
+        <Typography 
+          variant="h4" 
+          component="h1" 
+          sx={{ 
+            color: '#1976d2', 
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}
+        >
+          Gestion des Lignes
+        </Typography>
+      </Box>
 
       {/* Section de recherche */}
       <SearchSection title="RECHERCHE">
@@ -606,32 +630,38 @@ const Lignes = () => {
           <Typography variant="h6" display="flex" alignItems="center">
             LIGNES
           </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleAddLigne}
-          >
-            Ajouter Ligne
-          </Button>
+          
+          <Box display="flex" alignItems="center" gap={2}>
+            {/* Sélecteur d'éléments par page */}
+            <Box display="flex" alignItems="center" gap={1}>
+              <Typography variant="body2" sx={{ color: '#666' }}>
+                Éléments par page :
+              </Typography>
+              <Select
+                value={pageSize}
+                onChange={handlePageSizeChange}
+                size="small"
+                sx={{ minWidth: 120 }}
+              >
+                <MenuItem value={5}>5</MenuItem>
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={25}>25</MenuItem>
+                <MenuItem value={50}>50</MenuItem>
+              </Select>
+            </Box>
+
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={handleAddLigne}
+            >
+              Ajouter Ligne
+            </Button>
+          </Box>
         </Box>
 
-        {/* Contrôles de pagination et recherche */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Box display="flex" alignItems="center" gap={2}>
-            <Typography>Afficher</Typography>
-            <Select
-              value={pageSize}
-              onChange={handlePageSizeChange}
-              size="small"
-            >
-              <MenuItem value={5}>5</MenuItem>
-              <MenuItem value={10}>10</MenuItem>
-              <MenuItem value={25}>25</MenuItem>
-              <MenuItem value={50}>50</MenuItem>
-            </Select>
-            <Typography>éléments</Typography>
-          </Box>
-
+        {/* Barre de recherche */}
+        <Box display="flex" justifyContent="flex-end" mb={2}>
           <TextField
             size="small"
             label="Rechercher:"
@@ -643,16 +673,16 @@ const Lignes = () => {
 
         {/* Table des lignes */}
         <TableContainer component={Paper}>
-          <Table>
+          <Table sx={{ border: '2px solid #e0e0e0', borderRadius: 1 }}>
             <TableHead>
-              <TableRow>
-                <TableCell>N° de ligne</TableCell>
-                <TableCell>Catégorie</TableCell>
-                <TableCell>CCT</TableCell>
-                <TableCell>Statut</TableCell>
-                <TableCell>Date statut</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
+                          <TableRow sx={{ backgroundColor: '#F2F2F5' }}>
+              <TableCell sx={{ fontWeight: 'bold' }}>N° de ligne</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Catégorie</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>CCT</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Statut</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Date statut</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}></TableCell>
+            </TableRow>
             </TableHead>
             <TableBody>
               {lignes.map((ligne) => {
@@ -738,16 +768,120 @@ const Lignes = () => {
           </Table>
         </TableContainer>
 
-        {/* Pagination */}
-        <Box display="flex" justifyContent="center" alignItems="center" mt={2}>
-          <Pagination
-            count={totalPages}
-            page={page}
-            onChange={handlePageChange}
-            color="primary"
-            showFirstButton
-            showLastButton
-          />
+        {/* Pagination avec style personnalisé */}
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          alignItems: 'center', 
+          mt: 3,
+          p: 2,
+          backgroundColor: '#f8f9fa',
+          borderRadius: 2,
+          border: '1px solid #e0e0e0'
+        }}>
+
+
+          {/* Navigation de pagination personnalisée centrée */}
+          {totalPages > 1 && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              {/* Bouton première page */}
+              <IconButton
+                onClick={() => handlePageChange(null, 1)}
+                disabled={page === 1}
+                sx={{
+                  color: page === 1 ? '#bdbdbd' : '#1976d2',
+                  '&:hover': {
+                    backgroundColor: page === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                  }
+                }}
+              >
+                <FirstPageIcon />
+              </IconButton>
+
+              {/* Bouton page précédente */}
+              <IconButton
+                onClick={() => handlePageChange(null, page - 1)}
+                disabled={page === 1}
+                sx={{
+                  color: page === 1 ? '#bdbdbd' : '#1976d2',
+                  '&:hover': {
+                    backgroundColor: page === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                  }
+                }}
+              >
+                <ChevronLeftIcon />
+              </IconButton>
+
+              {/* Numéros de page */}
+              {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 3) {
+                  pageNum = i + 1;
+                } else if (page <= 2) {
+                  pageNum = i + 1;
+                } else if (page >= totalPages - 1) {
+                  pageNum = totalPages - 2 + i;
+                } else {
+                  pageNum = page - 1 + i;
+                }
+
+                if (pageNum > 0 && pageNum <= totalPages) {
+                  return (
+                    <IconButton
+                      key={pageNum}
+                      onClick={() => handlePageChange(null, pageNum)}
+                      sx={{
+                        backgroundColor: page === pageNum ? '#1976d2' : 'transparent',
+                        color: page === pageNum ? 'white' : '#424242',
+                        minWidth: 36,
+                        height: 36,
+                        fontSize: '0.875rem',
+                        '&:hover': {
+                          backgroundColor: page === pageNum ? '#1976d2' : 'rgba(25, 118, 210, 0.1)'
+                        }
+                      }}
+                    >
+                      {pageNum}
+                    </IconButton>
+                  );
+                }
+                return null;
+              })}
+
+              {/* Bouton page suivante */}
+              <IconButton
+                onClick={() => handlePageChange(null, page + 1)}
+                disabled={page >= totalPages}
+                sx={{
+                  color: page >= totalPages ? '#bdbdbd' : '#1976d2',
+                  '&:hover': {
+                    backgroundColor: page >= totalPages ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                  }
+                }}
+              >
+                <ChevronRightIcon />
+              </IconButton>
+
+              {/* Bouton dernière page */}
+              <IconButton
+                onClick={() => handlePageChange(null, totalPages)}
+                disabled={page >= totalPages}
+                sx={{
+                  color: page >= totalPages ? '#bdbdbd' : '#1976d2',
+                  '&:hover': {
+                    backgroundColor: page >= totalPages ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                  }
+                }}
+              >
+                <LastPageIcon />
+              </IconButton>
+            </Box>
+          )}
+
+          {/* Informations d'affichage en dessous */}
+          <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+            Affichage de {((page - 1) * pageSize) + 1} à {Math.min(page * pageSize, totalCount)} sur {totalCount} lignes
+          </Typography>
         </Box>
       </Paper>
 

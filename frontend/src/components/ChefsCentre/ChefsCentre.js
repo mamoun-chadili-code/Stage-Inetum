@@ -46,7 +46,11 @@ import {
   Phone as PhoneIcon,
   Email as EmailIcon,
   School as SchoolIcon,
-  CalendarToday as CalendarIcon
+  CalendarToday as CalendarIcon,
+  FirstPage as FirstPageIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
+  LastPage as LastPageIcon
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import chefCentreService from '../../services/chefCentreService';
@@ -167,6 +171,7 @@ export default function ChefsCentre() {
       ]);
 
       console.log('Dropdowns chargés:', { regions, villes, reseaux, ccts, niveauxFormation });
+      console.log('Structure niveauxFormation:', niveauxFormation);
 
       setDropdowns({
         regions,
@@ -276,9 +281,29 @@ export default function ChefsCentre() {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Typography variant="h4" gutterBottom sx={{ mb: 2 }}>
-        Gestion des Chefs de Centre
-      </Typography>
+      {/* Titre principal centré */}
+      <Box sx={{ 
+        textAlign: 'center', 
+        mb: 4, 
+        pt: 2,
+        pb: 3,
+        backgroundColor: '#f8f9fa',
+        borderRadius: 2,
+        border: '1px solid #e0e0e0'
+      }}>
+        <Typography 
+          variant="h4" 
+          component="h1" 
+          sx={{ 
+            color: '#1976d2', 
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}
+        >
+          Gestion des Chefs de Centre
+        </Typography>
+      </Box>
 
       {/* Section Recherche */}
       <SearchSection>
@@ -532,18 +557,18 @@ export default function ChefsCentre() {
           </Box>
         ) : (
           <>
-            <Table>
+            <Table sx={{ border: '2px solid #e0e0e0', borderRadius: 1 }}>
               <TableHead>
-                <TableRow>
-                  <TableCell>Nom</TableCell>
-                  <TableCell>Prénom</TableCell>
-                  <TableCell>CIN</TableCell>
-                  <TableCell>Date de naissance</TableCell>
-                  <TableCell>Niveau de formation</TableCell>
-                  <TableCell>Année Autorisation</TableCell>
-                  <TableCell>Tel</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
+                            <TableRow sx={{ backgroundColor: '#F2F2F5' }}>
+              <TableCell sx={{ fontWeight: 'bold' }}>Nom</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Prénom</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>CIN</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Date de naissance</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Niveau de formation</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Année Autorisation</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Tel</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}></TableCell>
+            </TableRow>
               </TableHead>
               <TableBody>
                 {filteredChefsCentre.map((chefCentre) => (
@@ -554,7 +579,12 @@ export default function ChefsCentre() {
                     <TableCell>
                       {chefCentre.dateNaissance ? new Date(chefCentre.dateNaissance).toLocaleDateString() : '-'}
                     </TableCell>
-                    <TableCell>{chefCentre.niveauFormation || '-'}</TableCell>
+                    <TableCell>
+                      {chefCentre.niveauFormationInitialId && dropdowns.niveauxFormation ? 
+                        dropdowns.niveauxFormation.find(n => n.id === chefCentre.niveauFormationInitialId)?.libelle || '-'
+                        : chefCentre.niveauFormationInitialNom || '-'
+                      }
+                    </TableCell>
                     <TableCell>{chefCentre.anneeAutorisation}</TableCell>
                     <TableCell>{chefCentre.tel}</TableCell>
                     <TableCell>
@@ -588,23 +618,120 @@ export default function ChefsCentre() {
               </TableBody>
             </Table>
 
-            {/* Pagination */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Typography variant="body2">
-                  Affichage de {((pagination.currentPage - 1) * pagination.pageSize) + 1} à {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalCount)} sur {pagination.totalCount} chefs de centre
-                </Typography>
-              </Box>
+            {/* Pagination avec style personnalisé */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column',
+              alignItems: 'center', 
+              mt: 3,
+              p: 2,
+              backgroundColor: '#f8f9fa',
+              borderRadius: 2,
+              border: '1px solid #e0e0e0'
+            }}>
+
+
+              {/* Navigation de pagination personnalisée centrée */}
               {pagination.pageCount > 1 && (
-                <Pagination
-                  count={pagination.pageCount}
-                  page={pagination.currentPage}
-                  onChange={handlePageChange}
-                  color="primary"
-                  showFirstButton
-                  showLastButton
-                />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                  {/* Bouton première page */}
+                  <IconButton
+                    onClick={() => handlePageChange(null, 1)}
+                    disabled={pagination.currentPage === 1}
+                    sx={{
+                      color: pagination.currentPage === 1 ? '#bdbdbd' : '#1976d2',
+                      '&:hover': {
+                        backgroundColor: pagination.currentPage === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                      }
+                    }}
+                  >
+                    <FirstPageIcon />
+                  </IconButton>
+
+                  {/* Bouton page précédente */}
+                  <IconButton
+                    onClick={() => handlePageChange(null, pagination.currentPage - 1)}
+                    disabled={pagination.currentPage === 1}
+                    sx={{
+                      color: pagination.currentPage === 1 ? '#bdbdbd' : '#1976d2',
+                      '&:hover': {
+                        backgroundColor: pagination.currentPage === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                      }
+                    }}
+                  >
+                    <ChevronLeftIcon />
+                  </IconButton>
+
+                  {/* Numéros de page */}
+                  {Array.from({ length: Math.min(3, pagination.pageCount) }, (_, i) => {
+                    let pageNum;
+                    if (pagination.pageCount <= 3) {
+                      pageNum = i + 1;
+                    } else if (pagination.currentPage <= 2) {
+                      pageNum = i + 1;
+                    } else if (pagination.currentPage >= pagination.pageCount - 1) {
+                      pageNum = pagination.pageCount - 2 + i;
+                    } else {
+                      pageNum = pagination.currentPage - 1 + i;
+                    }
+
+                    if (pageNum > 0 && pageNum <= pagination.pageCount) {
+                      return (
+                        <IconButton
+                          key={pageNum}
+                          onClick={() => handlePageChange(null, pageNum)}
+                          sx={{
+                            backgroundColor: pagination.currentPage === pageNum ? '#1976d2' : 'transparent',
+                            color: pagination.currentPage === pageNum ? 'white' : '#424242',
+                            minWidth: 36,
+                            height: 36,
+                            fontSize: '0.875rem',
+                            '&:hover': {
+                              backgroundColor: pagination.currentPage === pageNum ? '#1976d2' : 'rgba(25, 118, 210, 0.1)'
+                            }
+                          }}
+                        >
+                          {pageNum}
+                        </IconButton>
+                      );
+                    }
+                    return null;
+                  })}
+
+                  {/* Bouton page suivante */}
+                  <IconButton
+                    onClick={() => handlePageChange(null, pagination.currentPage + 1)}
+                    disabled={pagination.currentPage >= pagination.pageCount}
+                    sx={{
+                      color: pagination.currentPage >= pagination.pageCount ? '#bdbdbd' : '#1976d2',
+                      '&:hover': {
+                        backgroundColor: pagination.currentPage >= pagination.pageCount ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                      }
+                    }}
+                  >
+                    <ChevronRightIcon />
+                  </IconButton>
+
+                  {/* Bouton dernière page */}
+                  <IconButton
+                    onClick={() => handlePageChange(null, pagination.pageCount)}
+                    disabled={pagination.currentPage >= pagination.pageCount}
+                    sx={{
+                      color: pagination.currentPage >= pagination.pageCount ? '#bdbdbd' : '#1976d2',
+                      '&:hover': {
+                        backgroundColor: pagination.currentPage >= pagination.pageCount ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                      }
+                    }}
+                  >
+                    <LastPageIcon />
+                  </IconButton>
+                </Box>
               )}
+
+              {/* Informations d'affichage en dessous */}
+              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                Affichage de {((pagination.currentPage - 1) * pagination.pageSize) + 1} à {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalCount)} sur {pagination.totalCount} chefs de centre
+              </Typography>
             </Box>
           </>
         )}
@@ -651,6 +778,7 @@ export default function ChefsCentre() {
           setOpenDetailsModal(false);
           handleEdit(selectedChefCentre);
         }}
+        dropdowns={dropdowns}
       />
     </Box>
   );

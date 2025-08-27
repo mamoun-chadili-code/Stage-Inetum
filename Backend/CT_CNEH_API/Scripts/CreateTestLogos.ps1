@@ -45,3 +45,4 @@ Write-Host "Les logos sont maintenant disponibles pour les tests." -ForegroundCo
 
 
 
+

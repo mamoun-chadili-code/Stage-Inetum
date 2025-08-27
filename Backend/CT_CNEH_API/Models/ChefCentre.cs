@@ -42,6 +42,8 @@ namespace CT_CNEH_API.Models
         [Required]
         public int AnneeAutorisation { get; set; }
         
+
+        
         // Navigation properties
         public virtual CCT? CCT { get; set; }
         public virtual NiveauFormation? NiveauFormationInitial { get; set; }

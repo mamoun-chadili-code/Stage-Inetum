@@ -174,12 +174,12 @@ export default function ChefCentreFormModal({ open, onClose, onSubmit, initialVa
                   sx={{ mt: 1 }}
                 >
                   <FormControlLabel 
-                    value={false} 
+                    value="true" 
                     control={<Radio sx={{ color: '#1976d2' }} />} 
                     label="Masculin" 
                   />
                   <FormControlLabel 
-                    value={true} 
+                    value="false" 
                     control={<Radio sx={{ color: '#1976d2' }} />} 
                     label="Féminin" 
                   />

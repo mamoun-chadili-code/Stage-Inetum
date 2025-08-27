@@ -1,4 +1,5 @@
 import api from './api';
+import { historiqueChefCentreService } from './historiqueChefCentreService';
 
 const chefCentreService = {
   // Récupérer la liste des chefs de centre avec filtres et pagination
@@ -60,7 +61,31 @@ const chefCentreService = {
   deleteChefCentre: (id) => api.delete(`/ChefsCentre/${id}`),
 
   // Récupérer l'historique d'un chef de centre
-  getChefCentreHistorique: (id) => api.get(`/ChefsCentre/${id}/historique`)
+  getChefCentreHistorique: (id) => api.get(`/ChefsCentre/${id}/historique`),
+
+  // Récupérer les détails complets d'un chef de centre avec son historique
+  getChefCentreDetails: async (id) => {
+    try {
+      // Récupérer les informations du chef de centre
+      const chefCentreResponse = await api.get(`/ChefsCentre/${id}`);
+      const chefCentre = chefCentreResponse.data;
+
+      // Récupérer l'historique du chef de centre
+      const historiqueResponse = await historiqueChefCentreService.getByChefCentre(id);
+      const historique = historiqueResponse;
+
+      // Combiner les données
+      return {
+        data: {
+          ...chefCentre,
+          historique: historique
+        }
+      };
+    } catch (error) {
+      console.error('Erreur lors de la récupération des détails du chef de centre:', error);
+      throw error;
+    }
+  }
 };
 
 export default chefCentreService; 

@@ -51,7 +51,11 @@ import {
   Email as EmailIcon,
   Warning as WarningIcon,
   DirectionsCar as CarIcon,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  FirstPage as FirstPageIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
+  LastPage as LastPageIcon
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import cctService from '../../services/cctService';
@@ -555,18 +559,34 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      {/* Header avec titre */}
-      <AppBar position="static" sx={{ bgcolor: '#1976d2', mb: 2 }}>
-        <Toolbar>
-          <CarIcon sx={{ mr: 2 }} />
-          <Typography variant="h5" component="h1">
-            Centres de Contrôle Technique (CCT)
-          </Typography>
-        </Toolbar>
-      </AppBar>
+    <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+      {/* Titre principal centré */}
+      <Box sx={{ 
+        textAlign: 'center', 
+        mb: 4, 
+        pt: 2,
+        pb: 3,
+        backgroundColor: '#f8f9fa',
+        borderRadius: 2,
+        border: '1px solid #e0e0e0',
+        mt: 3,
+        mx: 2
+      }}>
+        <Typography 
+          variant="h4" 
+          component="h1" 
+          sx={{ 
+            color: '#1976d2', 
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}
+        >
+          Centres de Contrôle Technique (CCT)
+        </Typography>
+      </Box>
 
-      <Box sx={{ p: 3, flex: 1 }}>
+      <Box sx={{ px: 2, flex: 1, width: '100%' }}>
         {/* Section Recherche */}
         <Paper sx={{ p: 3, mb: 3, bgcolor: '#f8f9fa' }}>
           <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
@@ -574,8 +594,14 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
             RECHERCHE
           </Typography>
           
-          <Grid container spacing={3} alignItems="center">
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'row', 
+            gap: 3, 
+            alignItems: 'center',
+            width: '100%'
+          }}>
+            <Box sx={{ flex: 1 }}>
               <SearchableSelect
                 label="Région"
                 value={filters.regionId}
@@ -584,9 +610,11 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
                 placeholder="Sélectionnez une région"
                 getOptionLabel={(option) => option.libelle}
                 margin="dense"
+                fullWidth
+                size="small"
               />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+            </Box>
+            <Box sx={{ flex: 1 }}>
               <SearchableSelect
                 label="Ville"
                 value={filters.villeId}
@@ -595,9 +623,11 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
                 placeholder="Sélectionnez une ville"
                 getOptionLabel={(option) => option.nom}
                 margin="dense"
+                fullWidth
+                size="small"
               />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+            </Box>
+            <Box sx={{ flex: 1 }}>
               <SearchableSelect
                 label="Réseau de ralliement"
                 value={filters.reseauId}
@@ -606,9 +636,11 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
                 placeholder="Sélectionnez un réseau"
                 getOptionLabel={(option) => option.nom}
                 margin="dense"
+                fullWidth
+                size="small"
               />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+            </Box>
+            <Box sx={{ flex: 1 }}>
               <TextField
                 fullWidth
                 size="small"
@@ -618,87 +650,80 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
                 type="number"
                 placeholder="Ex: 2019"
               />
-            </Grid>
-          </Grid>
-
-          {/* Boutons de recherche */}
-          <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'center' }}>
-            <Button
-              variant="contained"
-              startIcon={<SearchIcon />}
-              onClick={applyFilters}
-              sx={{ 
-                minHeight: '40px',
-                minWidth: '150px',
-                bgcolor: '#1976d2',
-                '&:hover': {
-                  bgcolor: '#1565c0'
-                }
-              }}
-            >
-              Rechercher
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<ClearIcon />}
-              onClick={clearFilters}
-              sx={{ 
-                minHeight: '40px',
-                minWidth: '150px',
-                borderColor: '#1976d2',
-                color: '#1976d2',
-                '&:hover': {
-                  borderColor: '#1565c0',
-                  bgcolor: 'rgba(25, 118, 210, 0.04)'
-                }
-              }}
-            >
-              Annuler
-            </Button>
+            </Box>
+            
+            {/* Boutons de recherche sur la même ligne */}
+            <Box sx={{ display: 'flex', gap: 2, ml: 2 }}>
+              <Button
+                variant="contained"
+                startIcon={<SearchIcon />}
+                onClick={applyFilters}
+                sx={{ 
+                  minHeight: '40px',
+                  minWidth: '150px',
+                  bgcolor: '#1976d2',
+                  '&:hover': {
+                    bgcolor: '#1565c0'
+                  }
+                }}
+              >
+                Rechercher
+              </Button>
+              <Button
+                variant="outlined"
+                startIcon={<ClearIcon />}
+                onClick={clearFilters}
+                sx={{ 
+                  minHeight: '40px',
+                  minWidth: '150px',
+                  borderColor: '#1976d2',
+                  color: '#1976d2',
+                  '&:hover': {
+                    borderColor: '#1565c0',
+                    bgcolor: 'rgba(25, 118, 210, 0.04)'
+                  }
+                }}
+              >
+                Annuler
+              </Button>
+            </Box>
           </Box>
         </Paper>
 
         {/* Section CCTs */}
-        <Paper sx={{ p: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Paper sx={{ p: 3, width: '100%' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, width: '100%' }}>
             <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <CarIcon color="primary" />
               CCTS
             </Typography>
             
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant="body2">Afficher</Typography>
-                <FormControl size="small" sx={{ minWidth: 80 }}>
-                  <Select
-                    value={pagination.pageSize}
-                    onChange={(e) => setPagination(prev => ({ ...prev, pageSize: e.target.value, currentPage: 1 }))}
-                  >
-                    <MenuItem value={5}>5</MenuItem>
-                    <MenuItem value={10}>10</MenuItem>
-                    <MenuItem value={20}>20</MenuItem>
-                    <MenuItem value={50}>50</MenuItem>
-                  </Select>
-                </FormControl>
-                <Typography variant="body2">éléments</Typography>
-              </Box>
               
-              <TextField
-                placeholder="Rechercher..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                size="small"
-                InputProps={{
-                  startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                }}
-                sx={{ width: 250 }}
-              />
             </Box>
           </Box>
 
           {/* Bouton Ajouter CCT */}
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
-            
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            {/* Sélecteur d'éléments par page */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="body2" sx={{ color: '#666' }}>
+                Éléments par page :
+              </Typography>
+              <FormControl size="small" sx={{ minWidth: 120 }}>
+                <Select
+                  value={pagination.pageSize}
+                  onChange={(e) => setPagination(prev => ({ ...prev, pageSize: e.target.value, currentPage: 1 }))}
+                  label="Éléments par page"
+                >
+                  <MenuItem value={5}>5</MenuItem>
+                  <MenuItem value={10}>10</MenuItem>
+                  <MenuItem value={25}>25</MenuItem>
+                  <MenuItem value={50}>50</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+
             <Button
               variant="contained"
               startIcon={<AddIcon />}
@@ -718,17 +743,17 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
           )}
 
           {/* Tableau */}
-          <Table>
+          <Table sx={{ border: '2px solid #e0e0e0', borderRadius: 1, width: '100%' }}>
             <TableHead>
-              <TableRow sx={{ bgcolor: '#1976d2' }}>
-                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>CCT</TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Agrément</TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Catégorie</TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Réseau</TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Ville</TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Statut</TableCell>
-                <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Actions</TableCell>
-              </TableRow>
+                          <TableRow sx={{ backgroundColor: '#F2F2F5' }}>
+              <TableCell sx={{ fontWeight: 'bold' }}>CCT</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Agrément</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Catégorie</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Réseau</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Ville</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Statut</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}></TableCell>
+            </TableRow>
             </TableHead>
             <TableBody>
               {loading ? renderLoadingRows() : (
@@ -809,33 +834,121 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
             </TableBody>
           </Table>
 
-          {/* Pagination */}
-          {!loading && (
-            <Box sx={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              p: 3, 
-              borderTop: '1px solid #e0e0e0',
-              backgroundColor: '#fafafa'
-            }}>
-              <Typography variant="body2" color="text.secondary">
-                Affichage de l'élément {((pagination.currentPage - 1) * pagination.pageSize) + 1} à {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalCount)} sur {pagination.totalCount} éléments
-              </Typography>
-              
-              {pagination.pageCount > 1 && (
-                <Pagination
-                  count={pagination.pageCount}
-                  page={pagination.currentPage}
-                  onChange={handlePageChange}
-                  color="primary"
-                  showFirstButton
-                  showLastButton
-                  size="large"
-                />
-              )}
-            </Box>
-          )}
+          {/* Pagination avec style personnalisé */}
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column',
+            alignItems: 'center', 
+            mt: 3,
+            p: 2,
+            backgroundColor: '#f8f9fa',
+            borderRadius: 2,
+            border: '1px solid #e0e0e0'
+          }}>
+
+
+            {/* Navigation de pagination personnalisée centrée */}
+            {pagination.pageCount > 1 && (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                {/* Bouton première page */}
+                <IconButton
+                  onClick={() => handlePageChange(null, 1)}
+                  disabled={pagination.currentPage === 1}
+                  sx={{
+                    color: pagination.currentPage === 1 ? '#bdbdbd' : '#1976d2',
+                    '&:hover': {
+                      backgroundColor: pagination.currentPage === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                    }
+                  }}
+                >
+                  <FirstPageIcon />
+                </IconButton>
+
+                {/* Bouton page précédente */}
+                <IconButton
+                  onClick={() => handlePageChange(null, pagination.currentPage - 1)}
+                  disabled={pagination.currentPage === 1}
+                  sx={{
+                    color: pagination.currentPage === 1 ? '#bdbdbd' : '#1976d2',
+                    '&:hover': {
+                      backgroundColor: pagination.currentPage === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                    }
+                  }}
+                >
+                  <ChevronLeftIcon />
+                </IconButton>
+
+                {/* Numéros de page */}
+                {Array.from({ length: Math.min(3, pagination.pageCount) }, (_, i) => {
+                  let pageNum;
+                  if (pagination.pageCount <= 3) {
+                    pageNum = i + 1;
+                  } else if (pagination.currentPage <= 2) {
+                    pageNum = i + 1;
+                  } else if (pagination.currentPage >= pagination.pageCount - 1) {
+                    pageNum = pagination.pageCount - 2 + i;
+                  } else {
+                    pageNum = pagination.currentPage - 1 + i;
+                  }
+
+                  if (pageNum > 0 && pageNum <= pagination.pageCount) {
+                    return (
+                      <IconButton
+                        key={pageNum}
+                        onClick={() => handlePageChange(null, pageNum)}
+                        sx={{
+                          backgroundColor: pagination.currentPage === pageNum ? '#1976d2' : 'transparent',
+                          color: pagination.currentPage === pageNum ? 'white' : '#424242',
+                          minWidth: 36,
+                          height: 36,
+                          fontSize: '0.875rem',
+                          '&:hover': {
+                            backgroundColor: pagination.currentPage === pageNum ? '#1976d2' : 'rgba(25, 118, 210, 0.1)'
+                          }
+                        }}
+                      >
+                        {pageNum}
+                      </IconButton>
+                    );
+                  }
+                  return null;
+                })}
+
+                {/* Bouton page suivante */}
+                <IconButton
+                  onClick={() => handlePageChange(null, pagination.currentPage + 1)}
+                  disabled={pagination.currentPage >= pagination.pageCount}
+                  sx={{
+                    color: pagination.currentPage >= pagination.pageCount ? '#bdbdbd' : '#1976d2',
+                    '&:hover': {
+                      backgroundColor: pagination.currentPage >= pagination.pageCount ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                    }
+                  }}
+                >
+                  <ChevronRightIcon />
+                </IconButton>
+
+                {/* Bouton dernière page */}
+                <IconButton
+                  onClick={() => handlePageChange(null, pagination.pageCount)}
+                  disabled={pagination.currentPage >= pagination.pageCount}
+                  sx={{
+                    color: pagination.currentPage >= pagination.pageCount ? '#bdbdbd' : '#1976d2',
+                    '&:hover': {
+                      backgroundColor: pagination.currentPage >= pagination.pageCount ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                    }
+                  }}
+                >
+                  <LastPageIcon />
+                </IconButton>
+              </Box>
+            )}
+
+            {/* Informations d'affichage en dessous */}
+            <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+              Affichage de {((pagination.currentPage - 1) * pagination.pageSize) + 1} à {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalCount)} sur {pagination.totalCount} CCTs
+            </Typography>
+          </Box>
         </Paper>
       </Box>
 

@@ -74,6 +74,8 @@ namespace CT_CNEH_API.Models
         
         public string? ThumbprintCertificat { get; set; }
         
+
+        
         // Navigation properties
         public virtual CategorieCCT Categorie { get; set; } = null!;
         public virtual StatutCCT Statut { get; set; } = null!;
