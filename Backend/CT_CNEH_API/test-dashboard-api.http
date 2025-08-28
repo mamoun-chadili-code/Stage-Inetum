@@ -1,0 +1,65 @@
+### Test des endpoints du Dashboard API
+
+# Récupérer toutes les statistiques
+GET http://localhost:7000/api/dashboard/stats
+Content-Type: application/json
+
+###
+
+# Récupérer le nombre total de CCTs
+GET http://localhost:7000/api/dashboard/ccts/count
+Content-Type: application/json
+
+###
+
+# Récupérer le nombre total d'agents
+GET http://localhost:7000/api/dashboard/agents/count
+Content-Type: application/json
+
+###
+
+# Récupérer le nombre total de chefs de centre
+GET http://localhost:7000/api/dashboard/chefs-centre/count
+Content-Type: application/json
+
+###
+
+# Récupérer le nombre total de lignes
+GET http://localhost:7000/api/dashboard/lignes/count
+Content-Type: application/json
+
+###
+
+# Récupérer le nombre total de formations
+GET http://localhost:7000/api/dashboard/formations/count
+Content-Type: application/json
+
+###
+
+# Récupérer le nombre total d'équipements
+GET http://localhost:7000/api/dashboard/equipements/count
+Content-Type: application/json
+
+###
+
+# Récupérer le nombre total de décisions
+GET http://localhost:7000/api/dashboard/decisions/count
+Content-Type: application/json
+
+###
+
+# Récupérer le nombre total de réseaux
+GET http://localhost:7000/api/dashboard/reseaux/count
+Content-Type: application/json
+
+###
+
+# Récupérer les statistiques détaillées
+GET http://localhost:7000/api/dashboard/detailed
+Content-Type: application/json
+
+###
+
+# Récupérer les statistiques en temps réel
+GET http://localhost:7000/api/dashboard/real-time
+Content-Type: application/json
