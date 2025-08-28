@@ -264,6 +264,12 @@ export default function Reseaux() {
       const result = await reseauxService.getReseaux(params);
       console.log('Résultat reçu:', result);
       
+      // Log de débogage pour vérifier la structure des données
+      if (result.data && result.data.length > 0) {
+        console.log('🔍 Structure des données du premier réseau:', result.data[0]);
+        console.log('📊 Propriétés disponibles:', Object.keys(result.data[0]));
+      }
+      
       setReseaux(result.data || []);
       setTotalCount(result.totalCount || 0);
       setPageCount(result.pageCount || 0);
@@ -763,10 +769,13 @@ export default function Reseaux() {
                 <TableCell>{new Date(r.dateAgrement).toLocaleDateString('fr-FR')}</TableCell>
                 <TableCell>{new Date(r.dateStatut).toLocaleDateString('fr-FR')}</TableCell>
                 <TableCell>{r.adresseSiege}</TableCell>
-                <TableCell>{r.ville?.nom || r.ville}</TableCell>
-                                <TableCell>
+                {/* CORRECTION : Utiliser villeNom du backend */}
+                <TableCell>{r.villeNom || r.ville?.nom || '—'}</TableCell>
+                <TableCell>
+                  {/* CORRECTION : Utiliser statutNom du backend */}
                   {(() => {
-                    const { statutAAfficher, couleurStatut } = getStatutAffichage(r.statut);
+                    const statutValue = r.statutNom || r.statut?.nom || r.statut;
+                    const { statutAAfficher, couleurStatut } = getStatutAffichage(statutValue);
                     return (
                       <Chip 
                         label={statutAAfficher} 

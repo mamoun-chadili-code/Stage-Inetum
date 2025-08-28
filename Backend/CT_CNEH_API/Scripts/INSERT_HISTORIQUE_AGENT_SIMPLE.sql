@@ -1,0 +1,60 @@
+USE CT_CNEH_DB;
+GO
+
+-- Nettoyer la table
+DELETE FROM HistoriqueAgent;
+GO
+
+-- Réinitialiser l'auto-increment
+DBCC CHECKIDENT ('HistoriqueAgent', RESEED, 0);
+GO
+
+-- Insertion des affectations d'agents
+INSERT INTO HistoriqueAgent (AgentId, CCTId, DateDebutAffectation, DateFinAffectation, DateMiseAJour, IsActive, DateCreation) VALUES
+(2, 9, '2023-01-15', NULL, GETDATE(), 1, GETDATE()),
+(3, 10, '2023-02-01', NULL, GETDATE(), 1, GETDATE()),
+(4, 11, '2023-02-15', NULL, GETDATE(), 1, GETDATE()),
+(5, 12, '2023-03-01', NULL, GETDATE(), 1, GETDATE()),
+(6, 13, '2023-03-15', NULL, GETDATE(), 1, GETDATE()),
+(7, 14, '2023-04-01', NULL, GETDATE(), 1, GETDATE()),
+(8, 15, '2023-04-15', NULL, GETDATE(), 1, GETDATE()),
+(9, 28, '2023-05-01', NULL, GETDATE(), 1, GETDATE()),
+(10, 29, '2023-05-15', NULL, GETDATE(), 1, GETDATE()),
+(11, 30, '2023-06-01', NULL, GETDATE(), 1, GETDATE()),
+(12, 31, '2023-06-15', NULL, GETDATE(), 1, GETDATE()),
+(13, 32, '2023-07-01', NULL, GETDATE(), 1, GETDATE()),
+(14, 33, '2023-07-15', NULL, GETDATE(), 1, GETDATE()),
+(15, 34, '2023-08-01', NULL, GETDATE(), 1, GETDATE()),
+(16, 35, '2022-01-01', '2023-01-31', GETDATE(), 0, GETDATE()),
+(17, 36, '2022-02-01', '2023-02-28', GETDATE(), 0, GETDATE()),
+(18, 37, '2022-03-01', '2023-03-31', GETDATE(), 0, GETDATE()),
+(19, 38, '2022-04-01', '2023-04-30', GETDATE(), 0, GETDATE()),
+(20, 39, '2022-05-01', '2023-05-31', GETDATE(), 0, GETDATE()),
+(21, 40, '2022-06-01', '2023-06-30', GETDATE(), 0, GETDATE()),
+(22, 41, '2022-07-01', '2023-07-31', GETDATE(), 0, GETDATE()),
+(23, 42, '2022-08-01', '2023-08-31', GETDATE(), 0, GETDATE()),
+(24, 43, '2022-09-01', '2023-09-30', GETDATE(), 0, GETDATE()),
+(25, 44, '2022-10-01', '2023-10-31', GETDATE(), 0, GETDATE()),
+(26, 45, '2023-11-01', NULL, GETDATE(), 1, GETDATE()),
+(27, 46, '2023-12-01', NULL, GETDATE(), 1, GETDATE()),
+(28, 47, '2024-01-01', NULL, GETDATE(), 1, GETDATE()),
+(29, 48, '2024-02-01', NULL, GETDATE(), 1, GETDATE()),
+(30, 49, '2024-03-01', NULL, GETDATE(), 1, GETDATE()),
+(31, 50, '2024-04-01', NULL, GETDATE(), 1, GETDATE()),
+(32, 51, '2024-05-01', NULL, GETDATE(), 1, GETDATE()),
+(33, 52, '2024-06-01', NULL, GETDATE(), 1, GETDATE()),
+(34, 53, '2024-07-01', NULL, GETDATE(), 1, GETDATE()),
+(35, 54, '2024-08-01', NULL, GETDATE(), 1, GETDATE()),
+(36, 55, '2024-09-01', NULL, GETDATE(), 1, GETDATE()),
+(37, 56, '2024-10-01', NULL, GETDATE(), 1, GETDATE()),
+(38, 57, '2024-11-01', NULL, GETDATE(), 1, GETDATE()),
+(39, 9, '2024-12-01', NULL, GETDATE(), 1, GETDATE());
+GO
+
+-- Vérification
+SELECT COUNT(*) as TotalAffectations FROM HistoriqueAgent;
+GO
+
+-- Affichage des données
+SELECT * FROM HistoriqueAgent ORDER BY Id;
+GO

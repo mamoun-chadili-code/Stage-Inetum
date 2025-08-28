@@ -179,7 +179,7 @@ export default function CCTFormModal({ open, onClose, onSubmit, initialValues = 
   };
 
   const isEditMode = !!initialValues?.id;
-  const title = isEditMode ? 'MODIFIER CCT' : '+ AJOUTER CCT';
+  const title = isEditMode ? 'MODIFIER CCT' : ' AJOUTER CCT';
 
   return (
     <Dialog 
