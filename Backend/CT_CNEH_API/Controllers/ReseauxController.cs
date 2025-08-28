@@ -16,9 +16,50 @@ namespace CT_CNEH_API.Controllers
             _context = context;
         }
 
+        // DTO pour éviter les cycles de références
+        public class ReseauDto
+        {
+            public int Id { get; set; }
+            public string Nom { get; set; } = string.Empty;
+            public string Agrement { get; set; } = string.Empty;
+            public DateTime DateAgrement { get; set; }
+            public int? StatutId { get; set; }
+            public string? StatutNom { get; set; }
+            public DateTime? DateStatut { get; set; }
+            public string? AdresseSiege { get; set; }
+            public string? AdresseDomiciliation { get; set; }
+            public int? VilleId { get; set; }
+            public string? VilleNom { get; set; }
+            public int? CadreAutorisationId { get; set; }
+            public string? CadreAutorisationNom { get; set; }
+        }
+
+        // GET: api/Reseaux/all
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAllReseaux()
+        {
+            var reseaux = await _context.Reseaux
+                .Select(r => new { 
+                    r.Id, 
+                    r.Nom, 
+                    r.Agrement,
+                    r.DateAgrement,
+                    r.DateStatut,
+                    StatutId = r.StatutId,
+                    StatutNom = r.Statut != null ? r.Statut.Nom : null,
+                    VilleId = r.VilleId,
+                    VilleNom = r.Ville != null ? r.Ville.Nom : null,
+                    CadreAutorisationId = r.CadreAutorisationId,
+                    CadreAutorisationNom = r.CadreAutorisation != null ? r.CadreAutorisation.Libelle : null
+                })
+                .ToListAsync();
+            
+            return Ok(reseaux);
+        }
+
         // GET: api/Reseaux
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Reseau>>> GetReseaux(
+        public async Task<ActionResult<IEnumerable<ReseauDto>>> GetReseaux(
             [FromQuery] string? nom,
             [FromQuery] string? agrement,
             [FromQuery] DateTime? dateAgrement,
@@ -65,7 +106,25 @@ namespace CT_CNEH_API.Controllers
             Response.Headers.Add("X-Total-Count", totalCount.ToString());
             Response.Headers.Add("X-Page-Count", Math.Ceiling((double)totalCount / pageSize).ToString());
 
-            return Ok(reseaux);
+            // Mapping vers DTO pour éviter les cycles
+            var reseauDtos = reseaux.Select(r => new ReseauDto
+            {
+                Id = r.Id,
+                Nom = r.Nom,
+                Agrement = r.Agrement,
+                DateAgrement = r.DateAgrement,
+                StatutId = r.StatutId,
+                StatutNom = r.Statut?.Nom,
+                DateStatut = r.DateStatut,
+                AdresseSiege = r.AdresseSiege,
+                AdresseDomiciliation = r.AdresseDomiciliation,
+                VilleId = r.VilleId,
+                VilleNom = r.Ville?.Nom,
+                CadreAutorisationId = r.CadreAutorisationId,
+                CadreAutorisationNom = r.CadreAutorisation?.Libelle
+            }).ToList();
+
+            return Ok(reseauDtos);
         }
 
         // GET: api/Reseaux/5

@@ -62,17 +62,33 @@ export const dropdownsService = {
   async getReseaux() {
     try {
       console.log('Tentative de récupération des réseaux depuis l\'API...');
-      const response = await api.get('/Reseaux');
-      console.log('Réseaux récupérés depuis l\'API:', response.data);
+      // Utiliser l'endpoint spécifique /Reseaux/all qui retourne TOUS les réseaux sans pagination
+      const response = await api.get('/Reseaux/all');
+      console.log('Réseaux récupérés depuis l\'API (endpoint /all):', response.data);
       // Trier les réseaux par ordre alphabétique (propriété 'nom')
       const sortedReseaux = response.data.sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
       return sortedReseaux;
     } catch (error) {
-      console.error('❌ ERREUR: API Reseaux non disponible.');
-      console.error('Veuillez vérifier que l\'API backend est démarrée et que la table Reseaux contient des données.');
-      // Retourner un tableau vide si l'API échoue
-      console.warn('API Reseaux non disponible - Retour d\'un tableau vide');
-      return [];
+      console.warn('API Reseaux/all non disponible, tentative avec endpoint paginé...');
+      try {
+        // Fallback vers l'endpoint paginé avec une grande pageSize
+        const response = await api.get('/Reseaux', {
+          params: {
+            page: 1,
+            pageSize: 1000 // Récupérer jusqu'à 1000 réseaux
+          }
+        });
+        console.log('Réseaux récupérés depuis l\'API (endpoint paginé):', response.data);
+        // Trier les réseaux par ordre alphabétique (propriété 'nom')
+        const sortedReseaux = response.data.sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+        return sortedReseaux;
+      } catch (fallbackError) {
+        console.error('❌ ERREUR: API Reseaux non disponible.');
+        console.error('Veuillez vérifier que l\'API backend est démarrée et que la table Reseaux contient des données.');
+        // Retourner un tableau vide si l'API échoue
+        console.warn('API Reseaux non disponible - Retour d\'un tableau vide');
+        return [];
+      }
     }
   },
 
@@ -233,16 +249,27 @@ export const dropdownsService = {
   async getCCTs() {
     try {
       console.log('Tentative de récupération des CCTs depuis l\'API...');
-      const response = await api.get('/CCTs');
-      console.log('CCTs récupérés depuis l\'API:', response.data);
-      // Gérer le format paginé de l'API
-      const result = response.data.data || response.data;
-      console.log('CCTs traités:', result);
-      return result;
+      // Utiliser l'endpoint spécifique /CCTs/all qui retourne TOUS les CCTs sans pagination
+      const response = await api.get('/CCTs/all');
+      console.log('CCTs récupérés depuis l\'API (endpoint /all):', response.data);
+      return response.data;
     } catch (error) {
-      console.warn('API CCTs non disponible, utilisation des données mockées:', error.message);
-      // console.log('Utilisation des CCTs mockés:', this.MOCK_CCTS); // Supprimé
-      return []; // Retourner un tableau vide en cas d'erreur
+      console.warn('API CCTs/all non disponible, tentative avec endpoint paginé...');
+      try {
+        // Fallback vers l'endpoint paginé avec une grande pageSize
+        const response = await api.get('/CCTs', {
+          params: {
+            page: 1,
+            pageSize: 1000 // Récupérer jusqu'à 1000 CCTs
+          }
+        });
+        console.log('CCTs récupérés depuis l\'API (endpoint paginé):', response.data);
+        return response.data;
+      } catch (fallbackError) {
+        console.error('❌ ERREUR: API CCTs non disponible.');
+        console.error('Veuillez vérifier que l\'API backend est démarrée et que la table CCTs contient des données.');
+        return []; // Retourner un tableau vide en cas d'erreur
+      }
     }
   },
 
@@ -250,14 +277,27 @@ export const dropdownsService = {
   async getChefsCentre() {
     try {
       console.log('Tentative de récupération des chefs de centre depuis l\'API...');
-      const response = await api.get('/ChefsCentre');
-      console.log('Chefs de centre récupérés depuis l\'API:', response.data);
-      // Gérer le format paginé de l'API
-      return response.data.data || response.data;
+      // Utiliser l'endpoint spécifique /ChefsCentre/all qui retourne TOUS les chefs de centre sans pagination
+      const response = await api.get('/ChefsCentre/all');
+      console.log('Chefs de centre récupérés depuis l\'API (endpoint /all):', response.data);
+      return response.data;
     } catch (error) {
-      console.warn('API ChefsCentre non disponible, utilisation des données mockées:', error.message);
-      // console.log('Utilisation des chefs de centre mockés:', this.MOCK_CHEFS_CENTRE); // Supprimé
-      return []; // Retourner un tableau vide en cas d'erreur
+      console.warn('API ChefsCentre/all non disponible, tentative avec endpoint paginé...');
+      try {
+        // Fallback vers l'endpoint paginé avec une grande pageSize
+        const response = await api.get('/ChefsCentre', {
+          params: {
+            page: 1,
+            pageSize: 1000 // Récupérer jusqu'à 1000 chefs de centre
+          }
+        });
+        console.log('Chefs de centre récupérés depuis l\'API (endpoint paginé):', response.data);
+        return response.data.data || response.data;
+      } catch (fallbackError) {
+        console.error('❌ ERREUR: API ChefsCentre non disponible.');
+        console.error('Veuillez vérifier que l\'API backend est démarrée et que la table ChefCentres contient des données.');
+        return []; // Retourner un tableau vide en cas d'erreur
+      }
     }
   },
 
@@ -265,14 +305,27 @@ export const dropdownsService = {
   async getAgents() {
     try {
       console.log('Tentative de récupération des agents depuis l\'API...');
-      const response = await api.get('/Agents');
-      console.log('Agents récupérés depuis l\'API:', response.data);
-      // Gérer le format paginé de l'API
-      return response.data.data || response.data;
+      // Utiliser l'endpoint spécifique /Agents/all qui retourne TOUS les agents sans pagination
+      const response = await api.get('/Agents/all');
+      console.log('Agents récupérés depuis l\'API (endpoint /all):', response.data);
+      return response.data;
     } catch (error) {
-      console.warn('API Agents non disponible, utilisation des données mockées:', error.message);
-      // console.log('Utilisation des agents mockés:', this.MOCK_AGENTS); // Supprimé
-      return []; // Retourner un tableau vide en cas d'erreur
+      console.warn('API Agents/all non disponible, tentative avec endpoint paginé...');
+      try {
+        // Fallback vers l'endpoint paginé avec une grande pageSize
+        const response = await api.get('/Agents', {
+          params: {
+            page: 1,
+            pageSize: 1000 // Récupérer jusqu'à 1000 agents
+          }
+        });
+        console.log('Agents récupérés depuis l\'API (endpoint paginé):', response.data);
+        return response.data.data || response.data;
+      } catch (fallbackError) {
+        console.error('❌ ERREUR: API Agents non disponible.');
+        console.error('Veuillez vérifier que l\'API backend est démarrée et que la table Agents contient des données.');
+        return []; // Retourner un tableau vide en cas d'erreur
+      }
     }
   },
 

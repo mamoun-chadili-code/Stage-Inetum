@@ -1,0 +1,19 @@
+### Test de l'endpoint /Reseaux/all
+GET http://localhost:7000/api/Reseaux/all
+Accept: application/json
+
+### Test de l'endpoint /Reseaux (avec pagination)
+GET http://localhost:7000/api/Reseaux?page=1&pageSize=5
+Accept: application/json
+
+### Test de l'endpoint /CCTs/all
+GET http://localhost:7000/api/CCTs/all
+Accept: application/json
+
+### Test de l'endpoint /ChefsCentre/all
+GET http://localhost:7000/api/ChefsCentre/all
+Accept: application/json
+
+### Test de l'endpoint /Agents/all
+GET http://localhost:7000/api/Agents/all
+Accept: application/json

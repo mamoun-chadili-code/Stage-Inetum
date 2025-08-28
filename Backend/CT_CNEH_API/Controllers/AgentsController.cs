@@ -19,6 +19,25 @@ namespace CT_CNEH_API.Controllers
             _historiqueService = historiqueService;
         }
 
+        // GET: api/Agents/all
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAllAgents()
+        {
+            var agents = await _context.Agents
+                .Include(a => a.CCT)
+                .Select(a => new { 
+                    a.Id, 
+                    a.Nom, 
+                    a.Prenom, 
+                    a.CIN, 
+                    a.CCTId,
+                    CCTNom = a.CCT != null ? a.CCT.Nom : null
+                })
+                .ToListAsync();
+            
+            return Ok(agents);
+        }
+
         // GET: api/Agents
         [HttpGet]
         public async Task<ActionResult<object>> GetAgents(

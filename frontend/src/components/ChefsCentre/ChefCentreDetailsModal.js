@@ -181,7 +181,7 @@ export default function ChefCentreDetailsModal({ open, onClose, chefCentre, deta
                     <Grid item xs={6}>
                       <Typography variant="subtitle2" color="text.secondary">CCT</Typography>
                       <Typography variant="body1">
-                        {chefCentre.cctId ? getCCTNom(chefCentre.cctId) : (chefCentre.cctNom || '-')}
+                        {chefCentre.cctNom || (chefCentre.cctId ? getCCTNom(chefCentre.cctId) : '-')}
                       </Typography>
                     </Grid>
                     <Grid item xs={6}>

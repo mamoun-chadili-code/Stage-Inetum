@@ -19,6 +19,25 @@ namespace CT_CNEH_API.Controllers
             _context = context;
         }
 
+        // GET: api/ChefsCentre/all
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAllChefsCentre()
+        {
+            var chefsCentre = await _context.ChefCentres
+                .Include(c => c.CCT)
+                .Select(c => new { 
+                    c.Id, 
+                    c.Nom, 
+                    c.Prenom, 
+                    c.CIN, 
+                    c.CCTId,
+                    CCTNom = c.CCT != null ? c.CCT.Nom : null
+                })
+                .ToListAsync();
+            
+            return Ok(chefsCentre);
+        }
+
         // GET: api/ChefsCentre
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ChefCentreDto>>> GetChefsCentre(

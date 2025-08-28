@@ -43,3 +43,4 @@ BEGIN
     AND TABLE_NAME LIKE '%Historique%'
     ORDER BY TABLE_NAME
 END
+

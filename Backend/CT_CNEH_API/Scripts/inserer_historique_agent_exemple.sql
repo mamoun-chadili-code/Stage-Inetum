@@ -64,3 +64,4 @@ BEGIN
     PRINT 'ERREUR: La table HistoriqueAgent n''existe pas'
     PRINT 'Vérifiez que la migration a été appliquée'
 END
+
