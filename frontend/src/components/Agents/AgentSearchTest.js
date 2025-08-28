@@ -11,7 +11,7 @@ import {
   CircularProgress
 } from '@mui/material';
 import { Search as SearchIcon, Clear as ClearIcon } from '@mui/icons-material';
-import SearchableSelect from '../common/SearchableSelect';
+import SearchableSelect from '../Commun/SearchableSelect';
 import dropdownsService from '../../services/dropdownsService';
 
 export default function AgentSearchTest() {

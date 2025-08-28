@@ -22,18 +22,22 @@ const SectionTitle = ({
     switch (variant) {
       case 'section':
         return {
-          color: 'primary.main',
+          color: '#003366',
           fontWeight: 700,
           fontSize: '1.5rem',
           textAlign: 'center',
-          marginBottom: '1.5rem',
-          paddingBottom: '0.5rem',
+          marginBottom: '0.5rem',
+          paddingBottom: '0.25rem',
           textTransform: 'uppercase',
           letterSpacing: '0.5px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '40px',
         };
       case 'module':
         return {
-          color: 'primary.main',
+          color: '#003366',
           fontWeight: 600,
           fontSize: '1.25rem',
           marginBottom: '1rem',
@@ -62,7 +66,7 @@ const SectionTitle = ({
         };
       default:
         return {
-          color: 'primary.main',
+          color: '#003366',
           fontWeight: 600,
           fontSize: '1.25rem',
           marginBottom: '1rem',

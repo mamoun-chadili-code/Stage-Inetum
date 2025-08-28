@@ -35,7 +35,7 @@ import {
   Schedule as ScheduleIcon,
   Event as EventIcon
 } from '@mui/icons-material';
-import SearchableSelect from '../common/SearchableSelect';
+import SearchableSelect from '../Commun/SearchableSelect';
 
 const LigneFormModal = ({ 
   open, 

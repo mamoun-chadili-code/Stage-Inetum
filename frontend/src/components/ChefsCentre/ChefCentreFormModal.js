@@ -16,7 +16,7 @@ import {
   Divider,
   Paper
 } from '@mui/material';
-import SearchableSelect from '../common/SearchableSelect';
+import SearchableSelect from '../Commun/SearchableSelect';
 
 export default function ChefCentreFormModal({ open, onClose, onSubmit, initialValues = null, dropdowns = {} }) {
   const [form, setForm] = useState({

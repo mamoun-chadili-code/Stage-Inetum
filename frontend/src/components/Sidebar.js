@@ -38,15 +38,15 @@ const glow = keyframes`
 
 
   const menu = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard', color: '#3C6F71' },
-    { text: 'Réseaux', icon: <SettingsEthernetIcon />, path: '/reseaux', color: '#284D63' },
-    { text: 'CCT', icon: <PeopleIcon />, path: '/cct', color: '#709CA7' },
-    { text: 'Agents', icon: <PeopleIcon />, path: '/agents', color: '#B8CBD0' },
-    { text: 'Chefs de Centre', icon: <PeopleIcon />, path: '/chefs-centre', color: '#7A90A4' },
-    { text: 'Formations', icon: <SchoolIcon />, path: '/formations', color: '#344D59' },
-    { text: 'Lignes', icon: <DirectionsBusIcon />, path: '/lignes', color: '#212E53' },
-    { text: 'Équipements', icon: <DevicesIcon />, path: '/equipements', color: '#353535' },
-    { text: 'Décisions', icon: <GavelIcon />, path: '/decisions', color: '#D9D9D9' },
+    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard', color: '#002FA7' },
+    { text: 'Réseaux', icon: <SettingsEthernetIcon />, path: '/reseaux', color: '#1FA055' },
+    { text: 'CCT', icon: <PeopleIcon />, path: '/cct', color: '#0A7399' },
+    { text: 'Agents', icon: <PeopleIcon />, path: '/agents', color: '#AD4F09' },
+    { text: 'Chefs de Centre', icon: <PeopleIcon />, path: '/chefs-centre', color: '#960018' },
+    { text: 'Formations', icon: <SchoolIcon />, path: '/formations', color: '#679F5A' },
+    { text: 'Lignes', icon: <DirectionsBusIcon />, path: '/lignes', color: '#7C9ACC' },
+    { text: 'Équipements', icon: <DevicesIcon />, path: '/equipements', color: '#3B6C99' },
+    { text: 'Décisions', icon: <GavelIcon />, path: '/decisions', color: '#0288C9' },
   ];
 
 export default function Sidebar() {

@@ -3,7 +3,7 @@ import { createTheme } from '@mui/material/styles';
 // Palette de couleurs personnalisée
 const colors = {
   // Couleurs principales
-  primary: '#3C6F71',      // Vert-bleu principal
+  primary: '#003366',      // Bleu foncé principal
   secondary: '#284D63',    // Bleu foncé secondaire
   accent: '#709CA7',       // Bleu-gris accent
   

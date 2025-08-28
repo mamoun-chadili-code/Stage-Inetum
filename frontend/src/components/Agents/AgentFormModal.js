@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { Close as CloseIcon, Save as SaveIcon } from '@mui/icons-material';
-import SearchableSelect from '../common/SearchableSelect';
+import SearchableSelect from '../Commun/SearchableSelect';
 
 export default function AgentFormModal({ open, onClose, onSubmit, initialValues, dropdowns }) {
   const [formData, setFormData] = useState({

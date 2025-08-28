@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CT_CNEH_API.Data;
 using CT_CNEH_API.Models;
+using CT_CNEH_API.Services;
 
 namespace CT_CNEH_API.Controllers
 {
@@ -10,10 +11,12 @@ namespace CT_CNEH_API.Controllers
     public class AgentsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHistoriqueAgentService _historiqueService;
 
-        public AgentsController(ApplicationDbContext context)
+        public AgentsController(ApplicationDbContext context, IHistoriqueAgentService historiqueService)
         {
             _context = context;
+            _historiqueService = historiqueService;
         }
 
         // GET: api/Agents
@@ -322,11 +325,17 @@ namespace CT_CNEH_API.Controllers
         {
             try
             {
-                // Pour l'instant, retourner un historique vide
-                // TODO: Implémenter la logique d'historique quand le modèle HistoriqueAgent sera créé
-                await Task.CompletedTask;
+                // Vérifier que l'agent existe
+                var agent = await _context.Agents.FindAsync(id);
+                if (agent == null)
+                {
+                    return NotFound(new { message = "Agent non trouvé" });
+                }
+
+                // Récupérer l'historique via le service
+                var historiques = await _historiqueService.GetByAgentIdAsync(id);
                 
-                return Ok(new { historique = new List<object>() });
+                return Ok(new { historique = historiques });
             }
             catch (Exception ex)
             {

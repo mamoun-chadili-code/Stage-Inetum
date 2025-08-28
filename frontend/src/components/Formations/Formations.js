@@ -52,6 +52,7 @@ import formationService from '../../services/formationService';
 import { dropdownsService } from '../../services/dropdownsService';
 import FormationFormModal from './FormationFormModal';
 import FormationDetailsModal from './FormationDetailsModal';
+import SectionTitle from '../Commun/SectionTitle';
 
 export default function Formations() {
   // États principaux
@@ -333,24 +334,20 @@ export default function Formations() {
       <Box sx={{ 
         textAlign: 'center', 
         mb: 4, 
-        pt: 2,
-        pb: 3,
+        pt: 1,
+        pb: 1,
         backgroundColor: '#f8f9fa',
         borderRadius: 2,
-        border: '1px solid #e0e0e0'
+        border: '1px solid #e0e0e0',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '50px'
       }}>
-        <Typography 
-          variant="h4" 
-          component="h1" 
-          sx={{ 
-            color: '#1976d2', 
-            fontWeight: 'bold',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px'
-          }}
-        >
-          Gestion des Formations
-        </Typography>
+        <SectionTitle 
+          title="GESTION DES FORMATIONS" 
+          variant="section"
+        />
       </Box>
 
       {/* Section Filtres */}
@@ -683,9 +680,9 @@ export default function Formations() {
                     onClick={() => handlePageChange(null, 1)}
                     disabled={pagination.currentPage === 1}
                     sx={{
-                      color: pagination.currentPage === 1 ? '#bdbdbd' : '#1976d2',
+                      color: pagination.currentPage === 1 ? '#bdbdbd' : '#008080',
                       '&:hover': {
-                        backgroundColor: pagination.currentPage === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                        backgroundColor: pagination.currentPage === 1 ? 'transparent' : 'rgba(0, 128, 128, 0.1)'
                       }
                     }}
                   >
@@ -697,9 +694,9 @@ export default function Formations() {
                     onClick={() => handlePageChange(null, pagination.currentPage - 1)}
                     disabled={pagination.currentPage === 1}
                     sx={{
-                      color: pagination.currentPage === 1 ? '#bdbdbd' : '#1976d2',
+                      color: pagination.currentPage === 1 ? '#bdbdbd' : '#008080',
                       '&:hover': {
-                        backgroundColor: pagination.currentPage === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                        backgroundColor: pagination.currentPage === 1 ? 'transparent' : 'rgba(0, 128, 128, 0.1)'
                       }
                     }}
                   >
@@ -724,16 +721,16 @@ export default function Formations() {
                         <IconButton
                           key={pageNum}
                           onClick={() => handlePageChange(null, pageNum)}
-                          sx={{
-                            backgroundColor: pagination.currentPage === pageNum ? '#1976d2' : 'transparent',
-                            color: pagination.currentPage === pageNum ? 'white' : '#424242',
-                            minWidth: 36,
-                            height: 36,
-                            fontSize: '0.875rem',
-                            '&:hover': {
-                              backgroundColor: pagination.currentPage === pageNum ? '#1976d2' : 'rgba(25, 118, 210, 0.1)'
-                            }
-                          }}
+                                                  sx={{
+                          backgroundColor: pagination.currentPage === pageNum ? '#008080' : 'transparent',
+                          color: pagination.currentPage === pageNum ? 'white' : '#424242',
+                          minWidth: 36,
+                          height: 36,
+                          fontSize: '0.875rem',
+                          '&:hover': {
+                            backgroundColor: pagination.currentPage === pageNum ? '#008080' : 'rgba(0, 128, 128, 0.1)'
+                          }
+                        }}
                         >
                           {pageNum}
                         </IconButton>
@@ -747,9 +744,9 @@ export default function Formations() {
                     onClick={() => handlePageChange(null, pagination.currentPage + 1)}
                     disabled={pagination.currentPage >= pagination.pageCount}
                     sx={{
-                      color: pagination.currentPage >= pagination.pageCount ? '#bdbdbd' : '#1976d2',
+                      color: pagination.currentPage >= pagination.pageCount ? '#bdbdbd' : '#008080',
                       '&:hover': {
-                        backgroundColor: pagination.currentPage >= pagination.pageCount ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                        backgroundColor: pagination.currentPage >= pagination.pageCount ? 'transparent' : 'rgba(0, 128, 128, 0.1)'
                       }
                     }}
                   >
@@ -761,9 +758,9 @@ export default function Formations() {
                     onClick={() => handlePageChange(null, pagination.pageCount)}
                     disabled={pagination.currentPage >= pagination.pageCount}
                     sx={{
-                      color: pagination.currentPage >= pagination.pageCount ? '#bdbdbd' : '#1976d2',
+                      color: pagination.currentPage >= pagination.pageCount ? '#bdbdbd' : '#008080',
                       '&:hover': {
-                        backgroundColor: pagination.currentPage >= pagination.pageCount ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                        backgroundColor: pagination.currentPage >= pagination.pageCount ? 'transparent' : 'rgba(0, 128, 128, 0.1)'
                       }
                     }}
                   >

@@ -1,5 +1,4 @@
 import api from './api';
-import { historiqueChefCentreService } from './historiqueChefCentreService';
 
 const chefCentreService = {
   // Récupérer la liste des chefs de centre avec filtres et pagination
@@ -71,8 +70,8 @@ const chefCentreService = {
       const chefCentre = chefCentreResponse.data;
 
       // Récupérer l'historique du chef de centre
-      const historiqueResponse = await historiqueChefCentreService.getByChefCentre(id);
-      const historique = historiqueResponse;
+      const historiqueResponse = await api.get(`/ChefsCentre/${id}/historique`);
+      const historique = historiqueResponse.data;
 
       // Combiner les données
       return {

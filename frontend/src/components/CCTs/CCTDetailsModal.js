@@ -124,7 +124,7 @@ export default function CCTDetailsModal({ open, onClose, cct, details, tab = 0, 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
       <DialogTitle sx={{ 
-        bgcolor: '#1976d2', 
+        bgcolor: '#003366', 
         color: 'white',
         display: 'flex',
         justifyContent: 'space-between',
@@ -523,9 +523,9 @@ export default function CCTDetailsModal({ open, onClose, cct, details, tab = 0, 
           variant="contained"
           startIcon={<EditIcon />}
           sx={{ 
-            bgcolor: '#1976d2',
+            bgcolor: '#17657D',
             '&:hover': {
-              bgcolor: '#1565c0'
+              bgcolor: '#0F4A5A'
             }
           }}
         >
@@ -534,7 +534,15 @@ export default function CCTDetailsModal({ open, onClose, cct, details, tab = 0, 
         <Button
           onClick={onClose}
           variant="outlined"
-          sx={{ minWidth: 120 }}
+          sx={{ 
+            minWidth: 120,
+            borderColor: '#17657D',
+            color: '#17657D',
+            '&:hover': {
+              borderColor: '#0F4A5A',
+              backgroundColor: 'rgba(23, 101, 125, 0.04)'
+            }
+          }}
         >
           Fermer
         </Button>

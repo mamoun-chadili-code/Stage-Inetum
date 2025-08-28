@@ -27,7 +27,7 @@ import {
   Edit as EditIcon,
   Add as AddIcon
 } from '@mui/icons-material';
-import SearchableSelect from '../common/SearchableSelect';
+import SearchableSelect from '../Commun/SearchableSelect';
 import { toast } from 'react-toastify';
 
 export default function CCTFormModal({ open, onClose, onSubmit, initialValues = {}, dropdowns = {} }) {
@@ -195,7 +195,7 @@ export default function CCTFormModal({ open, onClose, onSubmit, initialValues = 
       }}
     >
       <DialogTitle sx={{ 
-        bgcolor: '#1976d2', 
+        bgcolor: '#003366', 
         color: 'white',
         display: 'flex',
         justifyContent: 'space-between',
@@ -219,7 +219,7 @@ export default function CCTFormModal({ open, onClose, onSubmit, initialValues = 
         <Box component="form" onSubmit={handleSubmit} sx={{ p: 3 }}>
           {/* Section Informations principales */}
           <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mb: 3, pb: 2, borderBottom: '2px solid #e0e0e0' }}>
+            <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mb: 3, pb: 2, borderBottom: '2px solid #1976d2', fontWeight: 'bold' }}>
               Informations principales
             </Typography>
             
@@ -465,7 +465,7 @@ export default function CCTFormModal({ open, onClose, onSubmit, initialValues = 
 
           {/* Section Informations complémentaires */}
           <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mb: 3, pb: 2, borderBottom: '2px solid #e0e0e0' }}>
+            <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mb: 3, pb: 2, borderBottom: '2px solid #1976d2', fontWeight: 'bold' }}>
               Informations complémentaires
             </Typography>
             
@@ -568,7 +568,7 @@ export default function CCTFormModal({ open, onClose, onSubmit, initialValues = 
 
           {/* Section Classification et autorisation */}
           <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mb: 3, pb: 2, borderBottom: '2px solid #e0e0e0' }}>
+            <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mb: 3, pb: 2, borderBottom: '2px solid #1976d2', fontWeight: 'bold' }}>
               Classification et autorisation
             </Typography>
             
@@ -665,7 +665,15 @@ export default function CCTFormModal({ open, onClose, onSubmit, initialValues = 
         <Button
           onClick={onClose}
           variant="outlined"
-          sx={{ minWidth: 120 }}
+          sx={{ 
+            minWidth: 120,
+            borderColor: '#17657D',
+            color: '#17657D',
+            '&:hover': {
+              borderColor: '#0F4A5A',
+              backgroundColor: 'rgba(23, 101, 125, 0.1)'
+            }
+          }}
         >
           Annuler
         </Button>
@@ -675,9 +683,9 @@ export default function CCTFormModal({ open, onClose, onSubmit, initialValues = 
           disabled={isSubmitting}
           sx={{ 
             minWidth: 120,
-            bgcolor: '#00bcd4',
+            bgcolor: '#17657D',
             '&:hover': {
-              bgcolor: '#0097a7'
+              bgcolor: '#0F4A5A'
             }
           }}
         >

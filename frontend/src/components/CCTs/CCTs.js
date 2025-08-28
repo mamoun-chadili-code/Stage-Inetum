@@ -64,7 +64,8 @@ import { historiqueCCTService } from '../../services/historiqueCCTService';
 import CCTFormModal from './CCTFormModal';
 import CCTDetailsModal from './CCTDetailsModal';
 import CCTDebugModal from './CCTDebugModal';
-import SearchableSelect from '../common/SearchableSelect';
+import SearchableSelect from '../Commun/SearchableSelect';
+import SectionTitle from '../Commun/SectionTitle';
 
 export default function CCTs() {
   // États principaux
@@ -564,26 +565,22 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
       <Box sx={{ 
         textAlign: 'center', 
         mb: 4, 
-        pt: 2,
-        pb: 3,
+        pt: 1,
+        pb: 1,
         backgroundColor: '#f8f9fa',
         borderRadius: 2,
         border: '1px solid #e0e0e0',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '50px',
         mt: 3,
         mx: 2
       }}>
-        <Typography 
-          variant="h4" 
-          component="h1" 
-          sx={{ 
-            color: '#1976d2', 
-            fontWeight: 'bold',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px'
-          }}
-        >
-          Centres de Contrôle Technique (CCT)
-        </Typography>
+        <SectionTitle 
+          title="CENTRES DE CONTRÔLE TECHNIQUE (CCT)" 
+          variant="section"
+        />
       </Box>
 
       <Box sx={{ px: 2, flex: 1, width: '100%' }}>
@@ -661,9 +658,9 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
                 sx={{ 
                   minHeight: '40px',
                   minWidth: '150px',
-                  bgcolor: '#1976d2',
+                  bgcolor: '#008080',
                   '&:hover': {
-                    bgcolor: '#1565c0'
+                    bgcolor: '#006666'
                   }
                 }}
               >
@@ -676,11 +673,11 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
                 sx={{ 
                   minHeight: '40px',
                   minWidth: '150px',
-                  borderColor: '#1976d2',
-                  color: '#1976d2',
+                  borderColor: '#008080',
+                  color: '#008080',
                   '&:hover': {
-                    borderColor: '#1565c0',
-                    bgcolor: 'rgba(25, 118, 210, 0.04)'
+                    borderColor: '#006666',
+                    bgcolor: 'rgba(0, 128, 128, 0.1)'
                   }
                 }}
               >
@@ -729,7 +726,12 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
               startIcon={<AddIcon />}
               onClick={handleAdd}
               disabled={loadingDropdowns}
-              sx={{ bgcolor: '#1976d2' }}
+              sx={{ 
+                bgcolor: '#008080',
+                '&:hover': {
+                  bgcolor: '#006666'
+                }
+              }}
             >
               Ajouter CCT
             </Button>
@@ -847,33 +849,33 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
             {/* Navigation de pagination personnalisée centrée */}
             {pagination.pageCount > 1 && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                {/* Bouton première page */}
-                <IconButton
-                  onClick={() => handlePageChange(null, 1)}
-                  disabled={pagination.currentPage === 1}
-                  sx={{
-                    color: pagination.currentPage === 1 ? '#bdbdbd' : '#1976d2',
-                    '&:hover': {
-                      backgroundColor: pagination.currentPage === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
-                    }
-                  }}
-                >
-                  <FirstPageIcon />
-                </IconButton>
+                                  {/* Bouton première page */}
+                  <IconButton
+                    onClick={() => handlePageChange(null, 1)}
+                    disabled={pagination.currentPage === 1}
+                    sx={{
+                      color: pagination.currentPage === 1 ? '#bdbdbd' : '#008080',
+                      '&:hover': {
+                        backgroundColor: pagination.currentPage === 1 ? 'transparent' : 'rgba(0, 128, 128, 0.1)'
+                      }
+                    }}
+                  >
+                    <FirstPageIcon />
+                  </IconButton>
 
-                {/* Bouton page précédente */}
-                <IconButton
-                  onClick={() => handlePageChange(null, pagination.currentPage - 1)}
-                  disabled={pagination.currentPage === 1}
-                  sx={{
-                    color: pagination.currentPage === 1 ? '#bdbdbd' : '#1976d2',
-                    '&:hover': {
-                      backgroundColor: pagination.currentPage === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
-                    }
-                  }}
-                >
-                  <ChevronLeftIcon />
-                </IconButton>
+                                  {/* Bouton page précédente */}
+                  <IconButton
+                    onClick={() => handlePageChange(null, pagination.currentPage - 1)}
+                    disabled={pagination.currentPage === 1}
+                    sx={{
+                      color: pagination.currentPage === 1 ? '#bdbdbd' : '#008080',
+                      '&:hover': {
+                        backgroundColor: pagination.currentPage === 1 ? 'transparent' : 'rgba(0, 128, 128, 0.1)'
+                      }
+                    }}
+                  >
+                    <ChevronLeftIcon />
+                  </IconButton>
 
                 {/* Numéros de page */}
                 {Array.from({ length: Math.min(3, pagination.pageCount) }, (_, i) => {
@@ -894,13 +896,13 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
                         key={pageNum}
                         onClick={() => handlePageChange(null, pageNum)}
                         sx={{
-                          backgroundColor: pagination.currentPage === pageNum ? '#1976d2' : 'transparent',
-                          color: pagination.currentPage === pageNum ? 'white' : '#424242',
+                          backgroundColor: pagination.currentPage === pageNum ? '#008080' : 'transparent',
+                          color: pageNum === pagination.currentPage ? 'white' : '#424242',
                           minWidth: 36,
                           height: 36,
                           fontSize: '0.875rem',
                           '&:hover': {
-                            backgroundColor: pagination.currentPage === pageNum ? '#1976d2' : 'rgba(25, 118, 210, 0.1)'
+                            backgroundColor: pagination.currentPage === pageNum ? '#008080' : 'rgba(0, 128, 128, 0.1)'
                           }
                         }}
                       >
@@ -911,33 +913,33 @@ DERNIÈRE CHANCE : Cette action est irréversible !`
                   return null;
                 })}
 
-                {/* Bouton page suivante */}
-                <IconButton
-                  onClick={() => handlePageChange(null, pagination.currentPage + 1)}
-                  disabled={pagination.currentPage >= pagination.pageCount}
-                  sx={{
-                    color: pagination.currentPage >= pagination.pageCount ? '#bdbdbd' : '#1976d2',
-                    '&:hover': {
-                      backgroundColor: pagination.currentPage >= pagination.pageCount ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
-                    }
-                  }}
-                >
-                  <ChevronRightIcon />
-                </IconButton>
+                                  {/* Bouton page suivante */}
+                  <IconButton
+                    onClick={() => handlePageChange(null, pagination.currentPage + 1)}
+                    disabled={pagination.currentPage >= pagination.pageCount}
+                    sx={{
+                      color: pagination.currentPage >= pagination.pageCount ? '#bdbdbd' : '#008080',
+                      '&:hover': {
+                        backgroundColor: pagination.currentPage >= pagination.pageCount ? 'transparent' : 'rgba(0, 128, 128, 0.1)'
+                      }
+                    }}
+                  >
+                    <ChevronRightIcon />
+                  </IconButton>
 
-                {/* Bouton dernière page */}
-                <IconButton
-                  onClick={() => handlePageChange(null, pagination.pageCount)}
-                  disabled={pagination.currentPage >= pagination.pageCount}
-                  sx={{
-                    color: pagination.currentPage >= pagination.pageCount ? '#bdbdbd' : '#1976d2',
-                    '&:hover': {
-                      backgroundColor: pagination.currentPage >= pagination.pageCount ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
-                    }
-                  }}
-                >
-                  <LastPageIcon />
-                </IconButton>
+                                  {/* Bouton dernière page */}
+                  <IconButton
+                    onClick={() => handlePageChange(null, pagination.pageCount)}
+                    disabled={pagination.currentPage >= pagination.pageCount}
+                    sx={{
+                      color: pagination.currentPage >= pagination.pageCount ? '#bdbdbd' : '#008080',
+                      '&:hover': {
+                        backgroundColor: pagination.currentPage >= pagination.pageCount ? 'transparent' : 'rgba(0, 128, 128, 0.1)'
+                      }
+                    }}
+                  >
+                    <LastPageIcon />
+                  </IconButton>
               </Box>
             )}
 

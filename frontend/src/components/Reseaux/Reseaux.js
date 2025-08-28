@@ -4,7 +4,7 @@ import {
   Table, TableHead, TableRow, TableCell, TableBody, IconButton, Select, MenuItem, InputLabel, FormControl, Pagination, CircularProgress,
   Typography, Divider, Box, Avatar, Chip, Autocomplete, FormHelperText
 } from '@mui/material';
-import SectionTitle from '../common/SectionTitle';
+import SectionTitle from '../Commun/SectionTitle';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import AutoDeleteIcon from '@mui/icons-material/AutoDelete';
@@ -820,9 +820,9 @@ export default function Reseaux() {
             onClick={() => setPage(1)}
             disabled={page === 1}
             sx={{
-              color: page === 1 ? '#bdbdbd' : '#1976d2',
+              color: page === 1 ? '#bdbdbd' : '#008080',
               '&:hover': {
-                backgroundColor: page === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                backgroundColor: page === 1 ? 'transparent' : 'rgba(0, 128, 128, 0.1)'
               }
             }}
           >
@@ -834,9 +834,9 @@ export default function Reseaux() {
             onClick={() => setPage(page - 1)}
             disabled={page === 1}
             sx={{
-              color: page === 1 ? '#bdbdbd' : '#1976d2',
+              color: page === 1 ? '#bdbdbd' : '#008080',
               '&:hover': {
-                backgroundColor: page === 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                backgroundColor: page === 1 ? 'transparent' : 'rgba(0, 128, 128, 0.1)'
               }
             }}
           >
@@ -862,13 +862,13 @@ export default function Reseaux() {
                   key={pageNum}
                   onClick={() => setPage(pageNum)}
                   sx={{
-                    backgroundColor: page === pageNum ? '#1976d2' : 'transparent',
+                    backgroundColor: page === pageNum ? '#008080' : 'transparent',
                     color: page === pageNum ? 'white' : '#424242',
                     minWidth: 36,
                     height: 36,
                     fontSize: '0.875rem',
                     '&:hover': {
-                      backgroundColor: page === pageNum ? '#1976d2' : 'rgba(25, 118, 210, 0.1)'
+                      backgroundColor: page === pageNum ? '#008080' : 'rgba(0, 128, 128, 0.1)'
                     }
                   }}
                 >
@@ -884,9 +884,9 @@ export default function Reseaux() {
             onClick={() => setPage(page + 1)}
             disabled={page >= pageCount}
             sx={{
-              color: page >= pageCount ? '#bdbdbd' : '#1976d2',
+              color: page >= pageCount ? '#bdbdbd' : '#008080',
               '&:hover': {
-                backgroundColor: page >= pageCount ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                backgroundColor: page >= pageCount ? 'transparent' : 'rgba(0, 128, 128, 0.1)'
               }
             }}
           >
@@ -898,9 +898,9 @@ export default function Reseaux() {
             onClick={() => setPage(pageCount)}
             disabled={page >= pageCount}
             sx={{
-              color: page >= pageCount ? '#bdbdbd' : '#1976d2',
+              color: page >= pageCount ? '#bdbdbd' : '#008080',
               '&:hover': {
-                backgroundColor: page >= pageCount ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                backgroundColor: page >= pageCount ? 'transparent' : 'rgba(0, 128, 128, 0.1)'
               }
             }}
           >

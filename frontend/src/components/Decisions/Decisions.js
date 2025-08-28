@@ -38,6 +38,7 @@ import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { fr } from 'date-fns/locale';
 import DecisionFormModal from './DecisionFormModal';
 import DecisionDetailsModal from './DecisionDetailsModal';
+import SectionTitle from '../Commun/SectionTitle';
 import { decisionService } from '../../services/decisionService';
 import { dropdownsService } from '../../services/dropdownsService';
 
@@ -354,24 +355,20 @@ const Decisions = () => {
       <Box sx={{ 
         textAlign: 'center', 
         mb: 4, 
-        pt: 2,
-        pb: 3,
+        pt: 1,
+        pb: 1,
         backgroundColor: '#f8f9fa',
         borderRadius: 2,
-        border: '1px solid #e0e0e0'
+        border: '1px solid #e0e0e0',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '50px'
       }}>
-        <Typography 
-          variant="h4" 
-          component="h1" 
-          sx={{ 
-            color: '#1976d2', 
-            fontWeight: 'bold',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px'
-          }}
-        >
-          Gestion des Décisions/Sanctions
-        </Typography>
+        <SectionTitle 
+          title="GESTION DES DÉCISIONS/SANCTIONS" 
+          variant="section"
+        />
       </Box>
 
       {/* Section Recherche */}
@@ -584,18 +581,18 @@ const Decisions = () => {
               <Typography variant="body2" sx={{ color: '#666' }}>
                 Éléments par page :
               </Typography>
-              <FormControl size="small" sx={{ minWidth: 120 }}>
-                <Select
-                  value={rowsPerPage}
-                  onChange={handleChangeRowsPerPage}
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <Select
+                value={rowsPerPage}
+                onChange={handleChangeRowsPerPage}
                   label="Éléments par page"
-                >
-                  <MenuItem value={5}>5</MenuItem>
-                  <MenuItem value={10}>10</MenuItem>
-                  <MenuItem value={25}>25</MenuItem>
-                  <MenuItem value={50}>50</MenuItem>
-                </Select>
-              </FormControl>
+              >
+                <MenuItem value={5}>5</MenuItem>
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={25}>25</MenuItem>
+                <MenuItem value={50}>50</MenuItem>
+              </Select>
+            </FormControl>
             </Box>
 
             <Button
@@ -635,7 +632,7 @@ const Decisions = () => {
               <TableCell sx={{ fontWeight: 'bold' }}>Chef de centre</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Ligne</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }} align="center"></TableCell>
-            </TableRow>
+              </TableRow>
             </TableHead>
             <TableBody>
               {loading ? (
@@ -725,9 +722,9 @@ const Decisions = () => {
               onClick={() => handleChangePage(null, 0)}
               disabled={page === 0}
               sx={{
-                color: page === 0 ? '#bdbdbd' : '#1976d2',
+                color: page === 0 ? '#bdbdbd' : '#008080',
                 '&:hover': {
-                  backgroundColor: page === 0 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                  backgroundColor: page === 0 ? 'transparent' : 'rgba(0, 128, 128, 0.1)'
                 }
               }}
             >
@@ -739,9 +736,9 @@ const Decisions = () => {
               onClick={() => handleChangePage(null, page - 1)}
               disabled={page === 0}
               sx={{
-                color: page === 0 ? '#bdbdbd' : '#1976d2',
+                color: page === 0 ? '#bdbdbd' : '#008080',
                 '&:hover': {
-                  backgroundColor: page === 0 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                  backgroundColor: page === 0 ? 'transparent' : 'rgba(0, 128, 128, 0.1)'
                 }
               }}
             >
@@ -757,13 +754,13 @@ const Decisions = () => {
                     key={pageNum}
                     onClick={() => handleChangePage(null, pageNum)}
                     sx={{
-                      backgroundColor: page === pageNum ? '#1976d2' : 'transparent',
+                      backgroundColor: page === pageNum ? '#008080' : 'transparent',
                       color: page === pageNum ? 'white' : '#424242',
                       minWidth: 36,
                       height: 36,
                       fontSize: '0.875rem',
                       '&:hover': {
-                        backgroundColor: page === pageNum ? '#1976d2' : 'rgba(25, 118, 210, 0.1)'
+                        backgroundColor: page === pageNum ? '#008080' : 'rgba(0, 128, 128, 0.1)'
                       }
                     }}
                   >
@@ -779,9 +776,9 @@ const Decisions = () => {
               onClick={() => handleChangePage(null, page + 1)}
               disabled={page >= totalPages - 1}
               sx={{
-                color: page >= totalPages - 1 ? '#bdbdbd' : '#1976d2',
+                color: page >= totalPages - 1 ? '#bdbdbd' : '#008080',
                 '&:hover': {
-                  backgroundColor: page >= totalPages - 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                  backgroundColor: page >= totalPages - 1 ? 'transparent' : 'rgba(0, 128, 128, 0.1)'
                 }
               }}
             >
@@ -793,9 +790,9 @@ const Decisions = () => {
               onClick={() => handleChangePage(null, totalPages - 1)}
               disabled={page >= totalPages - 1}
               sx={{
-                color: page >= totalPages - 1 ? '#bdbdbd' : '#1976d2',
+                color: page >= totalPages - 1 ? '#bdbdbd' : '#008080',
                 '&:hover': {
-                  backgroundColor: page >= totalPages - 1 ? 'transparent' : 'rgba(25, 118, 210, 0.1)'
+                  backgroundColor: page >= totalPages - 1 ? 'transparent' : 'rgba(0, 128, 128, 0.1)'
                 }
               }}
             >
@@ -807,9 +804,9 @@ const Decisions = () => {
         {/* Informations d'affichage en dessous */}
         <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
           Affichage de {page * rowsPerPage + 1} à {Math.min((page + 1) * rowsPerPage, totalCount)} sur {totalCount} décisions
-        </Typography>
-      </Box>
-    </Paper>
+          </Typography>
+        </Box>
+      </Paper>
 
       {/* Modales */}
       <DecisionFormModal
